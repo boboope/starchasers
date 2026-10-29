@@ -91,12 +91,13 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .card.p1 .crowns{right:auto;left:8px}
 .card.p1 .who{align-items:flex-end}
 .vs{font-family:var(--f-title);color:var(--ink3);font-size:22px;align-self:center}
-.bannerRow{display:grid;grid-template-columns:36px 1fr 36px;gap:6px;align-items:center}
+.bannerRow{display:grid;grid-template-columns:36px 1fr 36px 36px;gap:6px;align-items:center}
 .banner{text-align:center;font-family:var(--f-title);color:var(--ink);font-size:18px;min-height:30px;line-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:14px}
 .banner.me{color:#3a2a00;background:var(--star);transform:rotate(-.5deg)}
 .statusRow{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;min-height:26px}
 .music{display:flex;gap:4px}
-.musicbtn.off{opacity:.45;text-decoration:line-through}
+.musicbtn.off{opacity:.5;position:relative}
+.musicbtn.off::after{content:"";position:absolute;left:18%;right:18%;top:50%;height:3px;background:var(--bad);transform:rotate(-40deg);border-radius:2px}
 .songtag{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:9;background:#fff;border:2px solid var(--ink3);border-radius:12px;padding:2px 10px;font-size:13px;color:var(--muted);white-space:nowrap;pointer-events:none}
 .aibtn{font-family:var(--f-title);font-size:14px;color:var(--ink);background:#fff;border:2px dashed var(--ink3);border-radius:12px;padding:0 10px;line-height:22px;white-space:nowrap}
 .aibtn.on{background:var(--ink);color:#fff;border-style:solid}
@@ -276,7 +277,7 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
     <div class="rules">
       <div><b>1.</b><span>Everyone starts in the middle. Pick a road, then SWIPE the dice to throw it. Roll a 6, roll again.</span></div>
       <div><b>2.</b><span>The 3 dark steps next to each door are the way in. Land on one: if nobody owns that corner, do the math in 21 seconds to own it and its 2 keys. Answer fast for more ink later!</span></div>
-      <div><b>3.</b><span>Corner owned by your friend? Its GUARDIAN challenges you to a 1-minute duel: the Chicken's Mustache Showdown, the Dog's Bone Fetch, the Duck's Duck Race or the Cat's Laser Chase. Your friend plays the guardian. Win and the corner is yours for good. The loser gets a mustache!</span></div>
+      <div><b>3.</b><span>Corner owned by your friend? Its GUARDIAN challenges you to a 1-minute duel: the Chicken's Mustache Showdown (the funniest-LOOKING face wins, but has to keep wearing it), the Dog's Bone Fetch, the Duck's Duck Race or the Cat's Laser Chase. Your friend plays the guardian. Win and the corner is yours for good. The loser gets a mustache!</span></div>
       <div><b>4.</b><span>Land on your friend: CHICKY-CHICKEN! Chicken dance, back to the middle. Tap the same emoji together to make the chicken laugh.</span></div>
       <div><b>5.</b><span>Own all four corners to unlock the rope. Climb its knots 1–3 at a time and land on the star EXACTLY. Beat the final puzzle to win.</span></div>
       <div><b>★</b><span>Every win lets you unlock one new doodle of your choice. Need a break? The AI button plays for you for up to 2 minutes.</span></div>
@@ -334,10 +335,10 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
     <div class="bannerRow">
       <button class="iconbtn sm" id="gameMenu" aria-label="Menu">☰</button>
       <div class="banner" id="banner"></div>
-      <button class="iconbtn sm" id="gameMute" aria-label="Sound on or off">🔊</button>
+      <button class="iconbtn sm musicbtn" data-act="toggle" aria-label="Music on or off">🎵</button><button class="iconbtn sm" id="gameMute" aria-label="Sound effects on or off">🔊</button>
     </div>
     <div class="statusRow">
-      <div class="music"><button class="iconbtn sm musicbtn" data-act="toggle" aria-label="Music on or off">🎵</button><button class="iconbtn sm musicbtn" data-act="next" aria-label="Next song">⏭</button></div>
+      <div class="music"><button class="iconbtn sm musicbtn" data-act="next" aria-label="Next song">⏭</button></div>
       <div class="notes" id="notes"></div>
       <button class="aibtn" id="aiBtn">🤖 AI plays for me</button>
     </div>
@@ -899,25 +900,32 @@ function guardTick(now){
 
 // ---------------- background music: 5 CC0 ambient tracks, served next to the page ----------------
 const Music = (() => {
-  let on = true, idx = 0, audio = null, ok = true, tagT = null;
-  try { const m = localStorage.getItem('sr_music'); if(m !== null) on = m === '1'; idx = (parseInt(localStorage.getItem('sr_track')||'0',10)||0) % MUSIC.length; } catch(e){}
+  let on = true, idx = 0, audio = null, fails = 0, avail = MUSIC.slice(), tagT = null, broken = false;
+  try { const m = localStorage.getItem('sr_music'); if(m !== null) on = m === '1'; idx = (parseInt(localStorage.getItem('sr_track')||'0',10)||0); } catch(e){}
   const save = () => { try { localStorage.setItem('sr_music', on ? '1' : '0'); localStorage.setItem('sr_track', String(idx)); } catch(e){} };
-  function ensure(){ if(audio) return; audio = new Audio(); audio.preload = 'auto'; audio.volume = .28;
+  // the site build writes music/list.json with the tracks it managed to fetch
+  if(location.protocol.startsWith('http')) fetch('music/list.json', { cache:'no-store' }).then(r => r.ok ? r.json() : null).then(list => { if(Array.isArray(list) && list.length){ const got = MUSIC.filter(m => list.includes(m.f.split('/').pop())); if(got.length) avail = got; } }).catch(() => {});
+  const cur = () => avail[((idx % avail.length) + avail.length) % avail.length];
+  function ensure(){ if(audio) return; audio = new Audio(); audio.preload = 'auto'; audio.volume = .3; audio.setAttribute('playsinline', '');
     audio.addEventListener('ended', () => next());
-    audio.addEventListener('error', () => { ok = false; renderMusic(); }); audio.src = MUSIC[idx].f; }
-  function play(){ if(!ok || !on || window.__SR_FAST) return; ensure(); const pr = audio.play(); if(pr && pr.catch) pr.catch(() => {}); showTag(); }
-  function showTag(){ const w = $('#boardwrap'); if(!w || $('#game').hidden) return; let t = w.querySelector('.songtag'); if(!t){ t = document.createElement('div'); t.className = 'songtag'; w.appendChild(t); } t.textContent = `♪ ${MUSIC[idx].t} · ${MUSIC[idx].a} (CC0)`; t.hidden = false; clearTimeout(tagT); tagT = setTimeout(() => { t.hidden = true; }, 3500); }
-  function next(){ idx = (idx + 1) % MUSIC.length; save(); if(audio){ audio.src = MUSIC[idx].f; } if(on) play(); }
-  function toggle(){ on = !on; save(); if(on) play(); else if(audio) audio.pause(); renderMusic(); }
-  return { start: play, next, toggle, get on(){ return on; }, get ok(){ return ok; } };
+    audio.addEventListener('playing', () => { fails = 0; broken = false; renderMusic(); });
+    audio.addEventListener('error', () => { fails++; if(fails < avail.length){ idx++; save(); audio.src = cur().f; if(on) tryPlay(); } else { broken = true; renderMusic(); } }); }
+  function tryPlay(){ const pr = audio.play(); if(pr && pr.catch) pr.catch(() => {}); }
+  function play(){ if(!on || window.__SR_FAST) return; ensure(); if(!audio.src || !audio.src.endsWith(encodeURI(cur().f).split('/').pop())) audio.src = cur().f; if(audio.paused) tryPlay(); showTag(); }
+  function showTag(msg){ const w = $('#boardwrap'); if(!w || $('#game').hidden) return; let t = w.querySelector('.songtag'); if(!t){ t = document.createElement('div'); t.className = 'songtag'; w.appendChild(t); } t.textContent = msg || `♪ ${cur().t} · ${cur().a} (CC0)`; t.hidden = false; clearTimeout(tagT); tagT = setTimeout(() => { t.hidden = true; }, 3500); }
+  function next(){ idx++; save(); fails = 0; if(audio){ audio.src = cur().f; } if(on) play(); }
+  function toggle(){ on = !on; save(); if(on){ fails = 0; broken = false; play(); if(!location.protocol.startsWith('http')) showTag('Music plays on the StarChasers website'); } else if(audio) audio.pause(); renderMusic(); }
+  // phones only allow music to start from a tap, so any tap (re)starts it while music is on
+  document.addEventListener('pointerdown', () => { if(on && !broken && (!audio || audio.paused) && !window.__SR_FAST) play(); }, { passive:true });
+  return { start: play, next, toggle, get on(){ return on; }, get broken(){ return broken; } };
 })();
-function renderMusic(){ document.querySelectorAll('.musicbtn').forEach(b => { b.hidden = !Music.ok; if(b.dataset.act==='toggle') b.classList.toggle('off', !Music.on); }); }
+function renderMusic(){ document.querySelectorAll('.musicbtn').forEach(b => { b.hidden = false; if(b.dataset.act==='toggle'){ b.classList.toggle('off', !Music.on || Music.broken); b.title = Music.broken ? 'Music could not load' : (Music.on ? 'Music on' : 'Music off'); } else b.hidden = !Music.on; }); }
 document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.musicbtn'); if(!b) return; SFX.unlock(); if(b.dataset.act==='next') Music.next(); else Music.toggle(); renderMusic(); });
 renderMusic();
 
 // ---------------- guardian duels: each guardian invented its own 1-minute game ----------------
 const GAMES = {
-  NW: { id:'stache', title:'MUSTACHE SHOWDOWN', how:'Draw the funniest mustache on your rival. The Chicken judges by counting its laughs. Loser keeps the mustache!' },
+  NW: { id:'stache', title:'MUSTACHE SHOWDOWN', how:'Draw a mustache on your rival. The Chicken laughs at both faces: the FUNNIEST-LOOKING face wins, but has to keep wearing it!' },
   NE: { id:'bones',  title:'BONE FETCH', how:'Tap the bones as fast as you can. First to 15 wins!', target:15 },
   SW: { id:'duck',   title:'DUCK RACE', how:'Tap PADDLE super fast. First across the pond wins!', target:70 },
   SE: { id:'laser',  title:'LASER CHASE', how:'Keep your finger on the red laser dot. First to 10 seconds wins!', target:10000 },
@@ -1034,12 +1042,13 @@ function gduelResult(d, a){
   let faces = '';
   if(game.id==='stache'){
     const onGuard = (a.draws && a.draws.c) || [], onCh = (a.draws && a.draws.o) || [];
-    faces = `<div class="faces"><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(kind, guardColor[kind])}${scribSVG(onGuard.length ? [onGuard] : [])}</svg>🐔 laughed ${a.scores[d.c]}×<small>${esc(cName)} drew this</small></div><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(S.players[d.c].av, colHex(S.players[d.c].col))}${scribSVG(onCh.length ? [onCh] : [])}</svg>🐔 laughed ${a.scores[d.o]}×<small>${esc(S.players[d.o].name)} drew this</small></div></div>`;
+    faces = `<div class="faces"><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(kind, guardColor[kind])}${scribSVG(onGuard.length ? [onGuard] : [])}</svg>🐔 laughed ${a.scores[d.o]}×<small>${esc(cName)} drew this</small></div><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(S.players[d.c].av, colHex(S.players[d.c].col))}${scribSVG(onCh.length ? [onCh] : [])}</svg>🐔 laughed ${a.scores[d.c]}×<small>${esc(S.players[d.o].name)} drew this</small></div></div>`;
   } else {
     faces = `<div class="faces"><div>${svgIcon(kind, guardColor[kind], 80)}${esc(gScoreText(game, a.scores[d.o]))}</div><div>${avatarSVG(S.players[d.c], 80)}${esc(gScoreText(game, a.scores[d.c]))}</div></div>`;
   }
   const head = guardWins ? `<svg viewBox="-20 -20 40 40" width="110" height="110" style="animation:dance .8s ease-in-out infinite">${ico(kind, guardColor[kind])}${coolBits(kind)}</svg><h2>THE ${GUARD_NAME[kind].toUpperCase()} WINS!</h2><p class="sub">The guardian is now SUPER COOL 😎</p>` : `${avatarSVG(S.players[d.c], 110, 'winav')}<h2>${esc(cName)} WINS!</h2><p class="sub">The ${GUARD_NAME[kind]} lost the duel.</p>`;
-  const r = document.createElement('div'); r.className = 'result'; r.innerHTML = head + faces; $('#gduel').appendChild(r);
+  const note = game.id==='stache' ? `<p class="sub">Funniest-looking face wins… and has to keep wearing it! 😂</p>` : '';
+  const r = document.createElement('div'); r.className = 'result'; r.innerHTML = head + faces + note; $('#gduel').appendChild(r);
 }
 // the squishy makes a new face every couple of seconds
 setInterval(() => { squishFace++; if(!S || $('#game').hidden) return; S.players.forEach((pl, p) => { if(pl.av!=='squishy') return; const a = $('#card'+p+' .av'); if(a) a.outerHTML = avatarSVG(pl, 84, 'av'); if(!S.dance && pieces[p]) drawPieceBody(p, false); }); }, 2200);
@@ -1158,9 +1167,9 @@ async function apply(a){
       renderAll(); pulseAt(FLAG[q]); SFX.lockRope();
       await toast(w===c ? 'key' : kind, w===c ? `${S.players[c].name} beat the ${GUARD_NAME[kind]}!` : `The ${GUARD_NAME[kind]} guardian wins!`, w===c ? `${QUADS[q].short} corner is ${S.players[c].name}'s for good.` : `${S.players[o].name} keeps ${QUADS[q].short} corner for good.`, 2000, QUADS[q].col);
       if(game.id==='stache'){
-        const strokes = (a.draws && (w===c ? a.draws.c : a.draws.o)) || [];
-        if(w===c) S.gscrib[q] = strokes.length ? [strokes] : []; else S.players[c].scribbles = strokes.length ? [strokes] : [];
-        renderAll(); SFX.splat(); shake(); fxText(w===c ? QPOS[q].x : pieces[c].x, (w===c ? QPOS[q].y : pieces[c].y) - 70, 'YOU KEEP IT!', INK, 44); await wait(800);
+        const strokes = (a.draws && (w===c ? a.draws.o : a.draws.c)) || [];   // the winner wears what was drawn on THEM
+        if(w===c) S.players[c].scribbles = strokes.length ? [strokes] : []; else S.gscrib[q] = strokes.length ? [strokes] : [];
+        renderAll(); SFX.splat(); shake(); fxText(w===c ? pieces[c].x : QPOS[q].x, (w===c ? pieces[c].y : QPOS[q].y) - 70, 'FUNNIEST FACE! KEEP IT ON!', INK, 40); await wait(800);
       } else S.draw = { ...drawSpec(w, w===c ? 'g:'+q : c, 5), next:o };
       await checkRope(S.players[c]);
       break;
@@ -1420,7 +1429,7 @@ async function hostGduelFinish(winner){
   lock = true;
   try {
     const d = S.gduel; const game = GAMES[d.q]; const scores = [0,0]; let draws = null;
-    if(game.id==='stache'){ const rng = Math.random; scores[d.c] = funnyScore(gHost.draws[d.c], rng); scores[d.o] = funnyScore(gHost.draws[d.o], rng); winner = scores[d.c] > scores[d.o] ? d.c : scores[d.o] > scores[d.c] ? d.o : pick([d.c, d.o]); draws = { c:gHost.draws[d.c] || [], o:gHost.draws[d.o] || [] }; }
+    if(game.id==='stache'){ const rng = Math.random; scores[d.o] = funnyScore(gHost.draws[d.c], rng); scores[d.c] = funnyScore(gHost.draws[d.o], rng); winner = scores[d.c] > scores[d.o] ? d.c : scores[d.o] > scores[d.c] ? d.o : pick([d.c, d.o]); draws = { c:gHost.draws[d.c] || [], o:gHost.draws[d.o] || [] }; }
     else { scores[d.c] = gHost.prog[d.c] || 0; scores[d.o] = gHost.prog[d.o] || 0; if(winner===undefined) winner = scores[d.c] > scores[d.o] ? d.c : d.o; }
     const c = d.c;
     await hostDo({ k:'gduel_end', winner, scores, draws });

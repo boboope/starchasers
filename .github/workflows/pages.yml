@@ -29,6 +29,8 @@ jobs:
           get "https://opengameart.org/sites/default/files/monoliths.mp3" monoliths
           get "https://opengameart.org/sites/default/files/booya-b.mp3" booya
           ls -la music
+          python3 -c "import json,os; json.dump(sorted(f for f in os.listdir('music') if f.endswith('.mp3') and os.path.getsize('music/'+f) > 10000), open('music/list.json','w'))"
+          cat music/list.json
       - uses: actions/configure-pages@v5
         with:
           enablement: true
