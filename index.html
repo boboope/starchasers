@@ -10,9 +10,9 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Patrick+Hand&display=swap">
 <style>
-/* Layout: one-screen phone app. Big player cards (room for drawn-on mustaches) on top, Enso's drawing as the board in the middle, the dice and road picker at the thumbs. Single visual world by choice: blue ballpoint on notebook paper in every theme. */
+/* Layout: one-screen phone app. Big player cards (room for drawn-on mustaches) on top, Enso's drawing as the board in the middle, the dice and road picker at the thumbs. Single visual world by choice: blue ballpoint on warm red paper in every theme. */
 :root{
-  --paper:#fbf8ef; --paper2:#f3eedf; --line:#e4e9f7;
+  --paper:#f4c9be; --paper2:#fbeee9; --line:#e4e9f7;
   --ink:#2b49b8; --ink2:#5c74cf; --ink3:#b7c3ea;
   --text:#1f2a4a; --muted:#6a7290;
   --star:#f6c531; --star2:#e39a12;
@@ -95,8 +95,9 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .banner{text-align:center;font-family:var(--f-title);color:var(--ink);font-size:18px;min-height:30px;line-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:14px}
 .banner.me{color:#3a2a00;background:var(--star);transform:rotate(-.5deg)}
 .statusRow{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;min-height:26px}
-.timer{font-family:var(--f-title);font-size:16px;color:var(--ink);background:#fff;border:2px solid var(--ink3);border-radius:12px;padding:0 10px;line-height:22px;font-variant-numeric:tabular-nums}
-.timer.hot{color:#fff;background:var(--bad);border-color:var(--bad);animation:bob .6s ease-in-out infinite}
+.music{display:flex;gap:4px}
+.musicbtn.off{opacity:.45;text-decoration:line-through}
+.songtag{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:9;background:#fff;border:2px solid var(--ink3);border-radius:12px;padding:2px 10px;font-size:13px;color:var(--muted);white-space:nowrap;pointer-events:none}
 .aibtn{font-family:var(--f-title);font-size:14px;color:var(--ink);background:#fff;border:2px dashed var(--ink3);border-radius:12px;padding:0 10px;line-height:22px;white-space:nowrap}
 .aibtn.on{background:var(--ink);color:#fff;border-style:solid}
 .notes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-width:0;overflow:hidden}
@@ -142,7 +143,7 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .emo small{display:block;font-size:16px;font-family:var(--f-title);color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:2px 8px;margin-top:2px;white-space:nowrap}
 @keyframes emo{0%{transform:scale(.2) rotate(-20deg);opacity:0}15%{transform:scale(1.2) rotate(8deg);opacity:1}30%{transform:scale(1) rotate(-6deg)}100%{transform:scale(1.05) translateY(-40px) rotate(4deg);opacity:0}}
 .bubble{position:absolute;z-index:8;pointer-events:none;background:#fff;border:3px solid var(--ink);border-radius:18px 18px 18px 4px;padding:6px 12px;font-family:var(--f-title);font-size:17px;color:var(--ink);max-width:70%;animation:pop .3s;box-shadow:3px 4px 0 var(--ink3)}
-.cover{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center;background:rgba(251,248,239,.95);overflow-y:auto}
+.cover{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center;background:rgba(244,201,190,.96);overflow-y:auto}
 .cover h2{font-size:38px}
 .cover .tally{font-family:var(--f-title);font-size:22px;color:var(--ink)}
 .cover .winav{width:150px;height:150px;overflow:visible;animation:dance 1.1s ease-in-out infinite}
@@ -170,7 +171,7 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .ask .wait{font-size:18px;color:var(--muted);animation:bob 1.2s ease-in-out infinite}
 .ask .feedback{font-family:var(--f-title);font-size:22px;color:var(--ink);min-height:26px}
 /* drawing pad */
-.pad{position:absolute;inset:0;z-index:14;background:rgba(251,248,239,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;text-align:center}
+.pad{position:absolute;inset:0;z-index:14;background:rgba(244,201,190,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;text-align:center}
 .pad canvas{width:min(80vw,300px);height:min(80vw,300px);background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:5px 6px 0 var(--ink3);touch-action:none}
 .pad .row{display:flex;gap:10px}
 .pad .meters{display:flex;gap:14px;align-items:center;font-family:var(--f-title);color:var(--ink);font-size:16px}
@@ -205,20 +206,58 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .duel .dbtns button{min-height:44px;font-size:26px;background:#fff;border:2px solid var(--ink3);border-radius:12px}
 .duel .dbtns button:disabled{opacity:.4}
 .duel .dbtns button:active{transform:scale(1.1);background:var(--star)}
+.gd{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;gap:6px;padding:6px 0;background:var(--paper)}
+.gd .ghead{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:18px;padding:4px 10px;box-shadow:3px 4px 0 var(--ink3)}
+.gd .ghead svg{overflow:visible}
+.gd .gtitle{font-family:var(--f-title);color:var(--ink);font-size:20px;line-height:1.05}
+.gd .gtitle small{display:block;font-family:var(--f-body);font-size:14px;color:var(--muted)}
+.gd .gclock{font-family:var(--f-title);font-size:26px;color:var(--ink);font-variant-numeric:tabular-nums;min-width:48px;text-align:right}
+.gd .gclock.hot{color:var(--bad)}
+.gd .arenas{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
+.gd .arena{flex:1;min-height:0;position:relative;background:#fff;border:3px solid var(--ink3);border-radius:16px;overflow:hidden;touch-action:none}
+.gd .arena.mine{border-color:var(--ink)}
+.gd .alabel{position:absolute;left:8px;top:6px;z-index:3;display:flex;align-items:center;gap:6px;font-family:var(--f-title);font-size:15px;color:var(--ink);background:rgba(255,255,255,.85);border-radius:10px;padding:0 8px 0 2px;pointer-events:none}
+.gd .alabel svg{overflow:visible}
+.gd .ascore{position:absolute;right:8px;top:6px;z-index:3;font-family:var(--f-title);font-size:20px;color:var(--ink);background:rgba(255,255,255,.85);border-radius:10px;padding:0 8px;pointer-events:none;font-variant-numeric:tabular-nums}
+.gd .remote{display:flex;align-items:center;gap:10px;background:#fff;border:2px dashed var(--ink3);border-radius:14px;padding:6px 10px;font-family:var(--f-title);color:var(--ink);font-size:15px}
+.gd .remote svg{overflow:visible;flex:0 0 auto}
+.gd .remote .rb{flex:1;height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.gd .remote .rb i{display:block;height:100%;background:var(--bad);border-radius:7px;transition:width .2s}
+.gd .remote canvas{width:70px;height:70px;border:2px solid var(--ink3);border-radius:10px;background:#fff}
+.gd .bone{position:absolute;width:74px;height:46px;transform:translate(-50%,-50%);animation:pop .25s}
+.gd .bone svg{width:100%;height:100%;overflow:visible;pointer-events:none}
+.gd .pond{position:absolute;left:0;right:0;top:34%;height:30%;background:linear-gradient(#9fd0ff,#5aa9e8);border-block:3px solid var(--ink3)}
+.gd .finish{position:absolute;right:10%;top:0;bottom:0;width:8px;background:repeating-linear-gradient(#1f2a4a 0 8px,#fff 8px 16px)}
+.gd .duck{position:absolute;top:50%;width:62px;height:62px;transform:translate(-50%,-55%);transition:left .12s}
+.gd .duck svg{width:100%;height:100%;overflow:visible}
+.gd .paddle{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);min-width:60%;min-height:22%;font-family:var(--f-title);font-size:26px;background:var(--star);border:3px solid var(--star2);border-radius:20px;color:#3a2a00;box-shadow:3px 4px 0 var(--star2);touch-action:none}
+.gd .paddle:active{transform:translateX(-50%) translateY(3px);box-shadow:1px 1px 0 var(--star2)}
+.gd .dot{position:absolute;width:36px;height:36px;border-radius:50%;background:radial-gradient(#fff 0 15%,#ff2a2a 35%,rgba(255,42,42,.25) 70%);transform:translate(-50%,-50%);box-shadow:0 0 18px 6px rgba(255,42,42,.5);pointer-events:none}
+.gd .dot.on{box-shadow:0 0 26px 12px rgba(255,200,40,.85)}
+.gd canvas.sc{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);background:#fff;border:2px dashed var(--ink3);border-radius:12px;touch-action:none}
+.gd .scdone{position:absolute;right:8px;bottom:8px;z-index:3;font-family:var(--f-title);font-size:18px;background:var(--star);border:3px solid var(--star2);border-radius:14px;padding:4px 14px;color:#3a2a00}
+.gd .ink2{position:absolute;left:8px;bottom:10px;z-index:3;width:90px;height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.gd .ink2 i{display:block;height:100%;background:#1f2a4a}
+.gd .result{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(244,201,190,.95);text-align:center;padding:12px;animation:pop .35s}
+.gd .result h2{font-size:30px}
+.gd .result .faces{display:flex;gap:18px;align-items:flex-end;justify-content:center}
+.gd .result .faces div{display:flex;flex-direction:column;align-items:center;font-family:var(--f-title);color:var(--ink);font-size:16px}
+.gd .result svg{overflow:visible}
+.gd .wait{font-family:var(--f-title);color:var(--muted);text-align:center;padding:8px}
 .ink{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .sh{stroke-linecap:round;stroke-linejoin:round}
 .ftxt{font-family:var(--f-title);paint-order:stroke;stroke:#fff;stroke-linejoin:round;text-anchor:middle;pointer-events:none}
 .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
 .notewrite{display:flex;flex-direction:column;gap:4px;width:100%;max-width:320px;align-items:center}
 .notewrite input{font-size:20px}
-@media (prefers-reduced-motion:reduce){#dice.ready,.roads button.on,.roads button.rope,.cover .winav,.ask .wait,.timer.hot{animation:none}.emo{animation-duration:.6s}}
+@media (prefers-reduced-motion:reduce){#dice.ready,.roads button.on,.roads button.rope,.cover .winav,.ask .wait{animation:none}.emo{animation-duration:.6s}}
 @media (max-height:700px){.card .av{width:66px;height:66px}}
 @media (max-height:640px){.controls{min-height:96px}#dice{width:84px;height:84px}.card .av{width:56px;height:56px}body{font-size:16px}}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="topbar" id="topbar"><button class="iconbtn" id="muteBtn" aria-label="Sound on or off">🔊</button></div>
+  <div class="topbar" id="topbar"><button class="iconbtn musicbtn" data-act="toggle" aria-label="Music on or off">🎵</button><button class="iconbtn" id="muteBtn" aria-label="Sound effects on or off">🔊</button></div>
 
   <section class="screen" id="scrTitle">
     <div class="sketch-bg" id="sketchBg"></div>
@@ -236,12 +275,11 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
     <h2>How to play</h2>
     <div class="rules">
       <div><b>1.</b><span>Everyone starts in the middle. Pick a road, then SWIPE the dice to throw it. Roll a 6, roll again.</span></div>
-      <div><b>2.</b><span>Land EXACTLY on a door (the slanted tags at the alley ends) to knock. Do the math in 21 seconds and you own that corner and its 2 keys. Owned by your friend? Solve it to STEAL the corner and draw a mustache on their face. Answer fast: leftover seconds give you more ink and more drawing time.</span></div>
-      <div><b>3.</b><span>Once every corner has an owner, a steal becomes math + an EMOJI DUEL: remember the chicken's 3 emojis, tap them back fastest. Win and the corner is yours forever.</span></div>
+      <div><b>2.</b><span>The 3 dark steps next to each door are the way in. Land on one: if nobody owns that corner, do the math in 21 seconds to own it and its 2 keys. Answer fast for more ink later!</span></div>
+      <div><b>3.</b><span>Corner owned by your friend? Its GUARDIAN challenges you to a 1-minute duel: the Chicken's Mustache Showdown, the Dog's Bone Fetch, the Duck's Duck Race or the Cat's Laser Chase. Your friend plays the guardian. Win and the corner is yours for good. The loser gets a mustache!</span></div>
       <div><b>4.</b><span>Land on your friend: CHICKY-CHICKEN! Chicken dance, back to the middle. Tap the same emoji together to make the chicken laugh.</span></div>
-      <div><b>5.</b><span>Own all four corners to unlock the rope. Climb 1–3 at a time and land on the star EXACTLY. Beat the final puzzle to win the round.</span></div>
-      <div><b>6.</b><span>Every round has 6 minutes. When time runs out: FINAL EMOJI DUEL, best of 5. More keys = a head start.</span></div>
-      <div><b>★</b><span>Every star you win unlocks a new set of doodles. Need a break? The AI button plays your turns for up to 2 minutes.</span></div>
+      <div><b>5.</b><span>Own all four corners to unlock the rope. Climb its knots 1–3 at a time and land on the star EXACTLY. Beat the final puzzle to win.</span></div>
+      <div><b>★</b><span>Every win lets you unlock one new doodle of your choice. Need a break? The AI button plays for you for up to 2 minutes.</span></div>
     </div>
     <button class="btn" id="btnHowBack">Got it!</button>
   </section>
@@ -299,7 +337,7 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
       <button class="iconbtn sm" id="gameMute" aria-label="Sound on or off">🔊</button>
     </div>
     <div class="statusRow">
-      <div class="timer" id="timer">6:00</div>
+      <div class="music"><button class="iconbtn sm musicbtn" data-act="toggle" aria-label="Music on or off">🎵</button><button class="iconbtn sm musicbtn" data-act="next" aria-label="Next song">⏭</button></div>
       <div class="notes" id="notes"></div>
       <button class="aibtn" id="aiBtn">🤖 AI plays for me</button>
     </div>
@@ -311,6 +349,7 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
       <div class="flydie" id="flydie" hidden><svg viewBox="0 0 60 60"></svg></div>
     </div>
     <div class="duel" id="duel" hidden></div>
+    <div class="gd" id="gduel" hidden></div>
     <div class="controls">
       <div id="leftCtl"></div>
       <button id="dice" aria-label="Throw the dice"><svg viewBox="0 0 60 60" id="dieFace"></svg><span class="tag" id="diceTag">swipe!</span></button>
@@ -340,10 +379,14 @@ const INK = '#2b49b8', PAPER2 = '#f3eedf', STAR_C = '#f6c531', STAR2 = '#e39a12'
 
 // ---------------- game data ----------------
 const COLORS = [ { id:'red', hex:'#e2503f' }, { id:'blue', hex:'#2f6fe4' }, { id:'green', hex:'#3aa655' }, { id:'orange', hex:'#f28c28' }, { id:'purple', hex:'#8a4fd3' }, { id:'pink', hex:'#e85d9a' } ];
-const SETS = [ ['chicken'], ['boss','dino','rocket','ninja'], ['unicorn','kitty','shark','slime','pizza','ghost'] ];
-const SET_NAME = ['Starter', 'Heroes', 'Super Squad'];
-const AV_NAME = { chicken:'Chicken', boss:'The Boss', dino:'T-Rex', rocket:'Rocket', ninja:'Ninja', unicorn:'Unicorn', kitty:'Kitty', shark:'Shark', slime:'Slime', pizza:'Pizza', ghost:'Ghost', robot:'Robo', robochick:'Robo-Chick', roboninja:'Robo-Ninja', robocat:'Robo-Cat' };
-const ROBOS = [ { name:'Robo-Chicken', av:'robot' }, { name:'Cluck 3000', av:'robochick' }, { name:'Captain Cluck', av:'roboninja' }, { name:'Sir Bawks', av:'robocat' } ];
+const DOODLES = ['chicken','boss','dino','rocket','ninja','king','puppy','squishy','shark','pizza','pumpkin','fluffy'];
+const AV_NAME = { chicken:'Chicken', boss:'The Boss', dino:'T-Rex', rocket:'Rocket', ninja:'Ninja', king:'King Crown', puppy:'Puppy', squishy:'Squishy', shark:'Shark', pizza:'Pizza', pumpkin:'Galaxy Pumpkin', fluffy:'Fluffadactyl', robot:'Robo', robochick:'Robo-Chick', roboninja:'Robo-Ninja', robocat:'Robo-Cat' };
+const ROBOS = [
+  { name:'Robo-Chicken', av:'robot', lines:['Beep boop! My turn!', 'Calculating… 2 + 2 = FISH', 'Robo-Chicken ACTIVATE!', 'Initiating maximum hop.'], draw:['Hold still, hooman!', 'Mustache.exe loading…', 'BEEP BEEP BEEEP!'] },
+  { name:'Cluck 3000', av:'robochick', lines:['Cluck 3000 online.', 'Scanning for corn…', 'Bawk.exe is running', 'Wheee-beep!'], draw:['Scribble mode: CLUCK!', 'A work of BAWK art!', 'Your face needs feathers.'] },
+  { name:'Captain Cluck', av:'roboninja', lines:['Silent… but deadly… BAWK!', 'Ninja mode: ON', 'You did not see me.', 'Hi-YA-beep!'], draw:['Swift brush of shame!', 'Ninja mustache strike!', 'Hi-YA! Masterpiece.'] },
+  { name:'Sir Bawks', av:'robocat', lines:['Meow-beep.', 'I knock your keys off the table.', 'Purr-cessing…', 'Nap mode… just kidding!'], draw:['Purr-fect whiskers!', 'Hold still, I am an ARTIST.', 'Meow-ha-ha!'] },
+];
 const BOT_LEVELS = { dumb:{ name:'Dumb', math:.4, duel:.55, blurb:'Beep. Gets about 4 out of 10 right.' }, smart:{ name:'Smart', math:.7, duel:.75, blurb:'Thinks a bit. 7 out of 10.' }, genius:{ name:'Genius', math:.92, duel:.92, blurb:'Scary. Almost never misses.' } };
 const QUADS = { NW:{ name:'Chicken corner', short:'Chicken', col:'#f6c531', icon:'chicken', guard:'chicken' }, NE:{ name:'Lightning corner', short:'Lightning', col:'#f28c28', icon:'bolt', guard:'dog' }, SW:{ name:'Water corner', short:'Water', col:'#5aa9e8', icon:'drop', guard:'duck' }, SE:{ name:'Pen corner', short:'Pen', col:'#5fc06f', icon:'pen', guard:'cat' } };
 const QUAD_LIST = ['NW','NE','SW','SE'];
@@ -354,11 +397,22 @@ const ALLEY_QUADS = { W:['NW','SW'], N:['NE','NW'], E:['SE','NE'], S:['SW','SE']
 const STEPS = 10, LOOP = STEPS*2, ROPE_N = 7, STAR_I = 7;
 const ROOMS = ['enso1','enso2','enso3','enso4','enso5'];
 const ASK_MS = 21000, DRAW_BASE_MS = 15000, AUTO_MS = 120000;
-const ROUND_MS = window.__SR_ROUND_MS || 6*60*1000;
-const ROBO_LINES = ['Hold still, hooman!', 'BAWK HA HA HA!', 'A masterpiece!', 'Needs more mustache…', 'Beep boop. Mustache deployed.', 'Your face is my canvas!', 'Scribble scribble!', 'Say cheese! Too late!'];
+const ACCESS = 3;   // the 3 steps nearest each door are access points
+const GUARD_NAME = { chicken:'Chicken', dog:'Dog', duck:'Duck', cat:'Cat' };
+const MUSIC = [ { f:'music/heavenly-loop.mp3', t:'Heavenly Loop', a:'isaiah658' }, { f:'music/calm-ambient-1.mp3', t:'Calm Ambient 1', a:'cynicmusic' }, { f:'music/caller.mp3', t:'Caller', a:'SpringySpringo' }, { f:'music/monoliths.mp3', t:'Monoliths', a:'SpringySpringo' }, { f:'music/booya.mp3', t:'Booya', a:'SpringySpringo' } ];
+const ROBO_LINES = ['BAWK HA HA HA!', 'A masterpiece!', 'Needs more mustache…', 'Beep boop. Mustache deployed.', 'Your face is my canvas!', 'Scribble scribble!', 'Say cheese! Too late!', 'One more curl…'];
 
 // ---------------- icons (40x40 box centered on 0,0; wrap with ico()) ----------------
 function starPts(r, ri, n=5, rot=-90){ const p=[]; for(let i=0;i<n*2;i++){ const rr=i%2?ri:r; const a=(rot+i*180/n)*Math.PI/180; p.push((rr*Math.cos(a)).toFixed(1)+','+(rr*Math.sin(a)).toFixed(1)); } return p.join(' '); }
+let squishFace = 0;
+const SQUISH_FACES = [
+  `<circle cx="-5" cy="-1" r="2" fill="#1f2a4a" stroke="none"/><circle cx="5" cy="-1" r="2" fill="#1f2a4a" stroke="none"/><path d="M-4 5 q4 4 8 0" class="ink" stroke="#1f2a4a" stroke-width="1.8"/>`,
+  `<path d="M-7 -1 q2 -3 4 0 M3 -1 q2 -3 4 0" class="ink" stroke="#1f2a4a" stroke-width="1.8"/><path d="M-4 4 q4 6 8 0 Z" fill="#e2503f" class="sh" stroke-width="1.4"/>`,
+  `<circle cx="-5" cy="-1" r="3" fill="#fff" class="sh" stroke-width="1.2"/><circle cx="5" cy="-1" r="3" fill="#fff" class="sh" stroke-width="1.2"/><circle cx="-5" cy="-1" r="1.3" fill="#1f2a4a" stroke="none"/><circle cx="5" cy="-1" r="1.3" fill="#1f2a4a" stroke="none"/><ellipse cx="0" cy="6" rx="2.2" ry="2.8" fill="#1f2a4a" stroke="none"/>`,
+  `<path d="M-7 -2 l4 2 l-4 2 M7 -2 l-4 2 l4 2" class="ink" stroke="#1f2a4a" stroke-width="1.8"/><path d="M-4 5 q4 3 8 0" class="ink" stroke="#1f2a4a" stroke-width="1.8"/><path d="M1 6 q1 4 3 0" fill="#e85d9a" class="sh" stroke-width="1"/>`,
+  `<circle cx="-5" cy="-1" r="2" fill="#1f2a4a" stroke="none"/><path d="M3 -1 q2 -2 4 0" class="ink" stroke="#1f2a4a" stroke-width="1.8"/><path d="M-4 5 q4 3 8 -1" class="ink" stroke="#1f2a4a" stroke-width="1.8"/>`,
+  `<path d="M-7 0 h4 M3 0 h4" class="ink" stroke="#1f2a4a" stroke-width="2"/><path d="M-3 6 h6" class="ink" stroke="#1f2a4a" stroke-width="1.8"/><text x="8" y="-6" font-size="6" fill="#5c74cf" stroke="none">z</text>`,
+];
 const eye = (x,y,r=2.2) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" class="sh" stroke-width="1.3"/><circle cx="${x+.4}" cy="${y}" r="${r*.45}" fill="#1f2a4a" stroke="none"/>`;
 const ICON = {
   chicken:(c)=>`<ellipse cx="3" cy="5" rx="11" ry="8" fill="${c}" class="sh" stroke-width="2"/><path d="M4 2 q6 -3 9 3" class="ink" stroke-width="2"/><circle cx="-8" cy="-5" r="6" fill="${c}" class="sh" stroke-width="2"/><path d="M-12 -11 q2 -4 4 0 q2 -4 4 0" fill="#e2503f" class="sh" stroke-width="1.5"/><polygon points="-14,-5 -20,-3 -14,-1" fill="#f28c28" class="sh" stroke-width="1.5"/><circle cx="-9.5" cy="-6" r="1.4" fill="#1f2a4a" stroke="none"/><path d="M-1 13 v5 M-4 18 h6 M7 13 v5 M4 18 h6" class="ink" stroke-width="2"/>`,
@@ -370,12 +424,13 @@ const ICON = {
   dino:(c)=>`<path d="M-15 10 L-15 -4 Q-15 -12 -6 -12 L4 -12 Q12 -12 14 -4 L14 6 L8 6 L8 10 Z" fill="${c}" class="sh" stroke-width="2"/><path d="M-14 -4 l-3 -5 l5 2 l-1 -6 l5 3 l1 -6 l4 4 Z" fill="${c}" class="sh" stroke-width="1.5"/>${eye(6,-5,2.5)}<path d="M14 2 h-9 M8 2 l1.5 3 M11 2 l1.5 3" class="ink" stroke-width="1.8"/><path d="M-9 10 v6 M-3 10 v6" class="ink" stroke-width="2.5"/>`,
   rocket:(c)=>`<path d="M0 -18 C8 -10 8 2 6 10 L-6 10 C-8 2 -8 -10 0 -18 Z" fill="${c}" class="sh" stroke-width="2"/><circle cx="0" cy="-4" r="3.5" fill="#fff" class="sh" stroke-width="1.5"/><path d="M-6 4 L-13 12 L-6 10 Z M6 4 L13 12 L6 10 Z" fill="#e2503f" class="sh" stroke-width="1.5"/><path d="M-4 10 Q0 20 4 10" fill="#f6c531" class="sh" stroke="#f28c28" stroke-width="1.5"/>`,
   ninja:(c)=>`<circle r="15" fill="#1f2a4a" class="sh" stroke-width="2"/><rect x="-15" y="-6" width="30" height="9" rx="2" fill="${c}" class="sh" stroke-width="1.5"/><path d="M15 -4 l6 -3 l-2 5 M15 -2 l7 2" class="ink" stroke="${c}" stroke-width="2.5"/><path d="M-9 -1.5 q3 -2 6 0 M3 -1.5 q3 -2 6 0" class="ink" stroke="#1f2a4a" stroke-width="2"/>`,
-  unicorn:(c)=>`<path d="M-12 12 Q-14 -4 -2 -8 L8 -8 Q14 -8 14 0 L12 12 Z" fill="#fff" class="sh" stroke-width="2"/><path d="M0 -8 L3 -19 L6 -8 Z" fill="${STAR_C}" class="sh" stroke="${STAR2}" stroke-width="1.5"/><path d="M-6 -7 q-10 2 -10 12 q4 -6 10 -4 Z" fill="${c}" class="sh" stroke-width="1.5"/><path d="M-2 -8 q4 -6 10 -2" class="ink" stroke="${c}" stroke-width="3"/>${eye(5,-1,2.4)}<path d="M9 7 q2 1 3 0" class="ink" stroke="#e85d9a" stroke-width="1.6"/><path d="M-8 12 v5 M4 12 v5" class="ink" stroke-width="2.5"/>`,
-  kitty:(c)=>`<path d="M-13 2 L-13 -12 L-5 -6 L5 -6 L13 -12 L13 2 Q13 14 0 14 Q-13 14 -13 2 Z" fill="${c}" class="sh" stroke-width="2"/>${eye(-5,0,2.4)}${eye(5,0,2.4)}<path d="M-1 5 l1 1.5 l1 -1.5 Z" fill="#e85d9a" stroke="none"/><path d="M0 6.5 q-2 3 -4 1 M0 6.5 q2 3 4 1 M-13 4 h-6 M-13 7 h-6 M13 4 h6 M13 7 h6" class="ink" stroke-width="1.4"/><path d="M8 -12 q6 -6 9 0 q-4 -1 -6 3 Z" fill="#e85d9a" class="sh" stroke-width="1.3"/>`,
   shark:(c)=>`<path d="M-16 4 Q-8 -8 6 -8 L14 -14 L13 -4 Q18 2 14 8 Q6 14 -6 12 Q-14 10 -16 4 Z" fill="${c}" class="sh" stroke-width="2"/><path d="M-2 -8 L2 -17 L7 -8 Z" fill="${c}" class="sh" stroke-width="1.5"/><path d="M-10 6 Q-2 12 10 6" fill="#fff" class="sh" stroke-width="1.5"/><path d="M-8 7 l1.5 3 l1.5 -3 M-4 8 l1.5 3 l1.5 -3 M0 8 l1.5 3 l1.5 -3 M4 7.5 l1.5 3 l1.5 -3" class="ink" stroke-width="1.2"/>${eye(-6,-1,2.2)}`,
-  slime:(c)=>`<path d="M-15 12 Q-16 -2 -8 -8 Q-4 -16 4 -12 Q14 -12 15 0 Q17 12 8 13 Q0 16 -15 12 Z" fill="${c}" class="sh" stroke-width="2"/>${eye(-5,0,3)}${eye(5,-2,3)}<path d="M-6 7 q6 5 12 0" class="ink" stroke="#1f2a4a" stroke-width="2"/><circle cx="-9" cy="-6" r="2" fill="#fff" stroke="none" opacity=".7"/>`,
   pizza:(c)=>`<path d="M0 17 L-15 -11 Q0 -17 15 -11 Z" fill="#f6c531" class="sh" stroke="#e39a12" stroke-width="2"/><path d="M-15 -11 Q0 -17 15 -11 L13 -6 Q0 -11 -13 -6 Z" fill="#e2503f" class="sh" stroke="#b83a2c" stroke-width="1.5"/><circle cx="-4" cy="-1" r="3" fill="${c}" class="sh" stroke-width="1.3"/><circle cx="5" cy="2" r="2.6" fill="${c}" class="sh" stroke-width="1.3"/><circle cx="0" cy="8" r="2.2" fill="${c}" class="sh" stroke-width="1.3"/>${eye(-4,-1,1.3)}${eye(5,2,1.3)}`,
-  ghost:(c)=>`<path d="M-13 14 L-13 -2 Q-13 -16 0 -16 Q13 -16 13 -2 L13 14 L8 9 L4 14 L0 9 L-4 14 L-8 9 Z" fill="#fff" class="sh" stroke-width="2"/>${eye(-5,-3,3)}${eye(5,-3,3)}<ellipse cx="0" cy="5" rx="3" ry="4" fill="${c}" class="sh" stroke-width="1.5"/>`,
+  king:(c)=>`<path d="M-15 10 L-17 -10 L-8 -2 L0 -16 L8 -2 L17 -10 L15 10 Z" fill="#f6c531" class="sh" stroke="#b07a10" stroke-width="2"/><rect x="-15" y="8" width="30" height="7" rx="2" fill="${c}" class="sh" stroke-width="1.8"/><circle cx="0" cy="-16" r="2.5" fill="#e2503f" class="sh" stroke-width="1"/><circle cx="-17" cy="-10" r="2" fill="#3aa655" class="sh" stroke-width="1"/><circle cx="17" cy="-10" r="2" fill="#2f6fe4" class="sh" stroke-width="1"/>${eye(-5,0,2.6)}${eye(5,0,2.6)}<path d="M-4 5 q4 3 8 0" class="ink" stroke="#1f2a4a" stroke-width="1.8"/>`,
+  puppy:(c)=>`<circle r="13" fill="${c}" class="sh" stroke-width="2"/><path d="M-11 -9 q-9 0 -8 12 q5 1 7 -6 Z M11 -9 q9 0 8 12 q-5 1 -7 -6 Z" fill="#8a5a2b" class="sh" stroke-width="1.6"/>${eye(-5,-2,2.8)}${eye(5,-2,2.8)}<ellipse cx="0" cy="4" rx="3.2" ry="2.3" fill="#1f2a4a" stroke="none"/><path d="M0 6 v2 M-4 8 q4 3 8 0" class="ink" stroke="#1f2a4a" stroke-width="1.6"/><path d="M-1 9 q1 5 3 0" fill="#e85d9a" class="sh" stroke-width="1"/><circle cx="-9" cy="4" r="2" fill="#e85d9a" stroke="none" opacity=".5"/><circle cx="9" cy="4" r="2" fill="#e85d9a" stroke="none" opacity=".5"/>`,
+  squishy:(c)=>{ const f = SQUISH_FACES[squishFace % SQUISH_FACES.length]; return `<path d="M-15 8 Q-17 -12 0 -14 Q17 -12 15 8 Q13 15 0 15 Q-13 15 -15 8 Z" fill="${c}" class="sh" stroke-width="2"/><ellipse cx="-8" cy="-8" rx="3" ry="2" fill="#fff" stroke="none" opacity=".6"/><circle cx="-10" cy="5" r="2.4" fill="#e85d9a" stroke="none" opacity=".5"/><circle cx="10" cy="5" r="2.4" fill="#e85d9a" stroke="none" opacity=".5"/>${f}`; },
+  pumpkin:(c)=>`<path d="M0 -10 q-15 -2 -15 9 q0 12 15 12 q15 0 15 -12 q0 -11 -15 -9 Z" fill="#f28c28" class="sh" stroke-width="2"/><path d="M-5 -9 q-3 9 0 21 M5 -9 q3 9 0 21" class="ink" stroke="#c96a12" stroke-width="1.5"/><path d="M0 -10 q1 -5 5 -7" class="ink" stroke="#3aa655" stroke-width="2.5"/><polygon points="-8,-2 -4,-2 -6,-6" fill="#1f2a4a" stroke="none"/><polygon points="4,-2 8,-2 6,-6" fill="#1f2a4a" stroke="none"/><path d="M-7 4 l2 2 l2 -2 l2 2 l2 -2 l2 2 l2 -2" class="ink" stroke="#1f2a4a" stroke-width="1.6"/><g transform="translate(10 6) rotate(-20)"><rect x="0" y="-3" width="13" height="6" rx="3" fill="#8a4fd3" class="sh" stroke-width="1.5"/><rect x="-3" y="1" width="5" height="7" rx="2" fill="#5c74cf" class="sh" stroke-width="1.3"/><circle cx="13" cy="0" r="3.5" fill="${c}" class="sh" stroke="#2ad1c9" stroke-width="1.5"/><circle cx="4" cy="-1" r="1" fill="#fff" stroke="none"/><circle cx="8" cy="1" r=".8" fill="#fff" stroke="none"/><path d="M16 -3 l3 -2 M17 1 l4 0 M16 4 l3 2" class="ink" stroke="#2ad1c9" stroke-width="1.2"/></g>`,
+  fluffy:(c)=>`<path d="M-6 0 L-19 -12 L-15 2 Z M6 0 L19 -12 L15 2 Z" fill="${c}" class="sh" stroke-width="1.6" opacity=".85"/><circle r="11" fill="#fff6e8" class="sh" stroke-width="2"/><path d="M-11 -2 q-3 -3 0 -5 q-1 -4 3 -4 q1 -4 5 -2 q3 -3 6 0 q4 -1 4 3 q4 1 2 5" fill="#fff6e8" class="sh" stroke-width="1.6"/><path d="M0 -11 L4 -19 L6 -10 Z" fill="${c}" class="sh" stroke-width="1.5"/>${eye(-4,-1,3)}${eye(4,-1,3)}<path d="M-3 4 L0 9 L3 4 Z" fill="#f6c531" class="sh" stroke="#e39a12" stroke-width="1.3"/><path d="M-5 11 v4 M5 11 v4" class="ink" stroke-width="2"/>`,
   // robo styles
   robot:(c)=>`<rect x="-11" y="-9" width="22" height="20" rx="4" fill="${c}" class="sh" stroke-width="2"/>${eye(-5,-1,2.5)}${eye(5,-1,2.5)}<path d="M-5 6 h10" class="ink" stroke-width="2"/><path d="M0 -9 v-6 m-3 0 h6" class="ink" stroke-width="2"/>`,
   robochick:(c)=>`<ellipse cx="3" cy="5" rx="11" ry="8" fill="${c}" class="sh" stroke-width="2"/><rect x="-14" y="-11" width="12" height="11" rx="3" fill="${c}" class="sh" stroke-width="2"/><rect x="-13" y="-8" width="7" height="3.5" rx="1" fill="#9fd0ff" class="sh" stroke-width="1"/><polygon points="-14,-3 -20,-1 -14,1" fill="#f28c28" class="sh" stroke-width="1.5"/><path d="M-8 -11 v-5 m-2.5 0 h5" class="ink" stroke-width="2"/><path d="M-1 13 v5 M-4 18 h6 M7 13 v5 M4 18 h6" class="ink" stroke-width="2"/><circle cx="6" cy="3" r="1.6" fill="#e2503f" stroke="none"/>`,
@@ -392,9 +447,11 @@ const ICON = {
   door:(c)=>`<path d="M-9 14 V-6 A9 9 0 0 1 9 -6 V14 Z" fill="${c}" class="sh" stroke-width="2"/><path d="M-9 14 H9" class="ink" stroke-width="2.5"/><circle cx="4.5" cy="4" r="1.8" fill="#1f2a4a" stroke="none"/>`,
   lock:(c)=>`<rect x="-8" y="-3" width="16" height="13" rx="3" fill="${c}" class="sh" stroke-width="2"/><path d="M-5 -3 v-4 a5 5 0 0 1 10 0 v4" class="ink" stroke-width="2.5"/>`,
 };
+const FACE = { chicken:[-12,-1,.42], boss:[0,4,.8], dino:[9,1,.5], rocket:[0,2,.45], ninja:[0,5,.8], king:[0,4,.6], puppy:[0,6,.6], squishy:[0,4,.7], shark:[-6,4,.55], pizza:[0,4,.5], pumpkin:[0,2,.6], fluffy:[0,3,.55], robot:[0,4,.6], robochick:[-9,-1,.42], roboninja:[0,6,.75], robocat:[0,4,.65], dog:[-11,1,.45], duck:[-12,0,.4], cat:[-7,1,.45] };
 const ico = (kind, color) => `<g stroke="${INK}">${(ICON[kind]||ICON.chicken)(color)}</g>`;
 const scribblePath = (strokes) => strokes.map(st => st.length ? 'M' + st.map(p => `${p[0]} ${p[1]}`).join(' L ') : '').join(' ');
-const avatarSVG = (pl, size, extraClass='') => `<svg class="${extraClass}" viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(pl.av, colHex(pl.col))}${pl.scribbles && pl.scribbles.length ? `<path d="${scribblePath(pl.scribbles.flat())}" fill="none" stroke="#1f2a4a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` : ''}</svg>`;
+const scribSVG = (scribbles) => { if(!scribbles || !scribbles.length) return ''; const d = scribblePath(scribbles.flat()); return `<path d="${d}" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/><path d="${d}" fill="none" stroke="#1f2a4a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`; };
+const avatarSVG = (pl, size, extraClass='') => `<svg class="${extraClass}" viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(pl.av, colHex(pl.col))}${scribSVG(pl.scribbles)}</svg>`;
 const svgIcon = (kind, color, size=40) => `<svg viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(kind, color)}</svg>`;
 
 // ---------------- board geometry (measured on Enso's drawing; 900x1112 board units) ----------------
@@ -425,21 +482,30 @@ function locXY(p, loc){
   const r = ropeXY(loc.i); return { x:r.x + (p===0?-24:24), y:r.y };
 }
 const DOOR_OUT = STEPS-1, DOOR_BACK = STEPS;
-const doorAt = (loc) => loc.z==='alley' && (loc.i===DOOR_OUT || loc.i===DOOR_BACK) ? ALLEY_QUADS[loc.dir][loc.i===DOOR_OUT?0:1] : null;
+const isAccess = (i) => (i > DOOR_OUT-ACCESS && i <= DOOR_OUT) || (i >= DOOR_BACK && i < DOOR_BACK+ACCESS);
+const doorAt = (loc) => loc.z==='alley' && isAccess(loc.i) ? ALLEY_QUADS[loc.dir][loc.i<=DOOR_OUT?0:1] : null;
+const shade = (hex, k) => { const n = parseInt(hex.slice(1),16); const f = (v) => Math.max(0, Math.round(v*(1-k))); return '#'+[(n>>16)&255,(n>>8)&255,n&255].map(f).map(v=>v.toString(16).padStart(2,'0')).join(''); };
 const sameSpot = (a, b) => a.z===b.z && a.z!=='hub' && a.dir===b.dir && a.i===b.i;
 
 function buildBoard(){
-  let s = `<rect x="-40" y="-40" width="980" height="1192" fill="#fbf8ef"/>`;
-  if(BOARD_URL) s += `<image href="${BOARD_URL}" xlink:href="${BOARD_URL}" x="0" y="0" width="900" height="1112" preserveAspectRatio="xMidYMid slice"/>`;
+  let s = `<rect x="-40" y="-40" width="980" height="1192" fill="#f3c6ba"/>`;
+  if(BOARD_URL) s += `<image href="${BOARD_URL}" xlink:href="${BOARD_URL}" x="0" y="0" width="900" height="1112" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:multiply"/>`;
   for(const dir in LOOPS){
     const vert = (dir==='N'||dir==='S');
-    LOOPS[dir].forEach((pt, i) => { const q = ALLEY_QUADS[dir][i < STEPS ? 0 : 1]; const door = (i===DOOR_OUT || i===DOOR_BACK); const w = vert ? 30 : 16, h = vert ? 16 : 30;
-      s += `<rect class="stepmark" data-quad="${q}" x="${pt.x-w/2}" y="${pt.y-h/2}" width="${w}" height="${h}" rx="5" fill="${QUADS[q].col}" stroke="${INK}" stroke-width="1.5" opacity="${door?'.9':'.7'}"/>`; });
+    LOOPS[dir].forEach((pt, i) => { const q = ALLEY_QUADS[dir][i < STEPS ? 0 : 1]; const acc = isAccess(i); const w = vert ? (acc?36:30) : (acc?20:16), h = vert ? (acc?20:16) : (acc?36:30);
+      s += `<rect class="stepmark" data-quad="${q}" data-acc="${acc?1:0}" x="${pt.x-w/2}" y="${pt.y-h/2}" width="${w}" height="${h}" rx="5" fill="${acc ? shade(QUADS[q].col,.32) : QUADS[q].col}" stroke="${INK}" stroke-width="${acc?2.2:1.5}" opacity="${acc?'.95':'.7'}"/>`; });
     [0,1].forEach(side => { const q = ALLEY_QUADS[dir][side]; const tag = TAGS[dir][side]; const st = LOOPS[dir][side===0 ? DOOR_OUT : DOOR_BACK];
       s += `<path d="M${st.x} ${st.y} L${tag.x} ${tag.y}" stroke="${INK}" stroke-width="2" stroke-dasharray="4 5" fill="none" opacity=".6"/>`;
       s += `<g id="door-${dir}-${side===0?'out':'back'}" transform="translate(${tag.x} ${tag.y})"><circle r="26" fill="${QUADS[q].col}" opacity=".55"/><g transform="scale(1.5)">${ico('door', QUADS[q].col)}</g></g>`; });
   }
-  s += `<g id="ropeLock" transform="translate(${ROPE_LOCK.x} ${ROPE_LOCK.y}) scale(1.4)">${ico('lock', STAR_C)}</g>`;
+  // the rope hangs from the star: two braided strands, a numbered knot for every step
+  const top = { x:STAR.x, y:STAR.y+34 }, bot = { x:ROPE[0].x, y:ROPE[0].y+44 };
+  let s1 = `M${top.x} ${top.y}`, s2 = s1; const n = 40;
+  for(let i=1;i<=n;i++){ const k = i/n; const y = top.y + (bot.y-top.y)*k; const x = top.x + (bot.x-top.x)*k; const w = Math.sin(k*Math.PI*18)*7; s1 += ` L${(x+w).toFixed(1)} ${y.toFixed(1)}`; s2 += ` L${(x-w).toFixed(1)} ${y.toFixed(1)}`; }
+  s += `<g id="ropeG" opacity=".55"><path d="${s1}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round" opacity=".7"/><path d="${s1}" fill="none" stroke="#c98a4b" stroke-width="6" stroke-linecap="round"/><path d="${s2}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round" opacity=".7"/><path d="${s2}" fill="none" stroke="#e0a868" stroke-width="6" stroke-linecap="round"/>`;
+  ROPE.forEach((r, i) => { s += `<g transform="translate(${r.x} ${r.y})"><ellipse rx="22" ry="12" fill="#b07a3c" stroke="${INK}" stroke-width="2.5"/><path d="M-14 -3 q14 8 28 0" fill="none" stroke="#7a4f22" stroke-width="2"/><text class="ftxt" y="7" font-size="18" fill="#fff" stroke="${INK}" stroke-width="3">${i+1}</text></g>`; });
+  s += `</g>`;
+  s += `<g id="ropeLock" transform="translate(${ROPE_LOCK.x} ${ROPE_LOCK.y}) scale(1.6)">${ico('lock', STAR_C)}</g>`;
   s += `<g id="hubRing" transform="translate(${HUB.x} ${HUB.y})"><circle r="60" fill="none" stroke="${STAR_C}" stroke-width="6" stroke-dasharray="14 10" opacity="0"/></g>`;
   s += `<g id="goalStar" transform="translate(${STAR_ICON.x} ${STAR_ICON.y})"><g id="starFace" hidden><circle cx="-14" cy="-4" r="4" fill="#3a2a00"/><circle cx="14" cy="-4" r="4" fill="#3a2a00"/><path d="M-14 12 q14 14 28 0" class="ink" stroke="#3a2a00" stroke-width="4"/></g></g>`;
   for(const q of QUAD_LIST) s += `<g id="flag-${q}" transform="translate(${FLAG[q].x} ${FLAG[q].y})"></g>`;
@@ -519,6 +585,14 @@ const SFX = (() => {
     roboLaugh(){ [700,900,700,900,1100,700].forEach((f,i)=>tone(f,f,.09,'square',.13,i*.1)); tone(300,200,.3,'square',.1,.6); },
     drumroll(){ for(let i=0;i<14;i++) noise(.05,.3,v(300,.2),i*.07,3); tone(200,200,.4,'square',.14,1.0); },
     duelShow(){ [660,880,1100].forEach((f,i)=>tone(f,f,.16,'triangle',.12,i*.5)); },
+    robostep(i=0){ tone(v(600+(i%3)*200,.02),v(300),.05,'square',.09); tone(v(1200),v(900),.04,'square',.06,.05); },
+    roboTalk(){ for(let i=0;i<6;i++) tone(v(400+rnd(600)),v(300+rnd(500)),.06,'square',.08,i*.07); },
+    evilLaugh(){ [300,260,300,260,300,240].forEach((f,i)=>tone(f,f*.85,.12,'sawtooth',.13,i*.14)); },
+    penBuzz(){ noise(.08,.08,2600,0,2); },
+    bone(){ tone(v(700),v(1200),.06,'triangle',.13); },
+    paddle(){ noise(.07,.18,v(900),0,1.5); },
+    laserOn(){ tone(1800,1800,.05,'sine',.05); },
+    guardian(){ [523,392,523,659].forEach((f,i)=>tone(f,f,.13,'square',.13,i*.12)); },
     taunt(e){ if(e==='🐔') this.bawk(); else if(e==='😂') [600,800,600,800,600].forEach((f,i)=>tone(f,f*.9,.08,'square',.1,i*.09)); else if(e==='👏') [0,.12,.24,.36].forEach(t0=>noise(.06,.3,1800,t0,.8)); else this.reward(); },
   };
 })();
@@ -527,17 +601,20 @@ let S = null, MODE = 'local', ROLE = 'host', ME = 0, BOT_LEVEL = 'dumb';
 let profile = { name:'', av:'chicken', col:'blue', stars:0 };
 try { const p = JSON.parse(localStorage.getItem('sr_profile')||'null'); if(p && typeof p==='object') profile = Object.assign(profile, p); } catch(e){}
 profile.stars = profile.stars|0;
+if(!Array.isArray(profile.unlocked)){ profile.unlocked = ['chicken']; profile.credits = profile.stars; }   // older saves: every past win becomes an unlock to spend
+profile.unlocked = profile.unlocked.filter(a => DOODLES.includes(a)); if(!profile.unlocked.includes('chicken')) profile.unlocked.unshift('chicken');
+profile.credits = clamp(profile.credits|0, 0, DOODLES.length);
+if(!profile.unlocked.includes(profile.av)) profile.av = 'chicken';
 const saveProfile = () => { try { localStorage.setItem('sr_profile', JSON.stringify(profile)); } catch(e){} };
 const colHex = (id) => (COLORS.find(c=>c.id===id)||COLORS[1]).hex;
-const unlockedFor = (stars) => SETS.slice(0, 1 + clamp(stars|0, 0, SETS.length-1)).flat();
-const newPlayer = (pf) => ({ name:String(pf.name||'Player').slice(0,12), av:(ICON[pf.av]?pf.av:'chicken'), col:(COLORS.some(c=>c.id===pf.col)?pf.col:'blue'), loc:{z:'hub',dir:null,i:0}, keys:{NW:0,NE:0,SW:0,SE:0}, rope:false, scribbles:[], wins:0, stars:(pf.stars|0), skill:0, auto:false });
-function freshState(p0, p1){ return { phase:'lobby', players:[newPlayer(p0), newPlayer(p1)], owner:{NW:null,NE:null,SW:null,SE:null}, perm:{NW:null,NE:null,SW:null,SE:null}, turn:0, first:0, round:1, ask:null, draw:null, duel:null, dance:null, lastStop:null, notes:[null,null], roundStart:0 }; }
+const cleanUnlocked = (u) => { const a = (Array.isArray(u) ? u : []).map(String).filter(x => DOODLES.includes(x)); if(!a.includes('chicken')) a.unshift('chicken'); return Array.from(new Set(a)); };
+const newPlayer = (pf) => { const unlocked = ICON[pf.av] && !DOODLES.includes(pf.av) ? [pf.av] : cleanUnlocked(pf.unlocked); const av = unlocked.includes(pf.av) ? pf.av : unlocked[0]; return { name:String(pf.name||'Player').slice(0,12), av, col:(COLORS.some(c=>c.id===pf.col)?pf.col:'blue'), loc:{z:'hub',dir:null,i:0}, keys:{NW:0,NE:0,SW:0,SE:0}, rope:false, scribbles:[], wins:0, stars:(pf.stars|0), unlocked, credits:clamp(pf.credits|0, 0, DOODLES.length), skill:0, auto:false, robo:pf.robo|0 }; };
+function freshState(p0, p1){ return { phase:'lobby', players:[newPlayer(p0), newPlayer(p1)], owner:{NW:null,NE:null,SW:null,SE:null}, perm:{NW:null,NE:null,SW:null,SE:null}, gcool:{NW:false,NE:false,SW:false,SE:false}, gscrib:{NW:[],NE:[],SW:[],SE:[]}, turn:0, first:0, round:1, ask:null, draw:null, duel:null, gduel:null, dance:null, lastStop:null, notes:[null,null] }; }
 const locked = (q) => S.perm[q] !== null;
 const allOwnedOnce = () => QUAD_LIST.every(q => S.owner[q] !== null);
 const hasAll = (pl) => QUAD_LIST.every(q => pl.keys[q] > 0);
 const ownedCount = (pl) => QUAD_LIST.filter(q => pl.keys[q] > 0).length;
 const keyTotal = (pl) => QUAD_LIST.reduce((n,q) => n + pl.keys[q], 0);
-let roundStartLocal = 0;   // this device's clock at the start of the round (for the countdown)
 
 // ---------------- screens ----------------
 const SCREENS = ['scrTitle','scrHow','scrSketch','scrProfile','scrMode','scrBot','scrTwo','game'];
@@ -556,28 +633,29 @@ $('#gameMenu').onclick = () => goMenu();
 document.addEventListener('pointerdown', () => SFX.unlock(), { once:true, passive:true });
 
 let PENDING = null, editing = { ...profile }, editStars = 0;
+let editUnlocked = ['chicken'], editCredits = 0, editIsMe = true;
 function openProfile(title, base, cb, placeholder, stars){
-  editing = { ...(base||profile) }; editStars = (stars===undefined ? profile.stars : stars)|0;
-  if(!unlockedFor(editStars).includes(editing.av)) editing.av = 'chicken';
+  editing = { ...(base||profile) }; editIsMe = !cb;
+  editUnlocked = editIsMe ? profile.unlocked.slice() : ['chicken']; editCredits = editIsMe ? profile.credits : 0;
+  if(!editUnlocked.includes(editing.av)) editing.av = 'chicken';
   $('#profTitle').textContent = title || 'Who are you?';
   $('#nameIn').value = editing.name || ''; $('#nameIn').placeholder = placeholder || 'Enso';
   PENDING = cb || null; renderPickers(); show('scrProfile');
 }
 function renderPickers(){
-  const open = unlockedFor(editStars); const sets = Math.min(SETS.length, 1 + editStars);
-  let html = '';
-  SETS.forEach((set, si) => { if(si > sets) return; const isOpen = si < sets;
-    html += `<div class="setlbl">${SET_NAME[si]}${isOpen ? '' : ' 🔒 win a star'}</div>` + set.map(a => `<button class="pick ${editing.av===a?'on':''} ${isOpen?'':'locked'}" data-av="${a}" ${isOpen?'':'disabled'} aria-label="${AV_NAME[a]}">${svgIcon(a, colHex(editing.col), 48)}</button>`).join(''); });
-  $('#avPick').innerHTML = html;
-  $('#avLabel').textContent = open.length===1 ? 'Your doodle (win a star for more)' : 'Pick your doodle';
-  $('#avHint').textContent = sets >= SETS.length ? 'Every set unlocked!' : `${SET_NAME[sets]} set unlocks with your ${sets===1?'first':'next'} star`;
+  const open = editUnlocked;
+  $('#avPick').innerHTML = DOODLES.map(a => { const ok = open.includes(a); const buy = !ok && editCredits > 0; return `<button class="pick ${editing.av===a?'on':''} ${ok?'':'locked'}" data-av="${a}" ${ok||buy?'':'disabled'} aria-label="${AV_NAME[a]}${ok?'':' (locked)'}">${svgIcon(a, colHex(editing.col), 48)}</button>`; }).join('');
+  $('#avLabel').textContent = open.length===1 ? 'Your doodle' : 'Pick your doodle';
+  $('#avHint').textContent = editCredits > 0 ? `You have ${editCredits} unlock${editCredits>1?'s':''}! Tap a locked doodle to unlock it.` : (open.length >= DOODLES.length ? 'Every doodle unlocked!' : 'Win a round to unlock one more doodle of your choice.');
   $('#colPick').innerHTML = COLORS.map(c => `<button class="swatch ${editing.col===c.id?'on':''}" data-col="${c.id}" style="background:${c.hex}" aria-label="${c.id}"></button>`).join('');
-  $('#avPick').querySelectorAll('button').forEach(b => b.onclick = () => { editing.av = b.dataset.av; SFX.tick(); renderPickers(); });
+  $('#avPick').querySelectorAll('button').forEach(b => b.onclick = () => { const a = b.dataset.av;
+    if(!editUnlocked.includes(a)){ if(editCredits<=0) return; editCredits--; editUnlocked.push(a); if(editIsMe){ profile.unlocked = editUnlocked.slice(); profile.credits = editCredits; saveProfile(); } SFX.reward(); }
+    editing.av = a; SFX.tick(); renderPickers(); });
   $('#colPick').querySelectorAll('button').forEach(b => b.onclick = () => { editing.col = b.dataset.col; SFX.tick(); renderPickers(); });
 }
 $('#btnProfNext').onclick = () => {
   const inp = $('#nameIn'); editing.name = (inp.value || '').trim().slice(0,12) || inp.placeholder; SFX.pop();
-  if(PENDING){ const cb = PENDING; PENDING = null; cb({ ...editing, stars:editStars }); return; }
+  if(PENDING){ const cb = PENDING; PENDING = null; cb({ ...editing, stars:0, unlocked:editUnlocked.slice(), credits:0 }); return; }
   profile = { ...profile, ...editing }; saveProfile(); show('scrMode');
   const note = $('#viewerNote');
   if(IN_VIEWER){ note.hidden = false; note.innerHTML = `<b>Grown-ups:</b> on this Claude link, 2 PHONES only works between devices signed in to the same Claude account. On the game's own website the password rooms work for anyone. 1 PHONE and ROBO-CHICKEN always work.`; }
@@ -594,7 +672,7 @@ $('#btnTwoBack').onclick = () => { netClose(); show('scrMode'); };
 $('#btnEnter').onclick = () => { SFX.pop(); netEnter(($('#codeIn').value||'').toLowerCase().replace(/[^a-z0-9]/g,'')); };
 $('#codeIn').addEventListener('keydown', e => { if(e.key==='Enter') $('#btnEnter').click(); });
 $('#aiBtn').onclick = () => toggleAuto();
-function goMenu(){ netClose(); Q.length = 0; S = null; clearTimeout(botTimer); clearInterval(clockTimer); guardStop(); $('#cover').hidden = true; $('#ask').hidden = true; $('#pad').hidden = true; $('#duel').hidden = true; show('scrTitle'); }
+function goMenu(){ netClose(); Q.length = 0; gduelClose(); S = null; clearTimeout(botTimer); guardStop(); $('#cover').hidden = true; $('#ask').hidden = true; $('#pad').hidden = true; $('#duel').hidden = true; show('scrTitle'); }
 
 // ---------------- game UI ----------------
 let pieces = [];
@@ -604,13 +682,13 @@ function startGameScreen(){
   pieces = [0,1].map(p => { const g = document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','piece'); g.innerHTML = `<ellipse class="shadow" cx="0" cy="46" rx="30" ry="9" fill="rgba(43,73,184,.18)"/><g class="body"></g>`; pl.appendChild(g); return { el:g, x:0, y:0, rot:0, sc:1, sy:1 }; });
   rebuildTaunts(); wireDice();
   dieFace(6); $('#diceTag').textContent = 'swipe!'; $('#cover').hidden = true; $('#ask').hidden = true; $('#pad').hidden = true; $('#duel').hidden = true;
-  show('game'); [0,1].forEach(p => placePiece(p)); guardStart(); startClock(); renderAll();
+  show('game'); [0,1].forEach(p => placePiece(p)); guardStart(); renderAll();
 }
-function setPiece(pc){ pc.el.setAttribute('transform', `translate(${pc.x.toFixed(1)} ${pc.y.toFixed(1)}) rotate(${pc.rot.toFixed(1)}) scale(${pc.sc.toFixed(3)} ${(pc.sc*pc.sy).toFixed(3)})`); }
+function setPiece(pc){ pc.el.setAttribute('transform', `translate(${(pc.x+(pc.swx||0)).toFixed(1)} ${pc.y.toFixed(1)}) rotate(${pc.rot.toFixed(1)}) scale(${pc.sc.toFixed(3)} ${(pc.sc*pc.sy).toFixed(3)})`); }
 function placePiece(p){ const pc = pieces[p], pos = locXY(p, S.players[p].loc); pc.x = pos.x; pc.y = pos.y; pc.rot = 0; pc.sc = 1; pc.sy = 1; setPiece(pc); }
 function drawPieceBody(p, chickenMode){
   const pl = S.players[p], pc = pieces[p];
-  const inner = chickenMode ? ico('chicken','#f6c531') : (ico(pl.av, colHex(pl.col)) + (pl.scribbles.length ? `<path d="${scribblePath(pl.scribbles.flat())}" fill="none" stroke="#1f2a4a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` : ''));
+  const inner = chickenMode ? ico('chicken','#f6c531') : (ico(pl.av, colHex(pl.col)) + scribSVG(pl.scribbles));
   pc.el.querySelector('.body').innerHTML = `<g transform="scale(2.6)"><circle r="19" fill="#fff" opacity=".6"/>${inner}</g>`;
 }
 function renderFlags(){
@@ -618,9 +696,9 @@ function renderFlags(){
     if(o===null){ g.innerHTML = ''; continue; }
     const pl = S.players[o]; const w = Math.max(100, pl.name.length*19+40);
     g.innerHTML = `<rect x="${-w/2}" y="-24" width="${w}" height="48" rx="12" fill="${colHex(pl.col)}" class="sh" stroke="${INK}" stroke-width="3" opacity=".93"/><g transform="translate(${-w/2+22} 0) scale(1.1)">${ico(locked(q)?'lock':'key', locked(q)?STAR_C:'#fff')}</g><text class="ftxt" x="12" y="10" font-size="28" fill="#fff" stroke="${INK}" stroke-width="5">${esc(pl.name)}</text>`; }
-  const lock = $('#ropeLock'); if(lock) lock.hidden = S.players.some(p => p.rope);
+  const ropeOpen = S.players.some(p => p.rope); const lock = $('#ropeLock'); if(lock) lock.hidden = ropeOpen; const rg = $('#ropeG'); if(rg) rg.setAttribute('opacity', ropeOpen ? '1' : '.55');
   for(const dir in LOOPS) for(const side of ['out','back']){ const q = ALLEY_QUADS[dir][side==='out'?0:1]; const d = document.getElementById(`door-${dir}-${side}`); if(d){ const col = S.owner[q]===null ? QUADS[q].col : colHex(S.players[S.owner[q]].col); d.querySelector('circle').setAttribute('fill', col); d.querySelector('g').innerHTML = ico(locked(q)?'lock':'door', col); } }
-  document.querySelectorAll('#board .stepmark').forEach(r => { const q = r.dataset.quad; r.setAttribute('fill', S.owner[q]!==null ? colHex(S.players[S.owner[q]].col) : QUADS[q].col); });
+  document.querySelectorAll('#board .stepmark').forEach(r => { const q = r.dataset.quad; const base = S.owner[q]!==null ? colHex(S.players[S.owner[q]].col) : QUADS[q].col; r.setAttribute('fill', r.dataset.acc==='1' ? shade(base,.32) : base); });
 }
 function renderAll(){
   if(!S) return;
@@ -632,7 +710,7 @@ function renderAll(){
   $('#notes').innerHTML = [0,1].map(p => S.notes[p] ? `<div class="sticky"><b>${esc(S.players[p].name)}:</b> ${esc(S.notes[p])}</div>` : '').join('');
   const ctrl = controllable(); const pl = S.players[ctrl]; const mine = canRoll(ctrl);
   const left = $('#leftCtl'); const tz = $('#taunts');
-  const atHub = S.phase==='play' && S.turn===ctrl && pl.loc.z==='hub' && !S.ask && !S.draw && !S.duel && !S.dance && (MODE==='local' || ctrl===ME);
+  const atHub = S.phase==='play' && S.turn===ctrl && pl.loc.z==='hub' && !S.ask && !S.draw && !S.duel && !S.gduel && !S.dance && (MODE==='local' || ctrl===ME);
   const btns = TAUNTS.map(t => `<button class="taunt" data-e="${t.e}" aria-label="${t.t}">${t.e}<small>${t.t}</small></button>`).join('');
   if(S.dance && MODE==='local'){ if(!tz.classList.contains('dance')){ left.innerHTML = `<div class="dancewrap"><div class="keysbox">${esc(S.players[0].name)} 👇</div><div class="taunts dance">${btns}</div></div>`; left.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(0, b.dataset.e)); tz.className = 'taunts dance'; tz.innerHTML = btns; tz.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(1, b.dataset.e)); } }
   else if(S.dance){ left.innerHTML = `<div class="keysbox">Tap the same emoji as ${esc(S.players[1-ME].name)} to make the chicken laugh! 👉</div>`; if(!tz.classList.contains('dance')){ rebuildTaunts(); tz.classList.add('dance'); } }
@@ -648,7 +726,8 @@ function renderAll(){
   const bn = $('#banner'); bn.classList.remove('me');
   if(S.phase==='play'){ const tp = S.players[S.turn]; const me = (MODE==='local') || S.turn===ME; let msg;
     if(S.dance) msg = 'CHICKEN DANCE! Tap the same emoji together!';
-    else if(S.duel) msg = S.duel.kind==='final' ? 'TIME\'S UP! FINAL DUEL!' : 'EMOJI DUEL!';
+    else if(S.gduel) msg = 'GUARDIAN DUEL!';
+    else if(S.duel) msg = 'EMOJI DUEL!';
     else if(S.ask) msg = me ? 'MATH TIME!' : `${tp.name} is doing math…`;
     else if(S.draw) msg = (MODE==='local' || S.draw.by===ME) ? 'Draw a mustache!' : `${S.players[S.draw.by].name} is drawing on you…`;
     else if(tp.loc.z==='hub' && !tp.loc.dir) msg = me ? (MODE==='local' ? `${tp.name}: pick a road!` : 'YOUR TURN! Pick a road') : `${tp.name} is picking a road…`;
@@ -657,18 +736,14 @@ function renderAll(){
   else bn.textContent = S.phase==='over' ? 'Round over!' : 'Get ready…';
   const ai = $('#aiBtn'); const meP = MODE==='local' ? S.turn : ME; const canAuto = S.phase==='play' && !(MODE==='bot' && meP===1);
   ai.hidden = !canAuto; const au = S.players[meP].auto; ai.classList.toggle('on', !!au); ai.textContent = au ? `🤖 AI playing · ${Math.max(0, Math.ceil((autoUntil[meP]-Date.now())/1000))}s · tap to stop` : (MODE==='local' ? `🤖 AI plays ${esc(S.players[meP].name)}` : '🤖 AI plays for me');
-  renderClock(); renderAsk(); renderPad(); renderDuel();
+  renderAsk(); renderPad(); renderDuel(); renderMusic();
 }
 function controllable(){ return MODE==='local' ? S.turn : ME; }
-function canRoll(p){ return !!S && S.phase==='play' && S.turn===p && !busy() && !S.ask && !S.draw && !S.duel && !S.dance && (MODE==='local' || p===ME) && !(S.players[p].loc.z==='hub' && !S.players[p].loc.dir); }
+function canRoll(p){ return !!S && S.phase==='play' && S.turn===p && !busy() && !S.ask && !S.draw && !S.duel && !S.gduel && !S.dance && (MODE==='local' || p===ME) && !(S.players[p].loc.z==='hub' && !S.players[p].loc.dir); }
 function dieFace(v, el){
   const dots = {1:[[30,30]],2:[[18,18],[42,42]],3:[[18,18],[30,30],[42,42]],4:[[18,18],[42,18],[18,42],[42,42]],5:[[18,18],[42,18],[30,30],[18,42],[42,42]],6:[[18,16],[42,16],[18,30],[42,30],[18,44],[42,44]]}[v] || [];
   (el || $('#dieFace')).innerHTML = `<rect x="4" y="4" width="52" height="52" rx="12" fill="#fff" class="sh" stroke="${INK}" stroke-width="3"/>` + dots.map(d => `<circle cx="${d[0]}" cy="${d[1]}" r="5" fill="${INK}"/>`).join('');
 }
-// round clock
-let clockTimer = null;
-function startClock(){ clearInterval(clockTimer); clockTimer = setInterval(renderClock, 500); renderClock(); }
-function renderClock(){ const el = $('#timer'); if(!S || S.phase!=='play' || !roundStartLocal){ el.textContent = S && S.phase==='over' ? 'done' : '6:00'; el.classList.remove('hot'); return; } const left = Math.max(0, ROUND_MS*SPEED - (Date.now()-roundStartLocal)); const secs = Math.ceil(left/(1000*SPEED)); el.textContent = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`; el.classList.toggle('hot', secs <= 30); if(ROLE==='host' && left<=0) hostTimeUp(); }
 let toastTimer = null;
 function toast(kind, t1, t2, ms=1300, color){ const el = $('#toast'); el.innerHTML = `${kind?svgIcon(kind, color||STAR_C, 54):''}<div><div class="t1">${esc(t1)}</div>${t2?`<div class="t2">${esc(t2)}</div>`:''}</div>`; el.classList.add('show'); clearTimeout(toastTimer); return new Promise(res => { toastTimer = setTimeout(() => { el.classList.remove('show'); res(); }, ms*SPEED); }); }
 function fxText(x, y, txt, color, size=52){ const t = svgEl('text', { class:'ftxt', x, y, 'font-size':size, 'stroke-width':10, fill: color||INK }); t.textContent = txt; tween(950, (k) => { t.setAttribute('y', y - 80*k); t.setAttribute('opacity', 1 - Math.max(0,(k-.6)/.4)); t.setAttribute('transform', `rotate(${(k*10-5).toFixed(1)} ${x} ${y})`); }).then(() => t.remove()); }
@@ -678,7 +753,7 @@ function bubble(txt, side, ms=1600){ const d = document.createElement('div'); d.
 function confetti(){ const cols = ['#e2503f','#2f6fe4','#3aa655','#f6c531','#8a4fd3','#e85d9a']; for(let i=0;i<90;i++){ const r = svgEl('rect', { width:16, height:24, rx:4, fill:cols[i%6] }); const vx = (Math.random()-.5)*1300, vy = -(250+Math.random()*900), rot = Math.random()*360; tween(2000, (k) => { const x = STAR_ICON.x+vx*k, y = STAR_ICON.y+vy*k+1700*k*k; r.setAttribute('transform', `translate(${x} ${y}) rotate(${rot+k*720})`); r.setAttribute('opacity', 1-Math.max(0,(k-.7)/.3)); }, (k)=>k).then(() => r.remove()); } }
 const easeOut = (k) => 1-(1-k)*(1-k);
 function tween(ms, fn, ease=easeOut){ ms = ms*SPEED; return new Promise(res => { const t0 = performance.now(); const step = (t) => { const k = Math.max(0, Math.min(1,(t-t0)/Math.max(1,ms))); fn(ease(k), k); if(k<1) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); }); }
-async function hop(p, to, ms=200, height=40, idx=0, rope=false){ const pc = pieces[p], x0 = pc.x, y0 = pc.y; if(rope) SFX.climb(idx); else SFX.hop(idx); await tween(ms, (k) => { pc.x = x0+(to.x-x0)*k; pc.y = y0+(to.y-y0)*k - Math.sin(Math.PI*k)*height; pc.sy = 1 + Math.sin(Math.PI*k)*.15; setPiece(pc); }, (k)=>k); pc.sy = .8; setPiece(pc); await tween(90, (k) => { pc.sy = .8+.2*k; setPiece(pc); }); }
+async function hop(p, to, ms=200, height=40, idx=0, rope=false){ const pc = pieces[p], x0 = pc.x, y0 = pc.y; const robo = isRoboP(p); if(robo) SFX.robostep(idx); else if(rope) SFX.climb(idx); else SFX.hop(idx); if(robo){ const dir = idx%2 ? 1 : -1; await tween(ms*1.2, (k) => { pc.x = x0+(to.x-x0)*k; pc.y = y0+(to.y-y0)*k - Math.abs(Math.sin(Math.PI*k*2))*height*.6; pc.rot = Math.sin(Math.PI*k)*28*dir; setPiece(pc); }, (k)=>k); pc.rot = 0; setPiece(pc); return; } await tween(ms, (k) => { pc.x = x0+(to.x-x0)*k; pc.y = y0+(to.y-y0)*k - Math.sin(Math.PI*k)*height; pc.sy = 1 + Math.sin(Math.PI*k)*.15; setPiece(pc); }, (k)=>k); pc.sy = .8; setPiece(pc); await tween(90, (k) => { pc.sy = .8+.2*k; setPiece(pc); }); }
 async function fly(p, to, ms=600, height=200){ const pc = pieces[p], x0=pc.x, y0=pc.y; await tween(ms, (k) => { pc.x = x0+(to.x-x0)*k; pc.y = y0+(to.y-y0)*k - Math.sin(Math.PI*k)*height; pc.rot = 360*k; setPiece(pc); }, (k)=>k); pc.rot = 0; setPiece(pc); }
 function pulseAt(pt){ const c = svgEl('circle', { cx:pt.x, cy:pt.y, r:10, fill:'none', stroke:STAR_C, 'stroke-width':8 }); tween(700, (k) => { c.setAttribute('r', 10+120*k); c.setAttribute('opacity', 1-k); }).then(() => c.remove()); }
 const svgEl = (tag, attrs, inner, parent) => { const el = document.createElementNS('http://www.w3.org/2000/svg', tag); for(const k in attrs) el.setAttribute(k, attrs[k]); if(inner) el.innerHTML = inner; (parent || $('#fx')).appendChild(el); return el; };
@@ -705,10 +780,11 @@ let padStrokes = [], padCtx = null, padDrawing = false, padInk = 0, padInkMax = 
 function renderPad(){
   const el = $('#pad'); const d = S && S.draw;
   if(!d){ el.hidden = true; clearInterval(padTimer); padTimer = null; return; }
+  if(!el.hidden && el.dataset.for==='robo') return;
   const mine = (MODE==='local') || d.by===ME;
   if(!el.hidden && el.dataset.for===`${d.by}-${d.victim}-${S.round}`) return;
   el.dataset.for = `${d.by}-${d.victim}-${S.round}`; padSubmitted = false;
-  const victim = S.players[d.victim], artist = S.players[d.by];
+  const victim = victimInfo(d.victim), artist = S.players[d.by];
   const isRobo = MODE==='bot' && d.by===1;
   if(!mine){ el.innerHTML = `<h3>${esc(artist.name)} is drawing a mustache on ${esc(victim.name)}…</h3>${isRobo ? '<div class="roboSays" id="roboSays"></div>' : ''}<canvas id="padCv" width="300" height="300"></canvas><div class="meters"><span class="clock" id="padClock">${d.secs}</span></div>`; el.hidden = false; padCtx = $('#padCv').getContext('2d'); padStrokes = []; padGhost(victim, () => padRedraw()); padEndsAt = performance.now() + d.secs*1000*SPEED; clearInterval(padTimer); padTimer = setInterval(padTick, 250); return; }
   el.innerHTML = `<h3>Draw a mustache on ${esc(victim.name)}!</h3><div class="meters"><span class="ink">Ink <span class="bar"><i id="inkBar" style="width:100%"></i></span></span><span class="clock" id="padClock">${d.secs}</span></div><canvas id="padCv" width="300" height="300"></canvas><div class="row"><button class="btn ghost" id="padClear">Clear</button><button class="btn big" id="padDone">GLUE IT ON!</button></div><p class="tiny">${d.secs} seconds, ${d.bonus>0 ? `${d.bonus} of them bonus for fast math` : 'answer faster next time for bonus ink'}</p>`;
@@ -723,15 +799,30 @@ function renderPad(){
   $('#padDone').onclick = () => { SFX.pop(); padSubmit(); };
   padEndsAt = performance.now() + d.secs*1000*SPEED; clearInterval(padTimer); padTimer = setInterval(padTick, 250);
 }
+function victimInfo(v){ if(typeof v==='string' && v.startsWith('g:')){ const q = v.slice(2); const kind = QUADS[q].guard; return { name:`the ${GUARD_NAME[kind]} guardian`, av:kind, col:null, guard:q, scribbles:S.gscrib[q] }; } const pl = S.players[v]; return { name:pl.name, av:pl.av, col:pl.col, scribbles:pl.scribbles }; }
+const guardColor = { chicken:'#f6c531', dog:'#c98a4b', duck:'#fff', cat:'#9fa8da' };
+const faceColor = (vi) => vi.col ? colHex(vi.col) : guardColor[vi.av];
 function fxTextPad(txt){ const h = $('#pad h3'); if(h) h.textContent = txt; }
 function padTick(){ const d = S && S.draw; if(!d){ clearInterval(padTimer); padTimer = null; return; } const left = Math.max(0, padEndsAt - performance.now()); const secs = Math.ceil(left/(1000*SPEED)); const c = $('#padClock'); if(c){ c.textContent = secs; c.classList.toggle('hot', secs<=5); } const mine = (MODE==='local') || d.by===ME; if(mine && left<=0 && !padSubmitted) padSubmit(); }
 function padSubmit(){ if(padSubmitted) return; padSubmitted = true; clearInterval(padTimer); padTimer = null; submitStache(compactStrokes(padStrokes)); }
 let padGhostImg = null;
-function padGhost(victim, cb){ const img = new Image(); img.onload = () => { padGhostImg = img; cb(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="260" height="260"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(victim.av, colHex(victim.col))}</svg>`); padGhostImg = null; }
+function padGhost(victim, cb){ const img = new Image(); img.onload = () => { padGhostImg = img; cb(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="260" height="260"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(victim.av, faceColor(victim))}</svg>`); padGhostImg = null; }
 function padRedraw(){ if(!padCtx) return; padCtx.clearRect(0,0,300,300); if(padGhostImg){ padCtx.save(); padCtx.globalAlpha = .25; try { padCtx.drawImage(padGhostImg, 20, 20, 260, 260); } catch(e){} padCtx.restore(); } padCtx.save(); padCtx.translate(150,150); padCtx.scale(6.5,6.5); padCtx.lineWidth = 2.6; padCtx.lineCap = 'round'; padCtx.lineJoin = 'round'; padCtx.strokeStyle = '#1f2a4a'; for(const st of padStrokes){ padCtx.beginPath(); st.forEach((pt,i) => i ? padCtx.lineTo(pt[0],pt[1]) : padCtx.moveTo(pt[0],pt[1])); padCtx.stroke(); } padCtx.restore(); }
 function compactStrokes(strokes){ let out = strokes.filter(s => s.length).map(s => s.map(p => [clamp(p[0],-24,24), clamp(p[1],-24,24)])); let total = out.reduce((n,s) => n+s.length, 0); while(total > 220){ out = out.map(s => s.length>3 ? s.filter((_,i) => i%2===0 || i===s.length-1) : s); const t2 = out.reduce((n,s) => n+s.length, 0); if(t2===total) break; total = t2; } if(!out.length) out = [defaultStache()]; return out.slice(0,12); }
 function defaultStache(){ const pts=[]; for(let i=0;i<=16;i++){ const x=-11+i*22/16; pts.push([+x.toFixed(1), +(2 + Math.sin(i/16*Math.PI*2)*2.5 - Math.abs(x)/5).toFixed(1)]); } return pts; }
-function botStache(){ const a=[]; const w=8+rnd(6); for(let i=0;i<=14;i++){ const x=-w+i*2*w/14; a.push([+x.toFixed(1), +(3+Math.sin(i/14*Math.PI*(2+rnd(2)))*(2+rnd(3)) - Math.abs(x)/4).toFixed(1)]); } const extras = []; if(rnd(2)){ const b=[]; for(let i=0;i<=10;i++){ const t=i/10*Math.PI*2; b.push([+(-7+Math.cos(t)*4).toFixed(1), +(-5+Math.sin(t)*3).toFixed(1)]); } extras.push(b); } if(rnd(2)){ const g=[]; for(let i=0;i<=8;i++) g.push([+(-10+i*2.5).toFixed(1), +(9+(i%2?2:-1)).toFixed(1)]); extras.push(g); } return [a].concat(extras); }
+// a robo mustache in unit space (about ±12 wide), then placed on the victim's face
+function botStache(kind, wild=1){
+  const [fx, fy, fs] = FACE[kind] || [0,3,.6]; const T = (x,y) => [+(fx + x*fs).toFixed(1), +(fy + y*fs).toFixed(1)];
+  const style = rnd(4); const out = [];
+  const w = 10 + rnd(4)*wild;
+  if(style===0){ const a=[]; for(let i=0;i<=16;i++){ const x=-w+i*2*w/16; a.push(T(x, Math.sin(i/16*Math.PI*2)*3 - Math.abs(x)/4)); } out.push(a); }
+  else if(style===1){ for(const sgn of [-1,1]){ const a=[]; for(let i=0;i<=14;i++){ const t=i/14; const x = sgn*(1 + t*w); const y = -2*Math.sin(t*Math.PI) + (t>.7 ? -(t-.7)*14 : 0); a.push(T(x, y)); } for(let i=0;i<=8;i++){ const t=i/8*Math.PI*1.6; a.push(T(sgn*(w+1) + Math.cos(t)*3*sgn, -6 + Math.sin(t)*3)); } out.push(a); } }
+  else if(style===2){ const a=[]; for(let i=0;i<=24;i++){ const x=-w+i*2*w/24; a.push(T(x, (i%2?3:-1))); } out.push(a); }
+  else { for(const sgn of [-1,1]){ const a=[]; for(let i=0;i<=12;i++){ const t=i/12; a.push(T(sgn*t*w, 4*t*t - 1)); } out.push(a); } }
+  if(wild>1 || rnd(2)){ const g=[]; for(let i=0;i<=8;i++) g.push(T(-4+i, 7+(i%2?2:0))); out.push(g); }
+  if(rnd(3)===0){ for(const sgn of [-1,1]) out.push([T(sgn*3,-10), T(sgn*9,-13)]); }
+  return out;
+}
 
 // ---------------- the emoji duel ----------------
 const DUEL_LEN = 3, DUEL_SHOW_MS = 1700, DUEL_INPUT_MS = 7000;
@@ -773,15 +864,17 @@ function renderDuel(){
 let guardRAF = 0, guards = {};
 function guardStart(){ guardStop(); guards = {}; for(const q of QUAD_LIST) guards[q] = { q, kind:QUADS[q].guard, phase:'dance', t0:performance.now(), from:GUARD_HOME[q], to:GUARD_HOME[q], face:1, nextSound: performance.now()+3000+rnd(6000), zz:0 }; guardRAF = requestAnimationFrame(guardTick); }
 function guardStop(){ cancelAnimationFrame(guardRAF); guardRAF = 0; }
-const guardColor = { chicken:'#f6c531', dog:'#c98a4b', duck:'#fff', cat:'#9fa8da' };
+const EYES = { chicken:[-9.5,-6], dog:[-9,-4], duck:[-9,-6], cat:[-7,-2] };
+function coolBits(kind){ const [ex, ey] = EYES[kind] || [0,0]; return `<g><rect x="${ex-6}" y="${ey-2.5}" width="12" height="5" rx="2" fill="#1f2a4a" stroke="#000" stroke-width=".8"/><path d="M${ex-3} ${ey-1} l2 1.5" stroke="#fff" stroke-width="1" fill="none"/><path d="M-6 9 q8 6 16 0" fill="none" stroke="#f6c531" stroke-width="2.2"/><circle cx="2" cy="12" r="2.2" fill="#f6c531" stroke="#b07a10" stroke-width=".8"/><path d="M12 -12 l1 -3 l1 3 l3 1 l-3 1 l-1 3 l-1 -3 l-3 -1 Z" fill="#fff8b0" stroke="#e39a12" stroke-width=".6"/></g>`; }
 const guardSound = { chicken:'bawk', dog:'woof', duck:'quack', cat:'meow' };
 function guardTick(now){
   if(!S || $('#game').hidden){ guardRAF = requestAnimationFrame(guardTick); return; }
   for(const q of QUAD_LIST){ const g = guards[q]; const el = document.getElementById('guard-'+q); if(!g || !el) continue;
     const owned = S.owner[q] !== null; const home = GUARD_HOME[q];
     const body = el.querySelector('.gbody'), fx = el.querySelector('.gfx');
-    if(!owned && g.phase!=='dance'){ g.phase = 'dance'; g.t0 = now; fx.innerHTML = ''; }
-    if(owned && g.phase==='dance'){ g.phase = 'nap'; g.t0 = now; g.next = now + (8000+rnd(10000))*SPEED; fx.innerHTML = ''; }
+    const dueling = S.gduel && S.gduel.q===q;
+    if((!owned || dueling) && g.phase!=='dance'){ g.phase = 'dance'; g.t0 = now; fx.innerHTML = ''; }
+    if(owned && g.phase==='dance' && !dueling){ g.phase = 'nap'; g.t0 = now; g.next = now + (8000+rnd(10000))*SPEED; fx.innerHTML = ''; }
     let x = home.x, y = home.y, rot = 0, sc = 1, flip = g.face;
     if(g.phase==='dance'){ const k = (now - g.t0)/1000; x = home.x + Math.cos(k*2.2)*40; y = home.y + Math.sin(k*4.4)*18 - Math.abs(Math.sin(k*4.4))*20; rot = Math.sin(k*4.4)*18; flip = Math.cos(k*2.2) > 0 ? -1 : 1; if(now > g.nextSound){ g.nextSound = now + 5000+rnd(9000); SFX[guardSound[g.kind]](); } }
     else if(g.phase==='nap'){ sc = 1; rot = 90; y = home.y + 14; if(now - g.zz > 1400){ g.zz = now; const z = svgEl('text', { class:'ftxt', x: x+20, y: y-30, 'font-size':26, 'stroke-width':5, fill: INK }, null, fx); z.textContent = 'z'; tween(1400, (k) => { z.setAttribute('y', y-30-50*k); z.setAttribute('x', x+20+15*k); z.setAttribute('opacity', 1-k); }).then(() => z.remove()); if(Math.random()<.3) SFX.snore(); }
@@ -790,17 +883,171 @@ function guardTick(now){
     else if(g.phase==='walk' || g.phase==='walkback'){ const k = Math.min(1, (now - g.t0)/g.dur); x = g.from.x + (g.to.x-g.from.x)*k; y = g.from.y + (g.to.y-g.from.y)*k - Math.abs(Math.sin(k*Math.PI*8))*14; rot = Math.sin(k*Math.PI*8)*10; flip = g.to.x < g.from.x ? -1 : 1; g.face = flip;
       if(k>=1){ if(g.phase==='walk'){ g.phase = 'tease'; g.t0 = now; SFX.raspberry(); const t = svgEl('text', { class:'ftxt', x: g.to.x, y: g.to.y-50, 'font-size':40, 'stroke-width':8, fill:'#e2503f' }, null, fx); t.textContent = pick(['nyah nyah!', 'pbbbt!', 'ha ha!', 'can\'t catch me!']); setTimeout(() => t.remove(), 1800*SPEED); const og = guards[g.target]; if(og && og.phase==='nap'){ og.phase = 'startle'; og.t0 = now; } } else { g.phase = 'nap'; g.t0 = now; g.next = now + (10000+rnd(12000))*SPEED; } } }
     else if(g.phase==='tease'){ const k = (now - g.t0)/(1800*SPEED); x = g.to.x; y = g.to.y - Math.abs(Math.sin(k*Math.PI*6))*18; rot = Math.sin(k*Math.PI*6)*25; sc = 1.1; flip = g.face; if(k>=1){ g.phase = 'walkback'; g.t0 = now; g.from = g.to; g.to = home; g.dur = 2600*SPEED; } }
-    const col = guardColor[g.kind];
-    if(body.dataset.kind !== g.kind){ body.dataset.kind = g.kind; body.innerHTML = `<g class="gin">${ico(g.kind, col)}</g>`; }
-    body.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${(2.2*sc*flip).toFixed(3)} ${(2.2*sc).toFixed(3)})`);
+    const col = guardColor[g.kind]; const cool = !!S.gcool[q]; const sc2 = S.gscrib[q] || [];
+    const key = g.kind + cool + JSON.stringify(sc2).length;
+    if(body.dataset.key !== key){ body.dataset.key = key; body.innerHTML = `<g class="gin">${ico(g.kind, col)}${scribSVG(sc2)}${cool ? coolBits(g.kind) : ''}</g>`; }
+    if(cool && g.phase==='nap') { rot = 0; y = home.y; }   // cool guardians don't nap, they pose
+    body.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${(2.6*sc*flip).toFixed(3)} ${(2.6*sc).toFixed(3)})`);
   }
+  // the rope sways once it is open, and climbers sway with it
+  const open = S.players.some(p => p.rope); const rg = document.getElementById('ropeG');
+  const ang = open ? Math.sin(now/700)*1.6 : 0;
+  if(rg) rg.setAttribute('transform', `rotate(${ang.toFixed(2)} ${STAR.x} ${STAR.y+34})`);
+  S.players.forEach((pl, p) => { const pc = pieces[p]; if(!pc) return; const on = pl.loc.z==='rope' && open; const r = on ? ropeXY(pl.loc.i) : null; const sw = on ? Math.sin(ang*Math.PI/180)*(r.y-(STAR.y+34)) : 0; if(Math.abs((pc.swx||0)-sw) > .2){ pc.swx = sw; setPiece(pc); } });
   guardRAF = requestAnimationFrame(guardTick);
 }
+
+// ---------------- background music: 5 CC0 ambient tracks, served next to the page ----------------
+const Music = (() => {
+  let on = true, idx = 0, audio = null, ok = true, tagT = null;
+  try { const m = localStorage.getItem('sr_music'); if(m !== null) on = m === '1'; idx = (parseInt(localStorage.getItem('sr_track')||'0',10)||0) % MUSIC.length; } catch(e){}
+  const save = () => { try { localStorage.setItem('sr_music', on ? '1' : '0'); localStorage.setItem('sr_track', String(idx)); } catch(e){} };
+  function ensure(){ if(audio) return; audio = new Audio(); audio.preload = 'auto'; audio.volume = .28;
+    audio.addEventListener('ended', () => next());
+    audio.addEventListener('error', () => { ok = false; renderMusic(); }); audio.src = MUSIC[idx].f; }
+  function play(){ if(!ok || !on || window.__SR_FAST) return; ensure(); const pr = audio.play(); if(pr && pr.catch) pr.catch(() => {}); showTag(); }
+  function showTag(){ const w = $('#boardwrap'); if(!w || $('#game').hidden) return; let t = w.querySelector('.songtag'); if(!t){ t = document.createElement('div'); t.className = 'songtag'; w.appendChild(t); } t.textContent = `♪ ${MUSIC[idx].t} · ${MUSIC[idx].a} (CC0)`; t.hidden = false; clearTimeout(tagT); tagT = setTimeout(() => { t.hidden = true; }, 3500); }
+  function next(){ idx = (idx + 1) % MUSIC.length; save(); if(audio){ audio.src = MUSIC[idx].f; } if(on) play(); }
+  function toggle(){ on = !on; save(); if(on) play(); else if(audio) audio.pause(); renderMusic(); }
+  return { start: play, next, toggle, get on(){ return on; }, get ok(){ return ok; } };
+})();
+function renderMusic(){ document.querySelectorAll('.musicbtn').forEach(b => { b.hidden = !Music.ok; if(b.dataset.act==='toggle') b.classList.toggle('off', !Music.on); }); }
+document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.musicbtn'); if(!b) return; SFX.unlock(); if(b.dataset.act==='next') Music.next(); else Music.toggle(); renderMusic(); });
+renderMusic();
+
+// ---------------- guardian duels: each guardian invented its own 1-minute game ----------------
+const GAMES = {
+  NW: { id:'stache', title:'MUSTACHE SHOWDOWN', how:'Draw the funniest mustache on your rival. The Chicken judges by counting its laughs. Loser keeps the mustache!' },
+  NE: { id:'bones',  title:'BONE FETCH', how:'Tap the bones as fast as you can. First to 15 wins!', target:15 },
+  SW: { id:'duck',   title:'DUCK RACE', how:'Tap PADDLE super fast. First across the pond wins!', target:70 },
+  SE: { id:'laser',  title:'LASER CHASE', how:'Keep your finger on the red laser dot. First to 10 seconds wins!', target:10000 },
+};
+const GDUEL_MS = 60000;
+const BOT_DUEL = { dumb:{ bones:.9, duck:4.5, laser:.42 }, smart:{ bones:1.3, duck:6.5, laser:.62 }, genius:{ bones:1.8, duck:8.5, laser:.82 } };
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const BONE_SVG = `<svg viewBox="-37 -23 74 46"><g stroke="${INK}" stroke-width="3" fill="#fff"><path d="M-22 -6 h44 a9 9 0 1 1 6 9 a9 9 0 1 1 -6 9 h-44 a9 9 0 1 1 -6 -9 a9 9 0 1 1 6 -9 Z" transform="translate(0 -3)"/></g></svg>`;
+let GD = null;   // this device's view of the running duel
+
+function sideIcon(d, p, size){ return p===d.o ? svgIcon(QUADS[d.q].guard, guardColor[QUADS[d.q].guard], size) : avatarSVG(S.players[p], size); }
+function sideName(d, p){ return p===d.o ? `${S.players[p].name} as the ${GUARD_NAME[QUADS[d.q].guard]}` : S.players[p].name; }
+function gLocalSides(d){ const sides = [d.o, d.c]; if(MODE==='local') return sides.filter(p => !S.players[p].auto); return sides.filter(p => p===ME && !S.players[p].auto); }
+function gScoreText(game, v){ if(game.id==='laser') return `${(v/1000).toFixed(1)}s`; if(game.target) return `${Math.floor(v)}/${game.target}`; return ''; }
+
+function gduelOpen(d){
+  gduelClose();
+  const el = $('#gduel'); const game = GAMES[d.q]; const kind = QUADS[d.q].guard; const local = gLocalSides(d);
+  GD = { d, t0: performance.now(), arenas:{}, prog:{}, done:{}, lastSent:0, iv:null };
+  let html = `<div class="ghead">${svgIcon(kind, guardColor[kind], 46)}<div class="gtitle">${esc(game.title)}<small>${esc(game.how)}</small></div><div class="gclock" id="gclock">60</div></div><div class="arenas">`;
+  for(const p of [d.o, d.c]){
+    if(local.includes(p)) html += `<div class="arena mine" id="ga-${p}"><div class="alabel">${sideIcon(d, p, 26)} ${esc(sideName(d, p))}</div><div class="ascore" id="gs-${p}">${gScoreText(game, 0)}</div></div>`;
+    else html += `<div class="remote" id="gr-${p}">${sideIcon(d, p, 34)}<span>${esc(sideName(d, p))}</span>${game.id==='stache' ? `<span class="rv" id="grv-${p}">✏️ drawing…</span>` : `<div class="rb"><i id="grb-${p}" style="width:0%"></i></div><span class="rv" id="grv-${p}">${gScoreText(game, 0)}</span>`}</div>`;
+  }
+  html += `</div>`;
+  el.innerHTML = html; el.hidden = false;
+  for(const p of local){ const a = $('#ga-'+p); GD.arenas[p] = game.id==='bones' ? mkBones(a, p, mulberry32(d.seed)) : game.id==='duck' ? mkDuck(a, p, d) : game.id==='laser' ? mkLaser(a, p, d.seed) : mkStache(a, p, d); }
+  GD.iv = setInterval(gTick, 200); gTick();
+}
+function gTick(){
+  if(!GD) return; const left = Math.max(0, GDUEL_MS*SPEED - (performance.now()-GD.t0)); const secs = Math.ceil(left/(1000*SPEED));
+  const c = $('#gclock'); if(c){ c.textContent = secs; c.classList.toggle('hot', secs <= 10); }
+  if(secs <= 5 && secs !== GD.lastTick){ GD.lastTick = secs; SFX.tickTock(); }
+  if(left <= 0){ for(const p in GD.arenas){ const a = GD.arenas[p]; if(a.finish) a.finish(); } }
+  // the robo talks while it plays
+  if(MODE==='bot' && GD.d && [GD.d.c, GD.d.o].includes(1) && Math.random() < .03){ const r = ROBOS[S.players[1].robo|0] || ROBOS[0]; const rv = $('#grv-1'); bubble(pick(r.lines.concat(r.draw)), 1, 1400); if(rv && GAMES[GD.d.q].id==='stache' && !GD.done[1]) rv.textContent = pick(['✏️ drawing…', '🤖 scribble…', '✏️ hee hee…']); }
+}
+function gduelClose(){ if(!GD) { const el = $('#gduel'); if(el) el.hidden = true; return; } clearInterval(GD.iv); for(const p in GD.arenas){ try { GD.arenas[p].stop(); } catch(e){} } GD = null; const el = $('#gduel'); el.hidden = true; el.innerHTML = ''; }
+function gReport(p, v){
+  if(!GD) return; GD.prog[p] = v; const sc = $('#gs-'+p); if(sc) sc.textContent = gScoreText(GAMES[GD.d.q], v);
+  if(ROLE==='host') hostGprog(p, v);
+  else { const now = performance.now(); const game = GAMES[GD.d.q]; if(now - GD.lastSent > 150 || (game.target && v >= game.target)){ GD.lastSent = now; net && net.send({ t:'req', a:'gprog', v }); } }
+}
+function gUpdate(p, v){ if(!GD || GD.arenas[p]) return; const game = GAMES[GD.d.q]; const b = $('#grb-'+p), t = $('#grv-'+p); if(b && game.target) b.style.width = Math.min(100, v/game.target*100).toFixed(1)+'%'; if(t) t.textContent = gScoreText(game, v); }
+function gUpdateDone(p){ if(!GD) return; GD.done[p] = true; const t = $('#grv-'+p); if(t) t.textContent = '✓ done!'; }
+function gSubmitDraw(p, strokes){ if(!GD || GD.done[p]) return; GD.done[p] = true; if(ROLE==='host') hostGdraw(p, strokes); else net && net.send({ t:'req', a:'gdraw', strokes }); }
+
+function mkBones(el, p, rng){
+  const T = GAMES.NE.target; let n = 0, stopped = false;
+  const place = () => { if(stopped) return; const b = document.createElement('button'); b.className = 'bone'; b.style.left = (12 + rng()*76) + '%'; b.style.top = (24 + rng()*64) + '%'; b.innerHTML = BONE_SVG; b.setAttribute('aria-label', 'Bone');
+    b.onpointerdown = (e) => { e.preventDefault(); if(stopped) return; b.remove(); n++; SFX.bone(); if(n%5===0) SFX.woof(); gReport(p, n); if(n < T) place(); }; el.appendChild(b); };
+  place();
+  return { stop(){ stopped = true; el.querySelectorAll('.bone').forEach(b => b.remove()); } };
+}
+function mkDuck(el, p, d){
+  const T = GAMES.SW.target; let n = 0, stopped = false;
+  const racer = p===d.o ? svgIcon('duck', '#fff', 62) : avatarSVG(S.players[p], 62);
+  el.insertAdjacentHTML('beforeend', `<div class="pond"><div class="finish"></div><div class="duck" style="left:8%">${racer}</div></div><button class="paddle">PADDLE! 🌊</button>`);
+  const duck = el.querySelector('.duck'), btn = el.querySelector('.paddle');
+  btn.onpointerdown = (e) => { e.preventDefault(); if(stopped || n >= T) return; n++; duck.style.left = (8 + 80*n/T) + '%'; if(n%3===0) SFX.paddle(); if(n%14===0) SFX.quack(); gReport(p, n); };
+  return { stop(){ stopped = true; btn.disabled = true; } };
+}
+function mkLaser(el, p, seed){
+  const rng = mulberry32(seed ^ 0x5eed); const ph = [rng()*6, rng()*6, rng()*6, rng()*6];
+  const dot = document.createElement('div'); dot.className = 'dot'; el.appendChild(dot);
+  let fx = null, fy = null, acc = 0, last = performance.now(), raf = 0, lastRep = 0, stopped = false;
+  const pos = (t) => { const s = t/1000; return [.5 + .36*Math.sin(s*.95+ph[0])*Math.cos(s*.41+ph[1]), .56 + .3*Math.sin(s*1.17+ph[2])*Math.cos(s*.33+ph[3])]; };
+  const at = (e) => { const r = el.getBoundingClientRect(); fx = e.clientX - r.left; fy = e.clientY - r.top; };
+  el.onpointerdown = (e) => { e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch(x){} at(e); };
+  el.onpointermove = (e) => { if(fx !== null) at(e); };
+  el.onpointerup = el.onpointercancel = () => { fx = null; };
+  const step = (t) => { if(stopped) return; const dt = Math.min(100, t-last); last = t; const [ux, uy] = pos((t - GD_t0())/SPEED);
+    const x = ux*el.clientWidth, y = uy*el.clientHeight; dot.style.left = x+'px'; dot.style.top = y+'px';
+    const on = fx !== null && Math.hypot(fx-x, fy-y) < 46; dot.classList.toggle('on', on);
+    if(on){ acc += dt / SPEED; if(t - lastRep > 150){ lastRep = t; gReport(p, Math.round(acc)); SFX.laserOn(); } }
+    raf = requestAnimationFrame(step); };
+  raf = requestAnimationFrame(step);
+  return { stop(){ stopped = true; cancelAnimationFrame(raf); } };
+}
+const GD_t0 = () => GD ? GD.t0 : performance.now();
+function mkStache(el, p, d){
+  const target = p===d.c ? { av:QUADS[d.q].guard, col:null } : { av:S.players[d.c].av, col:S.players[d.c].col };
+  const size = Math.max(140, Math.min(el.clientWidth - 24, el.clientHeight - 64)); const K2 = size/46;
+  const cv = document.createElement('canvas'); cv.className = 'sc'; cv.width = size; cv.height = size; cv.style.width = size+'px'; cv.style.height = size+'px'; el.appendChild(cv);
+  el.insertAdjacentHTML('beforeend', `<div class="ink2"><i style="width:100%"></i></div><button class="scdone">DONE ✓</button>`);
+  const ctx = cv.getContext('2d'); const strokes = []; let drawing = false, ink = 260, done = false, ghost = null;
+  const img = new Image(); img.onload = () => { ghost = img; redraw(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="${size}" height="${size}"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(target.av, faceColor(target))}</svg>`);
+  const redraw = () => { ctx.clearRect(0,0,size,size); if(ghost){ ctx.save(); ctx.globalAlpha = .4; ctx.drawImage(ghost, size*3/46, size*3/46, size*40/46, size*40/46); ctx.restore(); } ctx.save(); ctx.translate(size/2, size/2); ctx.scale(K2, K2); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1f2a4a'; for(const st of strokes){ ctx.beginPath(); st.forEach((q,i) => i ? ctx.lineTo(q[0],q[1]) : ctx.moveTo(q[0],q[1])); ctx.stroke(); } ctx.restore(); };
+  const pt = (e) => { const r = cv.getBoundingClientRect(); return [ +(((e.clientX-r.left)/r.width*46) - 23).toFixed(1), +(((e.clientY-r.top)/r.height*46) - 23).toFixed(1) ]; };
+  cv.onpointerdown = (e) => { if(done || ink <= 0) return; e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch(x){} drawing = true; strokes.push([pt(e)]); SFX.tick(); };
+  cv.onpointermove = (e) => { if(!drawing || done || ink <= 0) return; e.preventDefault(); const st = strokes[strokes.length-1]; const q = pt(e); const l = st[st.length-1]; const dd = Math.hypot(q[0]-l[0], q[1]-l[1]); if(dd < .7) return; ink -= dd; st.push(q); redraw(); const bar = el.querySelector('.ink2 i'); if(bar) bar.style.width = Math.max(0, ink/260*100).toFixed(1)+'%'; if(Math.random() < .15) SFX.penBuzz(); };
+  cv.onpointerup = cv.onpointercancel = () => { drawing = false; };
+  const finish = () => { if(done) return; done = true; const b = el.querySelector('.scdone'); if(b){ b.textContent = 'Waiting…'; b.disabled = true; } gSubmitDraw(p, strokes.some(st => st.length > 1) ? compactStrokes(strokes) : []); };
+  el.querySelector('.scdone').onclick = () => { SFX.pop(); finish(); };
+  return { stop(){ done = true; }, finish };
+}
+// the chicken judges a mustache: long, wiggly, many-stroked and big = more laughs
+function funnyScore(strokes, rng){
+  if(!strokes || !strokes.length) return 0;
+  let len = 0, wig = 0, n = 0, minx = 99, maxx = -99, miny = 99, maxy = -99;
+  for(const st of strokes){ if(st.length < 2) continue; n++; let prevA = null, prevTurn = 0;
+    for(let i=1;i<st.length;i++){ const [x0,y0] = st[i-1], [x1,y1] = st[i]; len += Math.hypot(x1-x0, y1-y0); const a = Math.atan2(y1-y0, x1-x0);
+      if(prevA !== null){ let da = a - prevA; while(da > Math.PI) da -= 2*Math.PI; while(da < -Math.PI) da += 2*Math.PI; const turn = Math.sign(da); if(Math.abs(da) > .35 && turn !== prevTurn){ wig++; prevTurn = turn; } } prevA = a; }
+    for(const [x,y] of st){ minx = Math.min(minx,x); maxx = Math.max(maxx,x); miny = Math.min(miny,y); maxy = Math.max(maxy,y); } }
+  if(!n) return 0;
+  const area = (maxx-minx)*(maxy-miny);
+  return clamp(Math.round(len/22 + wig*.35 + n*.7 + area/140 + rng()*2), 1, 12);
+}
+function gduelResult(d, a){
+  if(!GD){ gduelOpen(d); }
+  for(const p in GD.arenas){ try { GD.arenas[p].stop(); } catch(e){} } clearInterval(GD.iv);
+  const game = GAMES[d.q], kind = QUADS[d.q].guard, w = a.winner, cName = S.players[d.c].name;
+  const guardWins = w === d.o;
+  let faces = '';
+  if(game.id==='stache'){
+    const onGuard = (a.draws && a.draws.c) || [], onCh = (a.draws && a.draws.o) || [];
+    faces = `<div class="faces"><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(kind, guardColor[kind])}${scribSVG(onGuard.length ? [onGuard] : [])}</svg>🐔 laughed ${a.scores[d.c]}×<small>${esc(cName)} drew this</small></div><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(S.players[d.c].av, colHex(S.players[d.c].col))}${scribSVG(onCh.length ? [onCh] : [])}</svg>🐔 laughed ${a.scores[d.o]}×<small>${esc(S.players[d.o].name)} drew this</small></div></div>`;
+  } else {
+    faces = `<div class="faces"><div>${svgIcon(kind, guardColor[kind], 80)}${esc(gScoreText(game, a.scores[d.o]))}</div><div>${avatarSVG(S.players[d.c], 80)}${esc(gScoreText(game, a.scores[d.c]))}</div></div>`;
+  }
+  const head = guardWins ? `<svg viewBox="-20 -20 40 40" width="110" height="110" style="animation:dance .8s ease-in-out infinite">${ico(kind, guardColor[kind])}${coolBits(kind)}</svg><h2>THE ${GUARD_NAME[kind].toUpperCase()} WINS!</h2><p class="sub">The guardian is now SUPER COOL 😎</p>` : `${avatarSVG(S.players[d.c], 110, 'winav')}<h2>${esc(cName)} WINS!</h2><p class="sub">The ${GUARD_NAME[kind]} lost the duel.</p>`;
+  const r = document.createElement('div'); r.className = 'result'; r.innerHTML = head + faces; $('#gduel').appendChild(r);
+}
+// the squishy makes a new face every couple of seconds
+setInterval(() => { squishFace++; if(!S || $('#game').hidden) return; S.players.forEach((pl, p) => { if(pl.av!=='squishy') return; const a = $('#card'+p+' .av'); if(a) a.outerHTML = avatarSVG(pl, 84, 'av'); if(!S.dance && pieces[p]) drawPieceBody(p, false); }); }, 2200);
 // ---------------- the action queue: every device applies the same actions in the same order ----------------
 const Q = []; let running = false; const busy = () => running || Q.length>0;
 function enqueue(a){ return new Promise(res => { Q.push({ a, res }); pump(); }); }
 async function pump(){ if(running) return; running = true; try { while(Q.length){ const { a, res } = Q.shift(); try { if(S) await apply(a); } catch(e){ console.error('apply failed', a, e); } res(); } } finally { running = false; renderAll(); if(ROLE==='host') scheduleBots(); } }
-function resetRound(){ S.players.forEach(p => { p.loc={z:'hub',dir:null,i:0}; p.keys={NW:0,NE:0,SW:0,SE:0}; p.rope=false; }); S.owner={NW:null,NE:null,SW:null,SE:null}; S.perm={NW:null,NE:null,SW:null,SE:null}; S.ask=null; S.draw=null; S.duel=null; S.dance=null; S.lastStop=null; roundStartLocal = Date.now(); }
+function resetRound(){ S.players.forEach(p => { p.loc={z:'hub',dir:null,i:0}; p.keys={NW:0,NE:0,SW:0,SE:0}; p.rope=false; }); S.owner={NW:null,NE:null,SW:null,SE:null}; S.perm={NW:null,NE:null,SW:null,SE:null}; S.gcool={NW:false,NE:false,SW:false,SE:false}; S.gscrib={NW:[],NE:[],SW:[],SE:[]}; S.ask=null; S.draw=null; S.duel=null; S.gduel=null; S.dance=null; S.lastStop=null; }
 function nextLoc(loc){ if(loc.z==='hub') return loc.dir==='R' ? { z:'rope', dir:'R', i:0 } : { z:'alley', dir:loc.dir, i:0 }; if(loc.z==='alley') return loc.i+1 >= LOOP ? { z:'hub', dir:null, i:0 } : { z:'alley', dir:loc.dir, i:loc.i+1 }; return { z:'rope', dir:'R', i:Math.min(STAR_I, loc.i+1) }; }
 
 async function apply(a){
@@ -812,10 +1059,10 @@ async function apply(a){
       [0,1].forEach(p => placePiece(p)); renderAll();
       const cv = $('#cover'); cv.hidden = false;
       for(const n of ['3','2','1','GO!']){ cv.innerHTML = `<div class="countdown">${n}</div>`; if(n==='GO!') SFX.horn(); else SFX.beep(); await wait(n==='GO!'?600:650); }
-      cv.hidden = true; roundStartLocal = Date.now(); renderClock();
+      cv.hidden = true; Music.start();
       break;
     }
-    case 'turn': { S.turn = a.p; S.lastStop = null; $('#diceTag').textContent = 'swipe!'; renderAll(); if(a.again){ SFX.ding(); fxText(HUB.x, HUB.y-150, 'ROLL AGAIN!', '#3aa655'); } break; }
+    case 'turn': { S.turn = a.p; S.lastStop = null; $('#diceTag').textContent = 'swipe!'; renderAll(); if(a.again){ SFX.ding(); fxText(HUB.x, HUB.y-150, 'ROLL AGAIN!', '#3aa655'); } if(isRoboP(a.p) && Math.random() < .7){ SFX.roboTalk(); bubble(pick(roboOf(a.p).lines), a.p, 1700); } break; }
     case 'path': { const pl = S.players[a.p]; pl.loc = { z:'hub', dir:a.dir, i:0 }; SFX.whoosh(.6); renderAll(); fxText(HUB.x, HUB.y-130, a.dir==='R' ? 'THE ROPE!' : DIRS[a.dir].name+'!', null, 44); break; }
     case 'roll': {
       const p = a.p, pl = S.players[p], foe = S.players[1-p];
@@ -833,7 +1080,7 @@ async function apply(a){
       const q = doorAt(pl.loc);
       if(stop==='hub'){ placePiece(p); SFX.ding(); fxText(HUB.x, HUB.y-130, 'The cross!', null, 44); await wait(300); }
       else if(stop==='star'){ fxText(STAR.x, STAR.y+90, 'THE STAR!', STAR2, 60); SFX.star(); await wait(500); }
-      else if(q && pl.keys[q]===0 && !locked(q)){ stop = 'door'; SFX.knock(); pulseAt(QPOS[q]); fxText(pieces[p].x, pieces[p].y-70, 'KNOCK KNOCK', INK, 44); await wait(500); }
+      else if(q && pl.keys[q]===0 && !locked(q)){ stop = S.owner[q]===null ? 'door' : 'guard'; SFX.knock(); pulseAt(QPOS[q]); fxText(pieces[p].x, pieces[p].y-70, S.owner[q]===null ? 'KNOCK KNOCK' : 'GUARDIAN!', INK, 44); await wait(500); }
       else if(sameSpot(pl.loc, foe.loc)){ stop = 'chicky'; await chicky(p); }
       S.lastStop = stop;
       break;
@@ -893,22 +1140,50 @@ async function apply(a){
       await checkRope(S.players[w]);
       break;
     }
-    case 'stache': {
-      const v = S.players[a.victim]; const robo = MODE==='bot' && a.by===1;
-      if(robo && a.strokes && a.strokes.length) await roboDrawShow(a.strokes, v);
-      S.draw = null; $('#pad').hidden = true;
-      v.scribbles = (a.strokes && a.strokes.length) ? [a.strokes] : [];
-      renderAll(); SFX.splat(); shake();
-      const card = $('#card'+a.victim); card.style.transform = 'scale(1.25) rotate(-4deg)'; await wait(500); card.style.transform = '';
-      fxText(pieces[a.victim].x, pieces[a.victim].y-70, 'SPLAT!', INK, 52); await wait(500);
-      if(robo){ SFX.roboLaugh(); bubble(pick(['BAWK HA HA HA!', 'Beep. Beautiful.', 'Frame it!']), 1, 1800); emoji('😂', 'HA HA!', 1); await wait(1200); }
+    case 'gduel_start': {
+      S.gduel = { q:a.q, c:a.c, o:a.o, seed:a.seed }; renderAll();
+      const kind = QUADS[a.q].guard; SFX.guardian(); SFX[guardSound[kind]]();
+      await toast(kind, `The ${GUARD_NAME[kind]} guardian blocks the door!`, `${GAMES[a.q].title}! ${S.players[a.o].name} plays the ${GUARD_NAME[kind]}. 1 minute!`, 2400, guardColor[kind]);
+      gduelOpen(S.gduel);
       break;
     }
-    case 'avatar': { const pl = S.players[a.p]; if(ICON[a.av]) pl.av = a.av; renderAll(); SFX.reward(); const st = $('#avStatus'); if(st) st.textContent = `${pl.name} is now ${AV_NAME[a.av]||a.av}!`; break; }
+    case 'gduel_end': {
+      const d = S.gduel; if(!d) break; const { c, o, q } = d; const w = a.winner; const kind = QUADS[q].guard; const game = GAMES[q];
+      gduelResult(d, a);
+      if(w===c) SFX.fanfare(); else { SFX.guardian(); SFX[guardSound[kind]](); }
+      await wait(3400);
+      gduelClose(); S.gduel = null;
+      if(w===c){ S.owner[q] = c; S.players[c].keys[q] = 2; S.players[o].keys[q] = 0; S.perm[q] = c; S.gcool[q] = false; }
+      else { S.perm[q] = o; S.gcool[q] = true; }
+      renderAll(); pulseAt(FLAG[q]); SFX.lockRope();
+      await toast(w===c ? 'key' : kind, w===c ? `${S.players[c].name} beat the ${GUARD_NAME[kind]}!` : `The ${GUARD_NAME[kind]} guardian wins!`, w===c ? `${QUADS[q].short} corner is ${S.players[c].name}'s for good.` : `${S.players[o].name} keeps ${QUADS[q].short} corner for good.`, 2000, QUADS[q].col);
+      if(game.id==='stache'){
+        const strokes = (a.draws && (w===c ? a.draws.c : a.draws.o)) || [];
+        if(w===c) S.gscrib[q] = strokes.length ? [strokes] : []; else S.players[c].scribbles = strokes.length ? [strokes] : [];
+        renderAll(); SFX.splat(); shake(); fxText(w===c ? QPOS[q].x : pieces[c].x, (w===c ? QPOS[q].y : pieces[c].y) - 70, 'YOU KEEP IT!', INK, 44); await wait(800);
+      } else S.draw = { ...drawSpec(w, w===c ? 'g:'+q : c, 5), next:o };
+      await checkRope(S.players[c]);
+      break;
+    }
+    case 'unlock': { const pl = S.players[a.p]; if(!pl.unlocked.includes(a.av)){ pl.unlocked.push(a.av); pl.credits = Math.max(0, pl.credits-1); } pl.av = a.av; if(isMine(a.p)){ profile.unlocked = pl.unlocked.slice(); profile.credits = pl.credits; profile.av = a.av; saveProfile(); } renderAll(); SFX.reward(); const st = $('#avStatus'); if(st) st.textContent = `${pl.name} unlocked ${AV_NAME[a.av]}!`; break; }
+    case 'stache': {
+      const vi = victimInfo(a.victim); const isG = typeof a.victim==='string'; const robo = isRoboP(a.by);
+      if(robo && a.strokes && a.strokes.length) await roboDrawShow(a.strokes, vi, a.by);
+      S.draw = null; $('#pad').hidden = true;
+      const sc = (a.strokes && a.strokes.length) ? [a.strokes] : [];
+      if(isG) S.gscrib[vi.guard] = sc; else S.players[a.victim].scribbles = sc;
+      renderAll(); SFX.splat(); shake();
+      if(!isG){ const card = $('#card'+a.victim); card.style.transform = 'scale(1.25) rotate(-4deg)'; await wait(500); card.style.transform = ''; fxText(pieces[a.victim].x, pieces[a.victim].y-70, 'SPLAT!', INK, 52); }
+      else fxText(GUARD_HOME[vi.guard].x, GUARD_HOME[vi.guard].y-70, 'SPLAT!', INK, 52);
+      await wait(500);
+      if(robo){ SFX.evilLaugh(); bubble(pick(['BAWK HA HA HA!', 'Beep. Beautiful.', 'Frame it!', 'You look FABULOUS.']), a.by, 1800); emoji('😂', 'HA HA!', a.by); await wait(1200); }
+      break;
+    }
+    case 'avatar': { const pl = S.players[a.p]; if(pl.unlocked.includes(a.av)) pl.av = a.av; renderAll(); SFX.reward(); const st = $('#avStatus'); if(st) st.textContent = `${pl.name} is now ${AV_NAME[a.av]||a.av}!`; break; }
     case 'auto': { S.players[a.p].auto = !!a.on; renderAll(); if(a.on){ SFX.beep(); fxText(HUB.x, HUB.y-150, `${S.players[a.p].name}: AI takes over`, INK, 36); } break; }
     case 'win': {
-      const p = a.p, pl = S.players[p]; S.phase = 'over'; pl.wins++; pl.stars = (pl.stars|0)+1; pl.scribbles = []; S.notes = [null,null]; S.players.forEach(x => x.auto = false); renderAll();
-      if((MODE==='local' && p===0) || (MODE!=='local' && p===ME)){ profile.stars = Math.max(profile.stars|0, pl.stars); saveProfile(); }
+      const p = a.p, pl = S.players[p]; S.phase = 'over'; pl.wins++; pl.stars = (pl.stars|0)+1; if(pl.unlocked.length < DOODLES.length) pl.credits++; pl.scribbles = []; S.notes = [null,null]; S.players.forEach(x => x.auto = false); renderAll();
+      if(isMine(p)){ profile.stars = Math.max(profile.stars|0, pl.stars); profile.credits = pl.credits; saveProfile(); }
       $('#starFace').hidden = false; SFX.kazoo(); confetti();
       const st = $('#goalStar'); tween(1600, (k) => st.setAttribute('transform', `translate(${STAR_ICON.x} ${STAR_ICON.y}) rotate(${k*720}) scale(${1+Math.sin(Math.PI*k)*.5})`)).then(()=>st.setAttribute('transform',`translate(${STAR_ICON.x} ${STAR_ICON.y})`));
       const pc = pieces[p]; const wy = pc.y; await tween(1500, (k) => { pc.rot = Math.sin(k*Math.PI*8)*25; pc.sc = 1+Math.sin(k*Math.PI*8)*.2; pc.y = wy - Math.abs(Math.sin(k*Math.PI*8))*40; setPiece(pc); }); pc.rot = 0; pc.sc = 1; pc.y = wy; setPiece(pc);
@@ -920,20 +1195,29 @@ async function apply(a){
   }
   renderAll();
 }
+const isMine = (p) => (MODE==='local' && p===0) || (MODE!=='local' && p===ME);
+const isRoboP = (p) => MODE==='bot' && p===1;
+const roboOf = (p) => ROBOS[S.players[p].robo|0] || ROBOS[0];
 function drawSpec(by, victim, left){ const bonus = clamp(Math.round(left||0), 0, 21); return { by, victim, bonus, secs: Math.round(DRAW_BASE_MS/1000) + bonus, ink: 70 + bonus*6 }; }
 async function checkRope(pl){
   if(hasAll(pl) && !pl.rope){ pl.rope = true; renderFlags(); SFX.unlockRope(); fxText(ROPE_LOCK.x, ROPE_LOCK.y, 'ROPE UNLOCKED!', STAR2, 48); await wait(700); }
   else if(QUAD_LIST.every(locked) && !S.players.some(hasAll) && !S.players.every(x => x.rope)){ S.players.forEach(x => x.rope = true); renderFlags(); SFX.unlockRope(); shake(); await toast('star', 'SHOWDOWN!', 'All four corners are settled for good. The rope is open for everyone. Race!', 2000, STAR_C); }
 }
-// the robo draws in public, with commentary
-async function roboDrawShow(strokes, victim){
-  const el = $('#pad'); el.dataset.for = 'robo'; el.innerHTML = `<h3>${esc(S.players[1].name)} is drawing on ${esc(victim.name)}…</h3><div class="roboSays" id="roboSays">${esc(pick(ROBO_LINES))}</div><canvas id="padCv" width="300" height="300"></canvas>`; el.hidden = false;
-  padCtx = $('#padCv').getContext('2d'); padStrokes = []; await new Promise(res => padGhost(victim, res)); padRedraw();
-  const lines = ROBO_LINES.slice().sort(() => Math.random()-.5);
-  let li = 0; const say = () => { const s = $('#roboSays'); if(s){ s.textContent = lines[li++ % lines.length]; s.style.animation = 'none'; void s.offsetWidth; s.style.animation = ''; } SFX[pick(['bawk','roboLaugh','beep'])](); emoji(pick(['😂','🐔','🤖']), pick(['heh heh', 'bawk!', 'beep']), 1); };
-  say();
-  for(const st of strokes){ padStrokes.push([]); for(let i=0;i<st.length;i++){ padStrokes[padStrokes.length-1].push(st[i]); if(i%2===0){ padRedraw(); SFX.tick(); await wait(70); } } if(Math.random()<.7) say(); await wait(300); }
-  padRedraw(); await wait(600);
+// the robo draws in public: its face bounces in the corner, it narrates, the pen jitters, it giggles
+async function roboDrawShow(strokes, victim, by){
+  const r = roboOf(by); const el = $('#pad'); el.dataset.for = 'robo';
+  el.innerHTML = `<div class="row">${svgIcon(r.av, colHex(S.players[by].col), 64).replace('<svg ', '<svg id="roboFace" ')}<h3>${esc(r.name)} is drawing on ${esc(victim.name)}!</h3></div><div class="roboSays" id="roboSays"></div><canvas id="padCv" width="300" height="300"></canvas>`; el.hidden = false;
+  padCtx = $('#padCv').getContext('2d'); padStrokes = []; await new Promise(res => { padGhost(victim, res); setTimeout(res, 800); }); padRedraw();
+  const lines = r.draw.concat(ROBO_LINES).sort(() => Math.random()-.5); let li = 0;
+  const face = $('#roboFace'); let bob = 0;
+  const say = () => { const s2 = $('#roboSays'); if(s2){ s2.textContent = lines[li++ % lines.length]; s2.style.animation = 'none'; void s2.offsetWidth; s2.style.animation = ''; } SFX.roboTalk(); };
+  say(); SFX.evilLaugh(); await wait(500);
+  for(const st of strokes){ padStrokes.push([]);
+    for(let i=0;i<st.length;i++){ const j = (Math.random()-.5)*.5; padStrokes[padStrokes.length-1].push([st[i][0]+j, st[i][1]+j]);
+      if(i%2===0){ padRedraw(); SFX.penBuzz(); bob++; if(face) face.style.transform = `rotate(${(bob%2?-12:12)}deg) translateY(${bob%2?-4:0}px)`; await wait(55); } }
+    if(Math.random() < .8) say(); await wait(260); }
+  padStrokes = strokes.map(st => st.slice()); padRedraw(); if(face) face.style.transform = 'scale(1.3)';
+  const s3 = $('#roboSays'); if(s3) s3.textContent = '✨ Signed: ' + r.name; SFX.roboLaugh(); await wait(900);
 }
 async function chicky(p){
   const fp = 1-p, foe = S.players[fp];
@@ -1003,7 +1287,9 @@ function onPathTap(dir){ if(!S || S.phase!=='play' || busy()) return; const p = 
 function onAnswerTap(i){ if(!S || !S.ask || S.ask.answered || busy()) return; const p = S.ask.p; if(!(MODE==='local' || p===ME) || S.players[p].auto) return; if(ROLE==='host') hostAnswer(p, i); else { net && net.send({ t:'req', a:'answer', i }); $('#ask').querySelectorAll('.opts button').forEach(b => b.disabled = true); } }
 function submitStache(strokes){ if(!S || !S.draw) return; if(ROLE==='host') hostStache(strokes); else net && net.send({ t:'req', a:'stache', strokes }); $('#pad').hidden = true; }
 function submitNote(w, txt){ if(!S) return; if(ROLE==='host') hostDo({ k:'note', p:w, text:txt }); else net && net.send({ t:'req', a:'note', text:txt }); }
-function submitAvatar(p, av){ if(!S || !ICON[av]) return; if((MODE==='local' && p===0) || (MODE!=='local' && p===ME)){ profile.av = av; saveProfile(); } if(ROLE==='host') hostDo({ k:'avatar', p, av }); else net && net.send({ t:'req', a:'avatar', av }); }
+function submitAvatar(p, av){ if(!S || !S.players[p].unlocked.includes(av)) return; if(isMine(p)){ profile.av = av; saveProfile(); } if(ROLE==='host') hostDo({ k:'avatar', p, av }); else net && net.send({ t:'req', a:'avatar', av }); }
+function submitUnlock(p, av){ if(!S || !DOODLES.includes(av) || S.players[p].unlocked.includes(av) || S.players[p].credits <= 0) return; if(ROLE==='host') hostUnlock(p, av); else net && net.send({ t:'req', a:'unlock', av }); }
+async function hostUnlock(p, av){ const pl = S.players[p]; if(!DOODLES.includes(av) || pl.unlocked.includes(av) || pl.credits <= 0) return; await hostDo({ k:'unlock', p, av }); }
 function toggleAuto(){ if(!S || S.phase!=='play') return; const p = MODE==='local' ? S.turn : ME; const on = !S.players[p].auto; SFX.pop(); if(ROLE==='host') hostAuto(p, on); else net && net.send({ t:'req', a:'auto', on }); }
 function rebuildTaunts(){ const t = $('#taunts'); t.className = 'taunts'; t.innerHTML = TAUNTS.map(x => `<button class="taunt" data-e="${x.e}" aria-label="${x.t}">${x.e}<small>${x.t}</small></button>`).join(''); t.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(MODE==='local' ? (S?S.turn:0) : ME, b.dataset.e)); }
 function tauntTap(p, e){ SFX.unlock(); showTaunt(p, e); if(ROLE==='host') hostTaunt(p, e); else if(net) net.send({ t:'taunt', e }); }
@@ -1017,19 +1303,19 @@ function showWin(p){
   const pl = S.players[p], cv = $('#cover'); cv.hidden = false;
   const tally = `${esc(S.players[0].name)} ${S.players[0].wins} · ${S.players[1].wins} ${esc(S.players[1].name)}`;
   const writers = MODE==='local' ? [0,1] : [ME];
-  const canPick = (MODE==='local') ? true : p===ME; const open = unlockedFor(pl.stars);
-  const newSet = pl.stars>=1 && pl.stars<=SETS.length-1 ? SETS[pl.stars] : null;
-  const avPick = canPick ? `<div class="field"><label>${newSet ? `New set unlocked: ${SET_NAME[pl.stars]}!` : 'Pick your doodle'}</label><div class="picker">${open.map(a => `<button class="pick ${pl.av===a?'on':''}" data-av="${a}" aria-label="${AV_NAME[a]}">${svgIcon(a, colHex(pl.col), 48)}</button>`).join('')}</div><p class="status" id="avStatus"></p></div>` : '';
+  const canPick = (MODE==='local') ? !(MODE==='bot' && p===1) : p===ME;
+  const locked = DOODLES.filter(a => !pl.unlocked.includes(a));
+  const avPick = canPick ? `<div class="field"><label>${pl.credits > 0 && locked.length ? `${esc(pl.name)}: pick ONE doodle to unlock!` : 'Pick your doodle'}</label><div class="picker">${(pl.credits > 0 ? locked : pl.unlocked).map(a => `<button class="pick ${pl.av===a?'on':''}" data-av="${a}" data-mode="${pl.credits > 0 && locked.length ? 'unlock' : 'pick'}" aria-label="${AV_NAME[a]}">${svgIcon(a, colHex(pl.col), 48)}</button>`).join('')}</div><p class="status" id="avStatus"></p></div>` : '';
   const notes = writers.map(w => `<div class="notewrite"><label for="noteIn${w}" class="tiny">${esc(S.players[w].name)}, leave a note for next round:</label><div class="row"><input class="txt" id="noteIn${w}" maxlength="60" placeholder="you're going DOWN 😜"><button class="btn" id="noteBtn${w}">Send</button></div><p class="status" id="noteStatus${w}"></p></div>`).join('');
   cv.innerHTML = `${avatarSVG(pl, 150, 'winav')}<h2>${esc(pl.name)} WINS!</h2><div class="tally">${tally}</div>${avPick}<div class="stack"><button class="btn big" id="btnAgain">PLAY AGAIN</button></div>${notes}<button class="btn ghost" id="btnMenu2">Menu</button>`;
   $('#btnAgain').onclick = () => { SFX.pop(); if(ROLE==='host') hostRematch(); else { net && net.send({ t:'req', a:'rematch' }); $('#btnAgain').textContent = 'Asking your friend…'; } };
   $('#btnMenu2').onclick = () => goMenu();
-  cv.querySelectorAll('.pick').forEach(b => b.onclick = () => { SFX.tick(); submitAvatar(p, b.dataset.av); cv.querySelectorAll('.pick').forEach(x => x.classList.toggle('on', x===b)); cv.querySelector('.winav').outerHTML = avatarSVG({ ...pl, av:b.dataset.av }, 150, 'winav'); });
+  cv.querySelectorAll('.pick').forEach(b => b.onclick = () => { SFX.tick(); const av = b.dataset.av; if(b.dataset.mode==='unlock'){ submitUnlock(p, av); cv.querySelectorAll('.pick').forEach(x => { x.disabled = true; x.classList.toggle('on', x===b); }); } else { submitAvatar(p, av); cv.querySelectorAll('.pick').forEach(x => x.classList.toggle('on', x===b)); } cv.querySelector('.winav').outerHTML = avatarSVG({ ...pl, av }, 150, 'winav'); });
   writers.forEach(w => { $('#noteBtn'+w).onclick = () => { const txt = ($('#noteIn'+w).value||'').trim().slice(0,60); SFX.pop(); submitNote(w, txt); }; $('#noteIn'+w).addEventListener('keydown', e => { if(e.key==='Enter') $('#noteBtn'+w).click(); }); });
 }
 
 // ---------------- host logic: one device decides; every random number travels inside the action ----------------
-let lock = false, botTimer = null, askHostTimer = null, drawHostTimer = null, timeUp = false;
+let lock = false, botTimer = null, askHostTimer = null, drawHostTimer = null;
 const autoUntil = [0,0];
 function broadcast(a){ if(MODE==='net' && net) net.send({ t:'act', a }); }
 async function hostDo(a){ broadcast(a); await enqueue(a); }
@@ -1039,7 +1325,6 @@ const botProfile = (p) => (MODE==='bot' && p===1) ? BOT_LEVELS[BOT_LEVEL] : BOT_
 async function hostPath(p, dir){ if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel) return; const pl = S.players[p]; if(pl.loc.z!=='hub' || (!DIRS[dir] && dir!=='R') || (dir==='R' && !pl.rope)) return; lock = true; try { await hostDo({ k:'path', p, dir }); } finally { lock = false; } scheduleBots(); }
 async function hostRoll(p, sw){
   if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel) return; const pl = S.players[p]; if(pl.loc.z==='hub' && !pl.loc.dir) return;
-  if(timeUp){ await hostTimeUp(); return; }
   lock = true;
   try {
     const onRope = pl.loc.z==='rope' || (pl.loc.z==='hub' && pl.loc.dir==='R'); const v = 1+rnd(onRope ? 3 : 6);
@@ -1048,7 +1333,8 @@ async function hostRoll(p, sw){
     if(!S || S.phase!=='play') return;
     const stop = S.lastStop;
     if(stop==='star'){ await hostAsk(p, 'star', null, 3); return; }
-    if(stop==='door'){ const q = doorAt(pl.loc); await hostAsk(p, S.owner[q]===null ? 'own' : 'steal', q, S.owner[q]===null ? 1 : 2); return; }
+    if(stop==='door'){ const q = doorAt(pl.loc); await hostAsk(p, 'own', q, 1); return; }
+    if(stop==='guard'){ const q = doorAt(pl.loc); lock = false; await hostGuardDuel(p, q); return; }
     const again = v===6 && !stop && !onRope; await nextTurn(again ? p : 1-p, again);
   } finally { lock = false; }
 }
@@ -1057,7 +1343,7 @@ async function hostAnswer(p, i){
   if(lock || !S || !S.ask || S.ask.p!==p || S.ask.answered || busy()) return; lock = true; clearTimeout(askHostTimer);
   try {
     const ask = S.ask; const elapsed = (performance.now() - (ask.hostT0 || ask.t0)) / SPEED; const left = clamp(Math.floor((ASK_MS - elapsed)/1000), 0, 21);
-    const ok = i>=0 && i===ask.q.ans && elapsed <= ASK_MS + 600; const duel = ok && ask.kind==='steal' && allOwnedOnce() && !locked(ask.quad);
+    const ok = i>=0 && i===ask.q.ans && elapsed <= ASK_MS + 600; const duel = false;
     await hostDo({ k:'answer', p, i, ok, left, duel });
     if(!S || S.phase!=='play') return;
     if(ask.kind==='star'){ if(ok){ await hostDo({ k:'win', p }); return; } await nextTurn(1-p, false); return; }
@@ -1095,22 +1381,53 @@ async function finishDuel(w){
   await nextTurn(1-ch, false);
 }
 async function hostStache(strokes){ if(lock || !S || !S.draw || busy()) return; lock = true; clearTimeout(drawHostTimer); try { await hostStacheInner(strokes); } finally { lock = false; } }
-async function hostStacheInner(strokes){ const d = S.draw; if(!d) return; const clean = Array.isArray(strokes) ? compactStrokes(strokes.filter(s => Array.isArray(s)).map(s => s.filter(pt => Array.isArray(pt) && pt.length===2 && isFinite(pt[0]) && isFinite(pt[1])).map(pt => [+(+pt[0]).toFixed(1), +(+pt[1]).toFixed(1)]))) : [defaultStache()]; await hostDo({ k:'stache', victim:d.victim, by:d.by, strokes:clean }); if(!S || S.phase!=='play') return; await nextTurn(1-d.by, false); }
-async function nextTurn(np, again){ if(!S || S.phase!=='play') return; if(timeUp){ await hostTimeUp(); return; } await hostDo({ k:'turn', p:np, again }); scheduleBots(); }
-async function hostRematch(){ if(!S || S.phase!=='over' || busy() || lock) return; timeUp = false; const first = 1 - (S.players[0].wins + S.players[1].wins) % 2; await hostDo({ k:'rematch', first }); await nextTurn(first, false); }
+async function hostStacheInner(strokes){ const d = S.draw; if(!d) return; const clean = Array.isArray(strokes) ? compactStrokes(strokes.filter(s => Array.isArray(s)).map(s => s.filter(pt => Array.isArray(pt) && pt.length===2 && isFinite(pt[0]) && isFinite(pt[1])).map(pt => [+(+pt[0]).toFixed(1), +(+pt[1]).toFixed(1)]))) : [defaultStache()]; await hostDo({ k:'stache', victim:d.victim, by:d.by, strokes:clean }); if(!S || S.phase!=='play') return; await nextTurn(d.next!==undefined ? d.next : 1-d.by, false); }
+async function nextTurn(np, again){ if(!S || S.phase!=='play') return; await hostDo({ k:'turn', p:np, again }); scheduleBots(); }
+async function hostRematch(){ if(!S || S.phase!=='over' || busy() || lock) return; const first = 1 - (S.players[0].wins + S.players[1].wins) % 2; await hostDo({ k:'rematch', first }); await nextTurn(first, false); }
 async function hostAuto(p, on){ if(!S || S.phase!=='play') return; autoUntil[p] = on ? Date.now() + AUTO_MS : 0; await hostDo({ k:'auto', p, on }); scheduleBots(); }
-// the 6-minute clock: when it runs out, the next quiet moment starts the final duel
-async function hostTimeUp(){
-  if(!S || S.phase!=='play') return; timeUp = true;
-  if(lock || busy() || S.ask || S.draw || S.duel || S.dance){ setTimeout(hostTimeUp, 300); return; }
+// ---------------- guardian duels (host side) ----------------
+let gHost = null;
+async function hostGuardDuel(c, q){
+  const o = S.owner[q]; gHost = { prog:{}, draws:{}, done:false, deadline:null, sim:null };
+  await hostDo({ k:'gduel_start', q, c, o, seed: 1 + rnd(2**30) });
+  if(!S || !S.gduel) return;
+  gHost.deadline = setTimeout(() => hostGduelFinish(), (GDUEL_MS + 1500) * SPEED);
+  gHost.botT0 = performance.now(); gHost.sim = setInterval(gSimBots, 250);
+}
+function gSimBots(){
+  if(!S || !S.gduel || !gHost || gHost.done) return; const d = S.gduel; const game = GAMES[d.q];
+  for(const p of [d.c, d.o]){ if(!isBot(p)) continue; const lvl = (MODE==='bot' && p===1) ? BOT_LEVEL : 'smart'; const r = BOT_DUEL[lvl];
+    if(game.id==='stache'){ if(!gHost.draws[p] && performance.now() - gHost.botT0 > (7000 + (p*997 % 9000)) * SPEED){ const kind = p===d.c ? QUADS[d.q].guard : S.players[d.c].av; hostGdraw(p, botStache(kind, lvl==='genius' ? 2 : 1)); } continue; }
+    const step = game.id==='bones' ? r.bones*.25 : game.id==='duck' ? r.duck*.25 : r.laser*250;
+    const v = (gHost.prog[p] || 0) + step * (.6 + Math.random()*.8);
+    hostGprog(p, game.id==='laser' ? Math.round(v) : v); }
+}
+function hostGprog(p, v){
+  if(!S || !S.gduel || !gHost || gHost.done) return; const d = S.gduel; if(p!==d.c && p!==d.o) return; const game = GAMES[d.q];
+  v = clamp(+v || 0, 0, game.target || 1e9); if(v <= (gHost.prog[p] || 0)) return; gHost.prog[p] = v;
+  if(MODE==='net' && net) net.send({ t:'gprog', p, v }); gUpdate(p, v);
+  if(game.target && v >= game.target) hostGduelFinish(p);
+}
+function hostGdraw(p, strokes){
+  if(!S || !S.gduel || !gHost || gHost.done || gHost.draws[p]) return; const d = S.gduel; if(p!==d.c && p!==d.o) return;
+  const clean = Array.isArray(strokes) && strokes.length ? compactStrokes(strokes.filter(st => Array.isArray(st)).map(st => st.filter(q => Array.isArray(q) && q.length===2 && isFinite(q[0]) && isFinite(q[1])).map(q => [+(+q[0]).toFixed(1), +(+q[1]).toFixed(1)])).filter(st => st.length)) : [];
+  gHost.draws[p] = clean; if(MODE==='net' && net) net.send({ t:'gdone', p }); gUpdateDone(p);
+  if(gHost.draws[d.c] && gHost.draws[d.o]) hostGduelFinish();
+}
+async function hostGduelFinish(winner){
+  if(!gHost || gHost.done || !S || !S.gduel) return; gHost.done = true; clearTimeout(gHost.deadline); clearInterval(gHost.sim);
+  while(lock || busy()) await new Promise(r => setTimeout(r, 50));
   lock = true;
   try {
-    const k = [keyTotal(S.players[0]), keyTotal(S.players[1])]; const lead = k[0]===k[1] ? null : (k[0]>k[1] ? 0 : 1);
-    const n = lead===null ? 0 : clamp(Math.round(2 * Math.abs(k[0]-k[1]) / Math.max(1, k[0]+k[1])), 0, 2);
-    const scores = [0,0]; if(lead!==null) scores[lead] = n;
-    duelAns = [null,null];
-    await hostDo({ k:'duel_start', kind:'final', q:null, challenger:0, defender:1, combos:Array.from({length:5}, randCombo), rounds:5, scores, adv: n ? { p:lead, n } : null });
-  } finally { lock = false; }
+    const d = S.gduel; const game = GAMES[d.q]; const scores = [0,0]; let draws = null;
+    if(game.id==='stache'){ const rng = Math.random; scores[d.c] = funnyScore(gHost.draws[d.c], rng); scores[d.o] = funnyScore(gHost.draws[d.o], rng); winner = scores[d.c] > scores[d.o] ? d.c : scores[d.o] > scores[d.c] ? d.o : pick([d.c, d.o]); draws = { c:gHost.draws[d.c] || [], o:gHost.draws[d.o] || [] }; }
+    else { scores[d.c] = gHost.prog[d.c] || 0; scores[d.o] = gHost.prog[d.o] || 0; if(winner===undefined) winner = scores[d.c] > scores[d.o] ? d.c : d.o; }
+    const c = d.c;
+    await hostDo({ k:'gduel_end', winner, scores, draws });
+    if(!S || S.phase!=='play') return;
+    if(S.draw){ armDrawTimer(); return; }
+    await nextTurn(1-c, false);
+  } finally { lock = false; gHost = null; }
 }
 // bots: the robo-chicken and any player on autopilot
 function scheduleBots(){ clearTimeout(botTimer); if(!S || ROLE!=='host') return; const any = [0,1].some(isBot); if(!any) return; botTimer = setTimeout(botStep, 1100*SPEED); }
@@ -1118,10 +1435,11 @@ async function botStep(){
   if(!S || S.phase!=='play' || ROLE!=='host') return;
   for(const p of [0,1]){ if(S.players[p].auto && !(MODE==='bot' && p===1) && Date.now() > autoUntil[p]){ await hostAuto(p, false); return; } }
   if(busy() || lock){ scheduleBots(); return; }
+  if(S.gduel) return;
   for(const p of [0,1]){
     if(!isBot(p)) continue; const prof = botProfile(p), me = S.players[p];
     if(S.ask && S.ask.p===p && !S.ask.answered){ const i = Math.random()<prof.math ? S.ask.q.ans : pick(S.ask.q.opts.map((_,j)=>j).filter(j=>j!==S.ask.q.ans)); await new Promise(r => setTimeout(r, (1500+rnd(3500))*SPEED)); await hostAnswer(p, i); return; }
-    if(S.draw && S.draw.by===p){ await hostStache(botStache()); return; }
+    if(S.draw && S.draw.by===p){ await hostStache(botStache(victimInfo(S.draw.victim).av)); return; }
     if(S.duel){ const d = S.duel; if(d.phase==='input' && !duelAns[p] && !d.done[p]){ const combo = d.combos[d.round]; const seq = Math.random()<prof.duel ? combo.slice() : combo.map(e => Math.random()<.6 ? e : pick(TAUNTS).e); d.done[p] = true; renderDuel(); setTimeout(() => hostDuelAnswer(p, d.round, seq, 1200+rnd(1800)), (1200+rnd(1800))*SPEED); } continue; }
     if(S.turn!==p || S.dance) continue;
     if(me.loc.z==='hub' && !me.loc.dir){ let dir = 'W'; if(me.rope) dir = 'R'; else { const score = (d) => ALLEY_QUADS[d].filter(q => me.keys[q]===0 && !locked(q)).length + Math.random()*.5; dir = Object.keys(DIRS).sort((a,b) => score(b)-score(a))[0]; } await hostPath(p, dir); return; }
@@ -1130,8 +1448,8 @@ async function botStep(){
 }
 
 // ---------------- game starters ----------------
-async function startLocal(p0, p1){ MODE='local'; ROLE='host'; ME=0; netClose(); timeUp = false; S = freshState(p0, p1); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
-async function startBot(level){ MODE='bot'; ROLE='host'; ME=0; BOT_LEVEL = BOT_LEVELS[level] ? level : 'dumb'; netClose(); timeUp = false; const robo = pick(ROBOS); S = freshState(profile, { name:robo.name, av:robo.av, col:pick(COLORS.filter(c => c.id!==profile.col)).id }); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
+async function startLocal(p0, p1){ MODE='local'; ROLE='host'; ME=0; netClose(); S = freshState(p0, p1); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
+async function startBot(level){ MODE='bot'; ROLE='host'; ME=0; BOT_LEVEL = BOT_LEVELS[level] ? level : 'dumb'; netClose(); const ri = rnd(ROBOS.length); const robo = ROBOS[ri]; S = freshState(profile, { name:robo.name, av:robo.av, col:pick(COLORS.filter(c => c.id!==profile.col)).id, robo:ri }); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
 
 // ---------------- networking: password rooms (PeerJS on a website; the Claude room inside the viewer) ----------------
 let net = null;
@@ -1139,8 +1457,8 @@ function netClose(){ if(net){ try{ net.close(); }catch(e){} net = null; } }
 function roomStatus(msg, err){ const st = $('#roomStatus'); st.textContent = msg; st.classList.toggle('err', !!err); }
 function netEnter(pw){
   if(!ROOMS.includes(pw)){ roomStatus('Room passwords are enso1 to enso5', true); return; }
-  netClose(); MODE='net'; S = null; timeUp = false; roomStatus('Knocking on room ' + pw + '…');
-  const hello = () => net && net.send({ t:'hello', p:{ name:profile.name, av:profile.av, col:profile.col, stars:profile.stars|0 } });
+  netClose(); MODE='net'; S = null; roomStatus('Knocking on room ' + pw + '…');
+  const hello = () => net && net.send({ t:'hello', p:{ name:profile.name, av:profile.av, col:profile.col, stars:profile.stars|0, unlocked:profile.unlocked, credits:profile.credits|0 } });
   openTransport(pw, {
     onHost(){ ROLE='host'; ME=0; roomStatus(`You opened room ${pw}. Waiting for a friend…`); },
     onGuest(){ ROLE='guest'; ME=1; roomStatus('Found the room! Joining…'); hello(); let n = 0; const iv = setInterval(() => { if(S || !net || n++>20){ clearInterval(iv); return; } hello(); }, 2000*Math.max(SPEED,.1)); },
@@ -1153,8 +1471,10 @@ function netEnter(pw){
 function onNetLost(){ if(!S || S.phase==='lobby'){ roomStatus('Connection closed. Try again.', true); return; } const cv = $('#cover'); cv.hidden = false; cv.innerHTML = `<h2>Lost your friend!</h2><p class="sub">Check the wifi, then enter the room again.</p><button class="btn" id="btnMenu3">Menu</button>`; $('#btnMenu3').onclick = () => goMenu(); }
 function hostOnMessage(m){
   if(!m || typeof m!=='object') return;
-  if(m.t==='hello' && m.p && typeof m.p==='object'){ if(S) return; const col = (m.p.col===profile.col) ? COLORS[(COLORS.findIndex(c=>c.id===profile.col)+1)%COLORS.length].id : m.p.col; S = freshState(profile, { name:m.p.name, av:m.p.av, col, stars:clamp(m.p.stars|0, 0, SETS.length) }); net.send({ t:'sync', s:S }); startGameScreen(); hostDo({ k:'start', first:0 }).then(() => nextTurn(0, false)); }
-  else if(m.t==='req'){ whenIdle().then(() => { if(!S) return; if(m.a==='roll') hostRoll(1, m.sw); else if(m.a==='path') hostPath(1, String(m.dir)); else if(m.a==='answer') hostAnswer(1, (+m.i|0)); else if(m.a==='stache') hostStache(m.strokes); else if(m.a==='duel') hostDuelAnswer(1, +m.round|0, m.seq, +m.ms|0); else if(m.a==='note') hostDo({ k:'note', p:1, text:String(m.text||'').slice(0,60) }); else if(m.a==='avatar'){ const av = String(m.av); if(unlockedFor(S.players[1].stars).includes(av)) hostDo({ k:'avatar', p:1, av }); } else if(m.a==='auto') hostAuto(1, !!m.on); else if(m.a==='rematch') hostRematch(); }); }
+  if(m.t==='hello' && m.p && typeof m.p==='object'){ if(S) return; const col = (m.p.col===profile.col) ? COLORS[(COLORS.findIndex(c=>c.id===profile.col)+1)%COLORS.length].id : m.p.col; S = freshState(profile, { name:m.p.name, av:m.p.av, col, stars:clamp(m.p.stars|0, 0, 999), unlocked:m.p.unlocked, credits:m.p.credits }); net.send({ t:'sync', s:S }); startGameScreen(); hostDo({ k:'start', first:0 }).then(() => nextTurn(0, false)); }
+  else if(m.t==='req' && m.a==='gprog'){ hostGprog(1, m.v); }
+  else if(m.t==='req' && m.a==='gdraw'){ hostGdraw(1, m.strokes); }
+  else if(m.t==='req'){ whenIdle().then(() => { if(!S) return; if(m.a==='roll') hostRoll(1, m.sw); else if(m.a==='path') hostPath(1, String(m.dir)); else if(m.a==='answer') hostAnswer(1, (+m.i|0)); else if(m.a==='stache') hostStache(m.strokes); else if(m.a==='duel') hostDuelAnswer(1, +m.round|0, m.seq, +m.ms|0); else if(m.a==='note') hostDo({ k:'note', p:1, text:String(m.text||'').slice(0,60) }); else if(m.a==='avatar'){ const av = String(m.av); if(S.players[1].unlocked.includes(av)) hostDo({ k:'avatar', p:1, av }); } else if(m.a==='unlock') hostUnlock(1, String(m.av)); else if(m.a==='auto') hostAuto(1, !!m.on); else if(m.a==='rematch') hostRematch(); }); }
   else if(m.t==='taunt'){ showTaunt(1, String(m.e)); hostTaunt(1, String(m.e)); }
 }
 function guestOnMessage(m){
@@ -1163,6 +1483,8 @@ function guestOnMessage(m){
   else if(m.t==='act' && m.a && typeof m.a==='object' && S){ enqueue(m.a); }
   else if(m.t==='taunt'){ showTaunt(0, String(m.e)); }
   else if(m.t==='laugh'){ showLaugh(); }
+  else if(m.t==='gprog'){ gUpdate(+m.p|0, +m.v||0); }
+  else if(m.t==='gdone'){ gUpdateDone(+m.p|0); }
   else if(m.t==='full'){ roomStatus('That room already has two players. Try another password.', true); netClose(); }
 }
 function openTransport(pw, cb){
@@ -1199,7 +1521,7 @@ async function openRoomTransport(pw, cb){
   if(role==='host') cb.onHost(); else cb.onGuest();
 }
 
-window.__sr = { get S(){ return S; }, hostRoll, hostPath, hostAnswer, hostStache, hostRematch, hostAuto, hostTimeUp, startLocal, startBot, busy, set speed(v){ SPEED = v; }, get mode(){ return MODE; }, netEnter, get net(){ return net; }, get lock(){ return lock; }, makeQ, hasAll, get profile(){ return profile; }, set timeUp(v){ timeUp = v; } };
+window.__sr = { get S(){ return S; }, hostRoll, hostPath, hostAnswer, hostStache, hostRematch, hostAuto, startLocal, hostGprog, hostGdraw, hostGuardDuel, startBot, busy, set speed(v){ SPEED = v; }, get mode(){ return MODE; }, netEnter, get net(){ return net; }, get lock(){ return lock; }, makeQ, hasAll, get profile(){ return profile; }, get role(){ return ROLE; } };
 show('scrTitle');
 })();
 

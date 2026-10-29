@@ -18,6 +18,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch the 5 CC0 background music tracks
+        run: |
+          command -v ffmpeg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          mkdir -p music
+          get() { curl -fsSL --retry 3 "$1" -o "/tmp/$2.src" && ffmpeg -nostdin -loglevel error -y -i "/tmp/$2.src" -ac 1 -b:a 80k "music/$2.mp3" || echo "could not fetch $2"; }
+          get "https://opengameart.org/sites/default/files/Heavenly%20Loop_0.ogg" heavenly-loop
+          get "https://opengameart.org/sites/default/files/001_Synthwave_4k_0.mp3" calm-ambient-1
+          get "https://opengameart.org/sites/default/files/caller_0.mp3" caller
+          get "https://opengameart.org/sites/default/files/monoliths.mp3" monoliths
+          get "https://opengameart.org/sites/default/files/booya-b.mp3" booya
+          ls -la music
       - uses: actions/configure-pages@v5
         with:
           enablement: true
