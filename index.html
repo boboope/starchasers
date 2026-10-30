@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="StarChasers">
-<title>StarChasers</title>
+<meta name="apple-mobile-web-app-title" content="QuadRun">
+<title>QuadRun</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Patrick+Hand&display=swap">
 <style>
@@ -80,7 +80,8 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .card .av{width:84px;height:84px;flex:0 0 auto;overflow:visible}
 .card .who{display:flex;flex-direction:column;min-width:0;gap:3px;flex:1}
 .card .nm{font-family:var(--f-title);color:var(--ink);font-size:17px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card .keys{display:flex;gap:3px;align-items:center}
+.card .keys{display:grid;grid-template-columns:repeat(2,22px);gap:1px 4px;align-items:center}
+.card.p1 .keys{direction:rtl}
 .card .keys svg{width:22px;height:22px;overflow:visible}
 .card .keys .k{opacity:.22}
 .card .keys .k.has{opacity:1}
@@ -94,14 +95,12 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .bannerRow{display:grid;grid-template-columns:36px 1fr 36px 36px;gap:6px;align-items:center}
 .banner{text-align:center;font-family:var(--f-title);color:var(--ink);font-size:18px;min-height:30px;line-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:14px}
 .banner.me{color:#3a2a00;background:var(--star);transform:rotate(-.5deg)}
-.statusRow{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;min-height:26px}
-.music{display:flex;gap:4px}
 .musicbtn.off{opacity:.5;position:relative}
 .musicbtn.off::after{content:"";position:absolute;left:18%;right:18%;top:50%;height:3px;background:var(--bad);transform:rotate(-40deg);border-radius:2px}
 .songtag{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:9;background:#fff;border:2px solid var(--ink3);border-radius:12px;padding:2px 10px;font-size:13px;color:var(--muted);white-space:nowrap;pointer-events:none}
-.aibtn{font-family:var(--f-title);font-size:14px;color:var(--ink);background:#fff;border:2px dashed var(--ink3);border-radius:12px;padding:0 10px;line-height:22px;white-space:nowrap}
+.aibtn{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:8;font-family:var(--f-title);font-size:14px;color:var(--ink);background:#fff;border:2px dashed var(--ink3);border-radius:12px;padding:0 10px;line-height:22px;white-space:nowrap}
 .aibtn.on{background:var(--ink);color:#fff;border-style:solid}
-.notes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-width:0;overflow:hidden}
+.notes{position:absolute;left:4px;right:4px;top:2px;z-index:4;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-width:0;overflow:hidden;pointer-events:none}
 .sticky{background:var(--note);padding:3px 10px;font-size:14px;transform:rotate(-1.5deg);box-shadow:2px 2px 0 rgba(0,0,0,.12);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sticky:nth-child(2){transform:rotate(1.2deg)}
 .sticky b{font-family:var(--f-title);font-weight:400;color:var(--ink)}
@@ -109,14 +108,28 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 #boardwrap.shake{animation:shake .4s}
 @keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,2px)}80%{transform:translate(4px,-2px)}}
 #board{height:100%;max-height:100%;max-width:100%;aspect-ratio:900/1112;display:block;overflow:visible}
-.controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:112px}
+.controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:108px;position:relative}
+#leftCtl{justify-self:end;display:flex;justify-content:flex-end}
+#rightCtl{justify-self:start;display:flex}
 .roads{display:grid;grid-template-columns:repeat(3,38px);grid-template-rows:repeat(3,38px);gap:3px;justify-self:end}
 .roads button{width:38px;height:38px;border-radius:10px;background:#fff;border:2px solid var(--ink3);font-size:20px;display:grid;place-items:center;color:var(--ink)}
 .roads button.on{border-color:var(--ink);background:var(--star);animation:bob .9s ease-in-out infinite}
 .roads button.rope{border-color:var(--star2);background:#fff8dc;animation:bob .9s ease-in-out infinite}
 .roads button:disabled{opacity:.35;animation:none}
-.roads .lab{grid-column:1/4;text-align:center;font-family:var(--f-title);font-size:13px;color:var(--ink);line-height:1;align-self:end}
-.keysbox{justify-self:end;font-family:var(--f-title);color:var(--ink);font-size:14px;text-align:right;line-height:1.2;max-width:130px}
+.roads button{position:relative}
+.roads .dots{position:absolute;bottom:2px;left:0;right:0;display:flex;justify-content:center;gap:3px}
+.roads .dots i{width:8px;height:8px;border-radius:50%;border:1px solid var(--ink)}
+.keysbox{font-family:var(--f-title);color:var(--ink);font-size:14px;line-height:1.2;max-width:140px}
+#leftCtl .keysbox{text-align:right}
+#rightCtl .keysbox{text-align:left}
+.keysbox small{font-family:var(--f-body);color:var(--muted);font-size:13px}
+.keysbox.big{font-size:17px}
+.keysbox.hint{background:#eaf7e6;border:2px dashed var(--good);border-radius:12px;padding:4px 8px;font-size:13px}
+.firstpick{display:flex;flex-direction:column;gap:4px;align-items:flex-start;max-width:140px}
+.firstpick .lab{font-family:var(--f-title);font-size:13px;color:var(--ink);line-height:1.1}
+.firstpick button{display:flex;align-items:center;gap:4px;background:#fff;border:3px solid var(--ink3);border-radius:12px;padding:1px 8px 1px 3px;font-family:var(--f-title);font-size:14px;color:var(--ink);min-height:34px}
+.firstpick button.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 22%,#fff);transform:scale(1.05)}
+.firstpick svg{width:22px;height:22px;overflow:visible}
 #dice{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,#eef2ff 55%,#d9e0f7 100%);border:3px solid var(--ink);box-shadow:4px 5px 0 var(--ink3);display:grid;place-items:center;position:relative;transition:transform .1s;touch-action:none}
 #dice.ready{animation:bob 1.2s ease-in-out infinite}
 #dice.off{opacity:.5}
@@ -128,9 +141,17 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 #dice .tag{position:absolute;bottom:-22px;left:-24px;right:-24px;font-family:var(--f-title);font-size:14px;color:var(--ink);line-height:1;white-space:nowrap;text-align:center}
 .flydie{position:absolute;width:64px;height:64px;left:0;top:0;pointer-events:none;z-index:9;filter:drop-shadow(3px 5px 2px rgba(43,73,184,.3))}
 .flydie svg{width:100%;height:100%}
-.taunts{display:grid;grid-template-columns:1fr 1fr;gap:5px;justify-self:start}
-.taunt{width:50px;height:44px;border-radius:14px;background:#fff;border:2px solid var(--ink3);font-size:20px;display:grid;place-items:center;line-height:1}
-.taunt small{font-size:9px;font-family:var(--f-title);color:var(--ink);display:block}
+.taunts{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding-top:4px}
+.taunts.two{grid-template-columns:repeat(5,1fr)}
+.taunt{height:52px;border-radius:14px;background:#fff;border:2px solid var(--ink3);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;gap:2px;min-width:0}
+.taunt b{font-size:24px;font-weight:400;display:block}
+.taunt small{font-size:13px;font-family:var(--f-title);color:var(--ink);display:block;white-space:nowrap}
+.taunt.groove{border-color:var(--good);background:#f0fbe9}
+.taunt.groove b{animation:groove var(--beat,.7s) ease-in-out infinite}
+.taunt.groove::after{content:'♪';position:absolute;margin:-30px 0 0 34px;font-size:14px;color:var(--good);animation:groove var(--beat,.7s) ease-in-out infinite}
+.taunt{position:relative}
+.taunt.sulk{opacity:.6;background:#eee}
+@keyframes groove{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-5px) rotate(10deg)}}
 .taunt:active{transform:scale(1.15)}
 .taunts.dance .taunt{border-color:var(--star2);background:#fff8dc;animation:bob .9s ease-in-out infinite}
 .dancewrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
@@ -251,9 +272,94 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
 .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
 .notewrite{display:flex;flex-direction:column;gap:4px;width:100%;max-width:320px;align-items:center}
 .notewrite input{font-size:20px}
-@media (prefers-reduced-motion:reduce){#dice.ready,.roads button.on,.roads button.rope,.cover .winav,.ask .wait{animation:none}.emo{animation-duration:.6s}}
-@media (max-height:700px){.card .av{width:66px;height:66px}}
-@media (max-height:640px){.controls{min-height:96px}#dice{width:84px;height:84px}.card .av{width:56px;height:56px}body{font-size:16px}}
+.card .avw{position:relative;flex:0 0 auto;width:84px;height:84px}
+.card .aura{position:absolute;inset:-6px;pointer-events:none;animation:spin 6s linear infinite}
+.card .aura i{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px;transform:rotate(var(--a)) translateY(-44px) rotate(calc(-1 * var(--a)))}
+.card .aura svg{overflow:visible}
+.card.glow .avw::before{content:'';position:absolute;inset:4px;border-radius:50%;box-shadow:0 0 14px 4px rgba(246,197,49,.55)}
+.card .eggs{grid-column:1/3;font-size:14px;letter-spacing:-3px;line-height:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pick.drawown span{display:flex;flex-direction:column;align-items:center;font-size:26px;line-height:1}
+.pick.drawown small{font-size:12px;font-family:var(--f-title);color:var(--ink)}
+.picker.dances .pick{width:auto;height:40px;border-radius:14px;padding:0 10px;font-family:var(--f-title);font-size:15px;color:var(--ink)}
+.picker.dances .pick:disabled{opacity:.45}
+.bossnews{display:flex;flex-direction:column;align-items:center;background:#fff;border:3px solid var(--bad);border-radius:16px;padding:6px 12px;font-family:var(--f-title);color:var(--bad);animation:pop .5s}
+.bossnews small{font-family:var(--f-body);color:var(--muted)}
+.lvl.boss{border-color:var(--bad);background:#fff1ee}
+.lvl.lockedboss{opacity:.6;border-style:dashed}
+#ownCv{width:min(78vw,300px);height:min(78vw,300px);background:#fff;border:3px dashed var(--ink3);border-radius:18px;touch-action:none}
+.museum{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;width:100%;max-width:440px}
+.museum figure{margin:0;background:#fff;border:3px solid var(--ink3);border-radius:12px;padding:6px;box-shadow:3px 4px 0 var(--ink3);transform:rotate(-1deg)}
+.museum figure:nth-child(2n){transform:rotate(1.2deg)}
+.museum figure svg{display:block;margin:0 auto}
+.museum figcaption{font-size:13px;color:var(--muted);text-align:center;line-height:1.15;overflow-wrap:anywhere}
+.museum figcaption b{font-family:var(--f-title);font-weight:400;color:var(--ink)}
+.howbox{width:100%;max-width:360px;display:flex;flex-direction:column;gap:12px;touch-action:pan-y}
+.howcard{background:#fff;border:3px solid var(--ink);border-radius:22px 18px 24px 16px/16px 24px 18px 22px;padding:16px 14px;box-shadow:4px 5px 0 var(--ink3);min-height:270px;display:flex;flex-direction:column;align-items:center;gap:10px;animation:pop .3s}
+.howcard .art{display:flex;align-items:center;justify-content:center;gap:4px;min-height:84px}
+.howcard .art svg{overflow:visible}
+.howcard .big{font-size:42px}
+.howcard p{font-size:18px}
+.hownav{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:8px}
+.hownav .btn{min-height:48px;padding:4px 16px}
+.hdots{display:flex;gap:6px;justify-content:center}
+.hdots i{width:10px;height:10px;border-radius:50%;background:var(--ink3)}
+.hdots i.on{background:var(--ink);transform:scale(1.3)}
+.menusheet{position:absolute;inset:0;z-index:30;background:rgba(31,42,74,.35);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;background:var(--paper2);border:3px solid var(--ink);border-bottom:0;border-radius:24px 24px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;align-items:stretch;text-align:center;animation:sheetup .25s ease-out;max-height:92%;overflow-y:auto}
+.sheet.how{align-items:center}
+@keyframes sheetup{from{transform:translateY(100%)}to{transform:none}}
+.sheet .mi{min-height:52px;background:#fff;border:2px solid var(--ink3);border-radius:16px;font-family:var(--f-title);font-size:19px;color:var(--ink);text-align:left;padding:0 14px;display:flex;align-items:center;gap:8px}
+.sheet .mi i{margin-left:auto;font-style:normal;font-size:15px;background:var(--ink3);color:#fff;border-radius:12px;padding:2px 10px}
+.sheet .mi.sw.on i{background:var(--good)}
+.sheet .mi.danger{color:var(--bad)}
+.sheet .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.lucky{position:absolute;inset:0;z-index:11;display:grid;place-items:center;background:rgba(244,201,190,.6)}
+.lk{background:#fff;border:3px solid var(--star2);border-radius:22px;padding:12px 16px;box-shadow:4px 5px 0 var(--star2);text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;animation:pop .35s;max-width:300px}
+.lkstar{font-size:44px;animation:spin 3s linear infinite}
+.lkdice{display:flex;gap:18px}
+.lkdice button{border-radius:18px;animation:bob 1s ease-in-out infinite}
+.lkdice button.on{transform:scale(1.2);animation:none}
+.lkdice button:disabled{animation:none}
+.bigmsg{position:absolute;inset:0;z-index:25;display:grid;place-items:center;background:rgba(244,201,190,.94);padding:18px}
+.bigmsg .bm{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-size:20px;max-width:340px;animation:pop .4s}
+.bigmsg h2{font-size:44px}
+.bigmsg svg{overflow:visible;animation:spin 4s linear infinite}
+.swipehint{position:absolute;left:50%;bottom:-6px;z-index:9;pointer-events:none;font-size:34px;display:flex;flex-direction:column;align-items:center;animation:swipeup 1.4s ease-in-out infinite}
+.swipehint small{font-family:var(--f-title);font-size:13px;color:var(--ink);background:#fff;border-radius:8px;padding:0 6px}
+@keyframes swipeup{0%{transform:translate(-30%,20px);opacity:0}25%{opacity:1}70%{transform:translate(-30%,-50px);opacity:1}100%{transform:translate(-30%,-60px);opacity:0}}
+.gd .burst{position:absolute;z-index:6;transform:translate(-50%,-50%);font-family:var(--f-title);font-size:28px;pointer-events:none;-webkit-text-stroke:1px #fff;animation:burst .7s ease-out forwards;white-space:nowrap}
+@keyframes burst{0%{transform:translate(-50%,-50%) scale(.5);opacity:1}40%{transform:translate(-50%,-90%) scale(1.3)}100%{transform:translate(-50%,-160%) scale(1);opacity:0}}
+.gd .ascore.bump{animation:bump .25s}
+@keyframes bump{50%{transform:scale(1.45);color:var(--good)}}
+.gd .mybar{position:absolute;left:8px;right:8px;top:38px;z-index:3;height:10px;border-radius:5px;background:var(--line);overflow:hidden;pointer-events:none}
+.gd .mybar i{display:block;height:100%;width:0;background:var(--good);border-radius:5px;transition:width .15s}
+.gd .duck.kick{animation:kick .2s}
+@keyframes kick{50%{transform:translate(-50%,-70%) rotate(-12deg)}}
+.gd .dot{--fill:0%}
+.gd .dot span{position:absolute;left:50%;top:-30px;transform:translateX(-50%);font-size:20px;opacity:0;transition:opacity .2s}
+.gd .dot.on span{opacity:1}
+.gd .dot::after{content:'';position:absolute;inset:-12px;border-radius:50%;background:conic-gradient(var(--good) var(--fill),transparent 0);-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%)}
+.gd .dot.far::before{content:'over here!';position:absolute;left:50%;top:40px;transform:translateX(-50%);font-family:var(--f-title);font-size:14px;color:var(--bad);white-space:nowrap}
+.gd .hintpop{position:absolute;left:50%;top:24%;transform:translate(-50%,-50%);z-index:9;background:#fff;border:3px solid #e85d9a;border-radius:18px;padding:10px 16px;font-family:var(--f-title);font-size:20px;color:#e85d9a;box-shadow:3px 4px 0 #f3a9c9;text-align:center;animation:popc .4s;pointer-events:none;width:max-content;max-width:88%}
+.gd .rainchick{position:absolute;top:-60px;width:56px;height:56px;margin-left:-28px;animation:fall linear forwards;z-index:2}
+.gd .rainchick svg{width:100%;height:100%;overflow:visible;pointer-events:none}
+@keyframes fall{from{transform:translateY(0) rotate(-20deg)}to{transform:translateY(calc(100vh)) rotate(30deg)}}
+.gd .result .faces div.won{transform:scale(1.08)}
+.gd .result .faces div.won::before{content:'👑';font-size:26px}
+.hmeter{position:relative;width:96px;height:12px;border-radius:6px;background:var(--line);overflow:visible;margin-top:4px}
+.hmeter i{display:block;height:100%;background:#e85d9a;border-radius:6px}
+.hmeter span{position:absolute;right:-14px;top:-6px;font-size:14px}
+.sees{font-family:var(--f-body);font-size:14px;color:var(--text);max-width:150px}
+@keyframes dance-wiggle{50%{transform:rotate(15deg) scale(1.1)}}
+@keyframes dance-chicken{25%{transform:translateY(-20px) scaleY(1.15)}75%{transform:translateY(-10px) scaleY(.9)}}
+@keyframes dance-robot{25%{transform:rotate(20deg)}50%{transform:translateX(10px)}75%{transform:rotate(-20deg)}}
+@keyframes dance-floss{25%{transform:translateX(-20px) rotate(-10deg)}75%{transform:translateX(20px) rotate(10deg)}}
+@keyframes dance-spin{to{transform:rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.card .aura,.taunt.groove b,.swipehint,.lkstar{animation:none}#dice.ready,.roads button.on,.roads button.rope,.cover .winav,.ask .wait{animation:none}.emo{animation-duration:.6s}}
+@media (max-height:740px){.card .av,.card .avw{width:64px;height:64px}.card .aura i{transform:rotate(var(--a)) translateY(-34px) rotate(calc(-1 * var(--a)))}.taunt{height:46px}.taunt b{font-size:21px}.taunt small{font-size:12px}}
+@media (max-height:640px){.controls{min-height:92px}#dice{width:80px;height:80px}.card .av,.card .avw{width:52px;height:52px}body{font-size:16px}}
 </style>
 </head>
 <body>
@@ -263,26 +369,34 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
   <section class="screen" id="scrTitle">
     <div class="sketch-bg" id="sketchBg"></div>
     <svg class="title-star" viewBox="-60 -60 120 120" id="titleStar"></svg>
-    <h1>STARCHASERS</h1>
+    <h1>QUADRUN</h1>
     <p class="sub">a game made up by Enso</p>
     <div class="stack">
       <button class="btn big" id="btnPlay">PLAY!</button>
       <button class="btn ghost" id="btnHow">How to play</button>
+      <button class="btn ghost" id="btnMuseum">🖼️ Mustache Museum</button>
       <button class="btn ghost" id="btnSketch">See Enso's drawing</button>
     </div>
   </section>
 
   <section class="screen" id="scrHow" hidden>
     <h2>How to play</h2>
-    <div class="rules">
-      <div><b>1.</b><span>Everyone starts in the middle. Pick a road, then SWIPE the dice to throw it. Roll a 6, roll again.</span></div>
-      <div><b>2.</b><span>The 3 dark steps next to each door are the way in. Land on one: if nobody owns that corner, do the math in 21 seconds to own it and its 2 keys. Answer fast for more ink later!</span></div>
-      <div><b>3.</b><span>Corner owned by your friend? Its GUARDIAN challenges you to a 1-minute duel: the Chicken's Mustache Showdown (the funniest-LOOKING face wins, but has to keep wearing it), the Dog's Bone Fetch, the Duck's Duck Race or the Cat's Laser Chase. Your friend plays the guardian. Win and the corner is yours for good. The loser gets a mustache!</span></div>
-      <div><b>4.</b><span>Land on your friend: CHICKY-CHICKEN! Chicken dance, back to the middle. Tap the same emoji together to make the chicken laugh.</span></div>
-      <div><b>5.</b><span>Own all four corners to unlock the rope. Climb its knots 1–3 at a time and land on the star EXACTLY. Beat the final puzzle to win.</span></div>
-      <div><b>★</b><span>Every win lets you unlock one new doodle of your choice. Need a break? The AI button plays for you for up to 2 minutes.</span></div>
-    </div>
-    <button class="btn" id="btnHowBack">Got it!</button>
+    <div id="howBox" class="howbox"></div>
+  </section>
+
+  <section class="screen" id="scrMuseum" hidden>
+    <h2>🖼️ Mustache Museum</h2>
+    <p class="sub" id="museumCount"></p>
+    <div class="museum" id="museumGrid"></div>
+    <button class="btn" id="btnMuseumBack">Back</button>
+  </section>
+
+  <section class="screen" id="scrDraw" hidden>
+    <h2>Draw your own doodle!</h2>
+    <p class="sub">Draw a face, a monster, anything. It becomes your game piece.</p>
+    <canvas id="ownCv" width="300" height="300" aria-label="Drawing pad"></canvas>
+    <div class="row"><button class="btn ghost" id="ownUndo">↩ Undo</button><button class="btn ghost" id="ownClear">🧽 Clear</button></div>
+    <div class="row"><button class="btn ghost" id="ownBack">Back</button><button class="btn big" id="ownDone">USE IT!</button></div>
   </section>
 
   <section class="screen" id="scrSketch" hidden>
@@ -337,13 +451,11 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
       <div class="banner" id="banner"></div>
       <button class="iconbtn sm musicbtn" data-act="toggle" aria-label="Music on or off">🎵</button><button class="iconbtn sm" id="gameMute" aria-label="Sound effects on or off">🔊</button>
     </div>
-    <div class="statusRow">
-      <div class="music"><button class="iconbtn sm musicbtn" data-act="next" aria-label="Next song">⏭</button></div>
-      <div class="notes" id="notes"></div>
-      <button class="aibtn" id="aiBtn">🤖 AI plays for me</button>
-    </div>
     <div id="boardwrap">
-      <svg id="board" viewBox="0 0 900 1112" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="StarChasers board, Enso's drawing"></svg>
+      <div class="notes" id="notes"></div>
+      <button class="aibtn on" id="aiBtn" hidden>🤖 AI playing</button>
+      <div class="lucky" id="lucky" hidden></div>
+      <svg id="board" viewBox="0 0 900 1112" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="QuadRun board, Enso's drawing"></svg>
       <div class="toast" id="toast"></div>
       <div class="ask" id="ask" hidden></div>
       <div class="pad" id="pad" hidden></div>
@@ -351,11 +463,14 @@ input.txt.code{letter-spacing:4px;font-size:34px;text-transform:lowercase;max-wi
     </div>
     <div class="duel" id="duel" hidden></div>
     <div class="gd" id="gduel" hidden></div>
+    <div class="bigmsg" id="bigmsg" hidden></div>
+    <div class="menusheet" id="menuSheet" hidden></div>
     <div class="controls">
       <div id="leftCtl"></div>
       <button id="dice" aria-label="Throw the dice"><svg viewBox="0 0 60 60" id="dieFace"></svg><span class="tag" id="diceTag">swipe!</span></button>
-      <div class="taunts" id="taunts"></div>
+      <div id="rightCtl"></div>
     </div>
+    <div class="taunts" id="taunts"></div>
   </section>
 
   <div class="cover" id="cover" hidden></div>
@@ -388,11 +503,17 @@ const ROBOS = [
   { name:'Captain Cluck', av:'roboninja', lines:['Silent… but deadly… BAWK!', 'Ninja mode: ON', 'You did not see me.', 'Hi-YA-beep!'], draw:['Swift brush of shame!', 'Ninja mustache strike!', 'Hi-YA! Masterpiece.'] },
   { name:'Sir Bawks', av:'robocat', lines:['Meow-beep.', 'I knock your keys off the table.', 'Purr-cessing…', 'Nap mode… just kidding!'], draw:['Purr-fect whiskers!', 'Hold still, I am an ARTIST.', 'Meow-ha-ha!'] },
 ];
-const BOT_LEVELS = { dumb:{ name:'Dumb', math:.4, duel:.55, blurb:'Beep. Gets about 4 out of 10 right.' }, smart:{ name:'Smart', math:.7, duel:.75, blurb:'Thinks a bit. 7 out of 10.' }, genius:{ name:'Genius', math:.92, duel:.92, blurb:'Scary. Almost never misses.' } };
-const QUADS = { NW:{ name:'Chicken corner', short:'Chicken', col:'#f6c531', icon:'chicken', guard:'chicken' }, NE:{ name:'Lightning corner', short:'Lightning', col:'#f28c28', icon:'bolt', guard:'dog' }, SW:{ name:'Water corner', short:'Water', col:'#5aa9e8', icon:'drop', guard:'duck' }, SE:{ name:'Pen corner', short:'Pen', col:'#5fc06f', icon:'pen', guard:'cat' } };
+const BOT_LEVELS = { dumb:{ name:'Dumb', math:.4, duel:.55, blurb:'Beep. Gets about 4 out of 10 right.' }, smart:{ name:'Smart', math:.7, duel:.75, blurb:'Thinks a bit. 7 out of 10.' }, genius:{ name:'Genius', math:.92, duel:.92, blurb:'Scary. Almost never misses.' }, mega:{ name:'MEGA-CLUCK', math:.95, duel:.95, blurb:'The boss. Huge, loud, and it has TURBO CLUCK.' } };
+const MEGA = { name:'MEGA-CLUCK', av:'megacluck', lines:['I AM MEGA-CLUCK!', 'TURBO… CLUCK… ENGAGED!', 'Puny doodle. BAWK.', 'My eggs are made of METAL.'], draw:['MEGA MUSTACHE!', 'Behold my art, puny one!', 'BAWK-TASTIC!'] };
+const QUADS = {
+  NW:{ name:'Chicken-Heart corner', short:'Chicken-Heart', col:'#e85d9a', icon:'heart', guard:'chicken', aura:'heart', auraCol:'#e85d9a' },
+  NE:{ name:'Fire corner', short:'Fire', col:'#f28c28', icon:'flame', guard:'dog', aura:'flame', auraCol:'#f28c28' },
+  SW:{ name:'Electricity corner', short:'Electricity', col:'#f6c531', icon:'bolt', guard:'duck', aura:'bolt', auraCol:'#f6c531' },
+  SE:{ name:'Forest corner', short:'Forest', col:'#3aa655', icon:'leaf', guard:'cat', aura:'bunny', auraCol:'#fff' },
+};
 const QUAD_LIST = ['NW','NE','SW','SE'];
 const NEIGHBORS = { NW:['NE','SW'], NE:['NW','SE'], SW:['NW','SE'], SE:['NE','SW'] };
-const TAUNTS = [ { e:'😂', t:'HA HA!' }, { e:'🐔', t:'Chicken!' }, { e:'👏', t:'Nice one!' }, { e:'🤩', t:'You rock!' } ];
+const TAUNTS = [ { e:'😂', t:'HA HA!' }, { e:'🐔', t:'Chicken!' }, { e:'💨', t:'Toot!' }, { e:'👏', t:'Nice one!' }, { e:'🤩', t:'You rock!' } ];
 const DIRS = { W:{ arrow:'⬅', name:'West' }, N:{ arrow:'⬆', name:'North' }, E:{ arrow:'➡', name:'East' }, S:{ arrow:'⬇', name:'South' } };
 const ALLEY_QUADS = { W:['NW','SW'], N:['NE','NW'], E:['SE','NE'], S:['SW','SE'] };
 const STEPS = 10, LOOP = STEPS*2, ROPE_N = 7, STAR_I = 7;
@@ -432,6 +553,9 @@ const ICON = {
   squishy:(c)=>{ const f = SQUISH_FACES[squishFace % SQUISH_FACES.length]; return `<path d="M-15 8 Q-17 -12 0 -14 Q17 -12 15 8 Q13 15 0 15 Q-13 15 -15 8 Z" fill="${c}" class="sh" stroke-width="2"/><ellipse cx="-8" cy="-8" rx="3" ry="2" fill="#fff" stroke="none" opacity=".6"/><circle cx="-10" cy="5" r="2.4" fill="#e85d9a" stroke="none" opacity=".5"/><circle cx="10" cy="5" r="2.4" fill="#e85d9a" stroke="none" opacity=".5"/>${f}`; },
   pumpkin:(c)=>`<path d="M0 -10 q-15 -2 -15 9 q0 12 15 12 q15 0 15 -12 q0 -11 -15 -9 Z" fill="#f28c28" class="sh" stroke-width="2"/><path d="M-5 -9 q-3 9 0 21 M5 -9 q3 9 0 21" class="ink" stroke="#c96a12" stroke-width="1.5"/><path d="M0 -10 q1 -5 5 -7" class="ink" stroke="#3aa655" stroke-width="2.5"/><polygon points="-8,-2 -4,-2 -6,-6" fill="#1f2a4a" stroke="none"/><polygon points="4,-2 8,-2 6,-6" fill="#1f2a4a" stroke="none"/><path d="M-7 4 l2 2 l2 -2 l2 2 l2 -2 l2 2 l2 -2" class="ink" stroke="#1f2a4a" stroke-width="1.6"/><g transform="translate(10 6) rotate(-20)"><rect x="0" y="-3" width="13" height="6" rx="3" fill="#8a4fd3" class="sh" stroke-width="1.5"/><rect x="-3" y="1" width="5" height="7" rx="2" fill="#5c74cf" class="sh" stroke-width="1.3"/><circle cx="13" cy="0" r="3.5" fill="${c}" class="sh" stroke="#2ad1c9" stroke-width="1.5"/><circle cx="4" cy="-1" r="1" fill="#fff" stroke="none"/><circle cx="8" cy="1" r=".8" fill="#fff" stroke="none"/><path d="M16 -3 l3 -2 M17 1 l4 0 M16 4 l3 2" class="ink" stroke="#2ad1c9" stroke-width="1.2"/></g>`,
   fluffy:(c)=>`<path d="M-6 0 L-19 -12 L-15 2 Z M6 0 L19 -12 L15 2 Z" fill="${c}" class="sh" stroke-width="1.6" opacity=".85"/><circle r="11" fill="#fff6e8" class="sh" stroke-width="2"/><path d="M-11 -2 q-3 -3 0 -5 q-1 -4 3 -4 q1 -4 5 -2 q3 -3 6 0 q4 -1 4 3 q4 1 2 5" fill="#fff6e8" class="sh" stroke-width="1.6"/><path d="M0 -11 L4 -19 L6 -10 Z" fill="${c}" class="sh" stroke-width="1.5"/>${eye(-4,-1,3)}${eye(4,-1,3)}<path d="M-3 4 L0 9 L3 4 Z" fill="#f6c531" class="sh" stroke="#e39a12" stroke-width="1.3"/><path d="M-5 11 v4 M5 11 v4" class="ink" stroke-width="2"/>`,
+  flame:(c)=>`<path d="M0 17 C-11 15 -13 4 -7 -4 C-6 1 -3 2 -2 0 C-4 -7 1 -13 4 -17 C4 -10 13 -5 11 6 C10 13 5 17 0 17 Z" fill="${c}" class="sh" stroke-width="2"/><path d="M0 14 C-5 13 -6 7 -3 3 C-1 6 2 5 2 2 C5 5 6 9 4 12 C3 14 1 14 0 14 Z" fill="#f6c531" stroke="none"/>`,
+  bunny:(c)=>`<path d="M-6 -4 C-9 -14 -8 -20 -5 -20 C-2 -20 -2 -12 -2 -5 Z M6 -4 C9 -14 8 -20 5 -20 C2 -20 2 -12 2 -5 Z" fill="${c}" class="sh" stroke-width="1.8"/><path d="M-5 -6 q-1 -8 0 -11 M5 -6 q1 -8 0 -11" class="ink" stroke="#e85d9a" stroke-width="1.6"/><ellipse cx="0" cy="5" rx="11" ry="10" fill="${c}" class="sh" stroke-width="2"/>${eye(-4,3,1.8)}${eye(4,3,1.8)}<path d="M-1 7 l1 1.4 l1 -1.4 Z" fill="#e85d9a" stroke="none"/><path d="M-3 10 q3 2 6 0" class="ink" stroke-width="1.3"/>`,
+  megacluck:(c)=>`<ellipse cx="3" cy="6" rx="13" ry="10" fill="${c}" class="sh" stroke-width="2.2"/><rect x="-17" y="-14" width="15" height="14" rx="3" fill="${c}" class="sh" stroke-width="2.2"/><rect x="-16" y="-10" width="11" height="4" rx="1" fill="#ff3b3b" class="sh" stroke-width="1"/><polygon points="-17,-5 -24,-2 -17,1" fill="#f28c28" class="sh" stroke-width="1.5"/><polygon points="-15,-14 -13,-20 -10,-15 -8,-21 -5,-15 -3,-19 -2,-14" fill="#f6c531" class="sh" stroke="#b07a10" stroke-width="1.3"/><path d="M14 2 l7 -6 l-1 7 l6 0 l-8 6" fill="#9fa8da" class="sh" stroke-width="1.5"/><path d="M-1 15 v4 M-4 19 h6 M8 15 v4 M5 19 h6" class="ink" stroke-width="2.4"/><circle cx="6" cy="4" r="2.2" fill="#ff3b3b" stroke="none"/><path d="M-2 8 h14" class="ink" stroke-width="1.4" opacity=".6"/>`,
   // robo styles
   robot:(c)=>`<rect x="-11" y="-9" width="22" height="20" rx="4" fill="${c}" class="sh" stroke-width="2"/>${eye(-5,-1,2.5)}${eye(5,-1,2.5)}<path d="M-5 6 h10" class="ink" stroke-width="2"/><path d="M0 -9 v-6 m-3 0 h6" class="ink" stroke-width="2"/>`,
   robochick:(c)=>`<ellipse cx="3" cy="5" rx="11" ry="8" fill="${c}" class="sh" stroke-width="2"/><rect x="-14" y="-11" width="12" height="11" rx="3" fill="${c}" class="sh" stroke-width="2"/><rect x="-13" y="-8" width="7" height="3.5" rx="1" fill="#9fd0ff" class="sh" stroke-width="1"/><polygon points="-14,-3 -20,-1 -14,1" fill="#f28c28" class="sh" stroke-width="1.5"/><path d="M-8 -11 v-5 m-2.5 0 h5" class="ink" stroke-width="2"/><path d="M-1 13 v5 M-4 18 h6 M7 13 v5 M4 18 h6" class="ink" stroke-width="2"/><circle cx="6" cy="3" r="1.6" fill="#e2503f" stroke="none"/>`,
@@ -448,12 +572,14 @@ const ICON = {
   door:(c)=>`<path d="M-9 14 V-6 A9 9 0 0 1 9 -6 V14 Z" fill="${c}" class="sh" stroke-width="2"/><path d="M-9 14 H9" class="ink" stroke-width="2.5"/><circle cx="4.5" cy="4" r="1.8" fill="#1f2a4a" stroke="none"/>`,
   lock:(c)=>`<rect x="-8" y="-3" width="16" height="13" rx="3" fill="${c}" class="sh" stroke-width="2"/><path d="M-5 -3 v-4 a5 5 0 0 1 10 0 v4" class="ink" stroke-width="2.5"/>`,
 };
-const FACE = { chicken:[-12,-1,.42], boss:[0,4,.8], dino:[9,1,.5], rocket:[0,2,.45], ninja:[0,5,.8], king:[0,4,.6], puppy:[0,6,.6], squishy:[0,4,.7], shark:[-6,4,.55], pizza:[0,4,.5], pumpkin:[0,2,.6], fluffy:[0,3,.55], robot:[0,4,.6], robochick:[-9,-1,.42], roboninja:[0,6,.75], robocat:[0,4,.65], dog:[-11,1,.45], duck:[-12,0,.4], cat:[-7,1,.45] };
-const ico = (kind, color) => `<g stroke="${INK}">${(ICON[kind]||ICON.chicken)(color)}</g>`;
+const FACE = { custom:[0,4,.7], megacluck:[-11,0,.45], chicken:[-12,-1,.42], boss:[0,4,.8], dino:[9,1,.5], rocket:[0,2,.45], ninja:[0,5,.8], king:[0,4,.6], puppy:[0,6,.6], squishy:[0,4,.7], shark:[-6,4,.55], pizza:[0,4,.5], pumpkin:[0,2,.6], fluffy:[0,3,.55], robot:[0,4,.6], robochick:[-9,-1,.42], roboninja:[0,6,.75], robocat:[0,4,.65], dog:[-11,1,.45], duck:[-12,0,.4], cat:[-7,1,.45] };
+// a doodle you drew yourself: your strokes on a bubble of your color
+const customIco = (color, cs) => { const d = cs && cs.length ? scribblePath(cs) : 'M-8 -4 L-8 -2 M8 -4 L8 -2 M-8 6 Q0 12 8 6'; return `<circle r="17" fill="${color}" opacity=".35" stroke="${color}" stroke-width="1.5"/><path d="${d}" fill="none" stroke="#fff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>`; };
+const ico = (kind, color, cs) => kind==='custom' ? `<g>${customIco(color, cs)}</g>` : `<g stroke="${INK}">${(ICON[kind]||ICON.chicken)(color)}</g>`;
 const scribblePath = (strokes) => strokes.map(st => st.length ? 'M' + st.map(p => `${p[0]} ${p[1]}`).join(' L ') : '').join(' ');
 const scribSVG = (scribbles) => { if(!scribbles || !scribbles.length) return ''; const d = scribblePath(scribbles.flat()); return `<path d="${d}" fill="none" stroke="#fff" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/><path d="${d}" fill="none" stroke="#1f2a4a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`; };
-const avatarSVG = (pl, size, extraClass='') => `<svg class="${extraClass}" viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(pl.av, colHex(pl.col))}${scribSVG(pl.scribbles)}</svg>`;
-const svgIcon = (kind, color, size=40) => `<svg viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(kind, color)}</svg>`;
+const avatarSVG = (pl, size, extraClass='') => `<svg class="${extraClass}" viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(pl.av, colHex(pl.col), pl.custom)}${scribSVG(pl.scribbles)}</svg>`;
+const svgIcon = (kind, color, size=40, cs) => `<svg viewBox="-20 -20 40 40" width="${size}" height="${size}" aria-hidden="true" style="overflow:visible">${ico(kind, color, cs)}</svg>`;
 
 // ---------------- board geometry (measured on Enso's drawing; 900x1112 board units) ----------------
 const K = 900/1527;
@@ -479,14 +605,20 @@ const ROPE_LOCK = P(762,600);
 const ropeXY = (i) => i >= STAR_I ? STAR : ROPE[i];
 function locXY(p, loc){
   if(loc.z==='hub') return { x:HUB.x + (p===0?-30:30), y:HUB.y };
-  if(loc.z==='alley'){ const pt = LOOPS[loc.dir][loc.i]; const vert = (loc.dir==='N'||loc.dir==='S'); const off = p===0 ? -10 : 10; return vert ? { x:pt.x+off, y:pt.y } : { x:pt.x, y:pt.y+off }; }
+  if(loc.z==='alley'){ const pt = LOOPS[loc.dir][phys(loc)]; const vert = (loc.dir==='N'||loc.dir==='S'); const off = p===0 ? -10 : 10; return vert ? { x:pt.x+off, y:pt.y } : { x:pt.x, y:pt.y+off }; }
   const r = ropeXY(loc.i); return { x:r.x + (p===0?-24:24), y:r.y };
 }
 const DOOR_OUT = STEPS-1, DOOR_BACK = STEPS;
 const isAccess = (i) => (i > DOOR_OUT-ACCESS && i <= DOOR_OUT) || (i >= DOOR_BACK && i < DOOR_BACK+ACCESS);
-const doorAt = (loc) => loc.z==='alley' && isAccess(loc.i) ? ALLEY_QUADS[loc.dir][loc.i<=DOOR_OUT?0:1] : null;
+// loc.i counts steps walked; going the other way round (rev) walks the loop backwards
+const phys = (loc) => loc.rev ? LOOP-1-loc.i : loc.i;
+const doorAt = (loc) => { if(loc.z!=='alley') return null; const i = phys(loc); return isAccess(i) ? ALLEY_QUADS[loc.dir][i<=DOOR_OUT?0:1] : null; };
 const shade = (hex, k) => { const n = parseInt(hex.slice(1),16); const f = (v) => Math.max(0, Math.round(v*(1-k))); return '#'+[(n>>16)&255,(n>>8)&255,n&255].map(f).map(v=>v.toString(16).padStart(2,'0')).join(''); };
-const sameSpot = (a, b) => a.z===b.z && a.z!=='hub' && a.dir===b.dir && a.i===b.i;
+const sameSpot = (a, b) => a.z===b.z && a.z!=='hub' && a.dir===b.dir && (a.z==='alley' ? phys(a)===phys(b) : a.i===b.i);
+// music fans: which emoji loves which song, and the beat they groove to
+const TRACK_FANS = { 'heavenly-loop':{ fans:['🤩'], bpm:70 }, 'calm-ambient-1':{ fans:['😂','👏'], bpm:96 }, 'caller':{ fans:['🐔'], bpm:84 }, 'monoliths':{ fans:['🤩','🐔'], bpm:76 }, 'booya':{ fans:['😂','💨'], bpm:100 } };
+const DANCES = [ { id:'wiggle', name:'Wiggle', need:0 }, { id:'chicken', name:'Chicken Flap', need:1 }, { id:'robot', name:'Robot', need:2 }, { id:'floss', name:'Floss', need:4 }, { id:'spin', name:'Tornado Spin', need:6 } ];
+const HATS = ['party','top','propeller','chef','crown2'];
 
 function buildBoard(){
   let s = `<rect x="-40" y="-40" width="980" height="1192" fill="#f3c6ba"/>`;
@@ -593,8 +725,15 @@ const SFX = (() => {
     bone(){ tone(v(700),v(1200),.06,'triangle',.13); },
     paddle(){ noise(.07,.18,v(900),0,1.5); },
     laserOn(){ tone(1800,1800,.05,'sine',.05); },
+    toot(){ wob(v(140),.45,9,30,'sawtooth',.16); noise(.4,.08,200,0,.6); tone(220,90,.2,'square',.06,.35); },
+    sneeze(){ tone(500,1400,.35,'sawtooth',.12); noise(.3,.4,1600,.35,.5); tone(700,150,.3,'square',.18,.37); },
+    glitch(){ for(let i=0;i<8;i++) tone(v(200+rnd(1800)),v(100+rnd(1800)),.05,'square',.08,i*.05); noise(.3,.12,3000,0,.2); },
+    hit(){ tone(v(900),v(1500),.06,'triangle',.14); tone(v(1800),v(2400),.05,'sine',.06,.03); },
+    miss(){ tone(220,160,.12,'square',.08); },
+    egg(){ tone(400,200,.12,'sine',.14); tone(300,600,.2,'triangle',.1,.12); },
+    hatch(){ noise(.12,.3,2000,0,1); [700,900,1200].forEach((f,i)=>tone(f,f,.1,'square',.12,.1+i*.08)); },
     guardian(){ [523,392,523,659].forEach((f,i)=>tone(f,f,.13,'square',.13,i*.12)); },
-    taunt(e){ if(e==='🐔') this.bawk(); else if(e==='😂') [600,800,600,800,600].forEach((f,i)=>tone(f,f*.9,.08,'square',.1,i*.09)); else if(e==='👏') [0,.12,.24,.36].forEach(t0=>noise(.06,.3,1800,t0,.8)); else this.reward(); },
+    taunt(e){ if(e==='💨') return this.toot(); if(e==='🐔') this.bawk(); else if(e==='😂') [600,800,600,800,600].forEach((f,i)=>tone(f,f*.9,.08,'square',.1,i*.09)); else if(e==='👏') [0,.12,.24,.36].forEach(t0=>noise(.06,.3,1800,t0,.8)); else this.reward(); },
   };
 })();
 // ---------------- state ----------------
@@ -605,12 +744,15 @@ profile.stars = profile.stars|0;
 if(!Array.isArray(profile.unlocked)){ profile.unlocked = ['chicken']; profile.credits = profile.stars; }   // older saves: every past win becomes an unlock to spend
 profile.unlocked = profile.unlocked.filter(a => DOODLES.includes(a)); if(!profile.unlocked.includes('chicken')) profile.unlocked.unshift('chicken');
 profile.credits = clamp(profile.credits|0, 0, DOODLES.length);
-if(!profile.unlocked.includes(profile.av)) profile.av = 'chicken';
+const cleanCustom = (cs) => Array.isArray(cs) ? cs.filter(st => Array.isArray(st)).slice(0,14).map(st => st.filter(q => Array.isArray(q) && q.length===2 && isFinite(q[0]) && isFinite(q[1])).slice(0,80).map(q => [clamp(+(+q[0]).toFixed(1),-19,19), clamp(+(+q[1]).toFixed(1),-19,19)])).filter(st => st.length > 1) : [];
+profile.custom = cleanCustom(profile.custom); profile.roboBeat = Object.assign({ dumb:0, smart:0, genius:0, mega:0 }, profile.roboBeat||{});
+if(!DANCES.some(d => d.id===profile.dance)) profile.dance = 'wiggle';
+if(!profile.unlocked.includes(profile.av) && !(profile.av==='custom' && profile.custom.length)) profile.av = 'chicken';
 const saveProfile = () => { try { localStorage.setItem('sr_profile', JSON.stringify(profile)); } catch(e){} };
 const colHex = (id) => (COLORS.find(c=>c.id===id)||COLORS[1]).hex;
 const cleanUnlocked = (u) => { const a = (Array.isArray(u) ? u : []).map(String).filter(x => DOODLES.includes(x)); if(!a.includes('chicken')) a.unshift('chicken'); return Array.from(new Set(a)); };
-const newPlayer = (pf) => { const unlocked = ICON[pf.av] && !DOODLES.includes(pf.av) ? [pf.av] : cleanUnlocked(pf.unlocked); const av = unlocked.includes(pf.av) ? pf.av : unlocked[0]; return { name:String(pf.name||'Player').slice(0,12), av, col:(COLORS.some(c=>c.id===pf.col)?pf.col:'blue'), loc:{z:'hub',dir:null,i:0}, keys:{NW:0,NE:0,SW:0,SE:0}, rope:false, scribbles:[], wins:0, stars:(pf.stars|0), unlocked, credits:clamp(pf.credits|0, 0, DOODLES.length), skill:0, auto:false, robo:pf.robo|0 }; };
-function freshState(p0, p1){ return { phase:'lobby', players:[newPlayer(p0), newPlayer(p1)], owner:{NW:null,NE:null,SW:null,SE:null}, perm:{NW:null,NE:null,SW:null,SE:null}, gcool:{NW:false,NE:false,SW:false,SE:false}, gscrib:{NW:[],NE:[],SW:[],SE:[]}, turn:0, first:0, round:1, ask:null, draw:null, duel:null, gduel:null, dance:null, lastStop:null, notes:[null,null] }; }
+const newPlayer = (pf) => { const custom = cleanCustom(pf.custom); const unlocked = ICON[pf.av] && !DOODLES.includes(pf.av) ? [pf.av] : cleanUnlocked(pf.unlocked); const av = (pf.av==='custom' && custom.length) ? 'custom' : unlocked.includes(pf.av) ? pf.av : unlocked[0]; return { name:String(pf.name||'Player').slice(0,12), av, col:(COLORS.some(c=>c.id===pf.col)?pf.col:'blue'), loc:{z:'hub',dir:null,i:0}, keys:{NW:0,NE:0,SW:0,SE:0}, rope:false, scribbles:[], wins:0, stars:(pf.stars|0), unlocked, credits:clamp(pf.credits|0, 0, DOODLES.length), skill:0, auto:false, robo:pf.robo|0, custom, auras:[], eggs:0, dance:(DANCES.some(d => d.id===pf.dance) ? pf.dance : 'wiggle') }; };
+function freshState(p0, p1){ return { phase:'lobby', players:[newPlayer(p0), newPlayer(p1)], owner:{NW:null,NE:null,SW:null,SE:null}, perm:{NW:null,NE:null,SW:null,SE:null}, gcool:{NW:false,NE:false,SW:false,SE:false}, gscrib:{NW:[],NE:[],SW:[],SE:[]}, turn:0, first:0, round:1, ask:null, draw:null, duel:null, gduel:null, dance:null, lastStop:null, notes:[null,null], ghats:{NW:0,NE:0,SW:0,SE:0}, lucky:null, sneezed:false, rained:false, lastWin:null }; }
 const locked = (q) => S.perm[q] !== null;
 const allOwnedOnce = () => QUAD_LIST.every(q => S.owner[q] !== null);
 const hasAll = (pl) => QUAD_LIST.every(q => pl.keys[q] > 0);
@@ -618,19 +760,20 @@ const ownedCount = (pl) => QUAD_LIST.filter(q => pl.keys[q] > 0).length;
 const keyTotal = (pl) => QUAD_LIST.reduce((n,q) => n + pl.keys[q], 0);
 
 // ---------------- screens ----------------
-const SCREENS = ['scrTitle','scrHow','scrSketch','scrProfile','scrMode','scrBot','scrTwo','game'];
+const SCREENS = ['scrTitle','scrHow','scrSketch','scrProfile','scrMode','scrBot','scrTwo','scrMuseum','scrDraw','game'];
 function show(id){ SCREENS.forEach(s => { $('#'+s).hidden = (s!==id); }); $('#topbar').hidden = (id==='game'); }
 $('#titleStar').innerHTML = `<g transform="scale(2.6)">${ico('star', STAR_C)}</g>`;
 if(BOARD_URL){ $('#sketchBg').style.backgroundImage = `url(${BOARD_URL})`; $('#sketchImg').src = BOARD_URL; } else { $('#btnSketch').hidden = true; }
 $('#btnPlay').onclick = () => { SFX.pop(); openProfile(); };
-$('#btnHow').onclick = () => show('scrHow');
-$('#btnHowBack').onclick = () => show('scrTitle');
+$('#btnHow').onclick = () => { SFX.pop(); renderHow($('#howBox'), () => show('scrTitle')); show('scrHow'); };
+$('#btnMuseum').onclick = () => { SFX.pop(); renderMuseum(); show('scrMuseum'); };
+$('#btnMuseumBack').onclick = () => show('scrTitle');
 $('#btnSketch').onclick = () => show('scrSketch');
 $('#btnSketchBack').onclick = () => show('scrTitle');
 const setMuteIcons = () => { const t = SFX.muted ? '🔇' : '🔊'; $('#muteBtn').textContent = t; $('#gameMute').textContent = t; };
 const toggleMute = () => { SFX.unlock(); SFX.toggle(); setMuteIcons(); if(!SFX.muted) SFX.pop(); };
 $('#muteBtn').onclick = toggleMute; $('#gameMute').onclick = toggleMute; setMuteIcons();
-$('#gameMenu').onclick = () => goMenu();
+$('#gameMenu').onclick = () => { SFX.pop(); openMenuSheet(); };
 document.addEventListener('pointerdown', () => SFX.unlock(), { once:true, passive:true });
 
 let PENDING = null, editing = { ...profile }, editStars = 0;
@@ -638,18 +781,19 @@ let editUnlocked = ['chicken'], editCredits = 0, editIsMe = true;
 function openProfile(title, base, cb, placeholder, stars){
   editing = { ...(base||profile) }; editIsMe = !cb;
   editUnlocked = editIsMe ? profile.unlocked.slice() : ['chicken']; editCredits = editIsMe ? profile.credits : 0;
-  if(!editUnlocked.includes(editing.av)) editing.av = 'chicken';
+  if(!editUnlocked.includes(editing.av) && !(editing.av==='custom' && editing.custom && editing.custom.length)) editing.av = 'chicken';
   $('#profTitle').textContent = title || 'Who are you?';
   $('#nameIn').value = editing.name || ''; $('#nameIn').placeholder = placeholder || 'Enso';
   PENDING = cb || null; renderPickers(); show('scrProfile');
 }
 function renderPickers(){
   const open = editUnlocked;
-  $('#avPick').innerHTML = DOODLES.map(a => { const ok = open.includes(a); const buy = !ok && editCredits > 0; return `<button class="pick ${editing.av===a?'on':''} ${ok?'':'locked'}" data-av="${a}" ${ok||buy?'':'disabled'} aria-label="${AV_NAME[a]}${ok?'':' (locked)'}">${svgIcon(a, colHex(editing.col), 48)}</button>`; }).join('');
+  $('#avPick').innerHTML = `<button class="pick drawown ${editing.av==='custom'?'on':''}" data-av="custom" aria-label="Draw your own doodle">${editing.custom && editing.custom.length ? svgIcon('custom', colHex(editing.col), 48, editing.custom) : '<span>✏️<small>draw!</small></span>'}</button>` + DOODLES.map(a => { const ok = open.includes(a); const buy = !ok && editCredits > 0; return `<button class="pick ${editing.av===a?'on':''} ${ok?'':'locked'}" data-av="${a}" ${ok||buy?'':'disabled'} aria-label="${AV_NAME[a]}${ok?'':' (locked)'}">${svgIcon(a, colHex(editing.col), 48)}</button>`; }).join('');
   $('#avLabel').textContent = open.length===1 ? 'Your doodle' : 'Pick your doodle';
   $('#avHint').textContent = editCredits > 0 ? `You have ${editCredits} unlock${editCredits>1?'s':''}! Tap a locked doodle to unlock it.` : (open.length >= DOODLES.length ? 'Every doodle unlocked!' : 'Win a round to unlock one more doodle of your choice.');
   $('#colPick').innerHTML = COLORS.map(c => `<button class="swatch ${editing.col===c.id?'on':''}" data-col="${c.id}" style="background:${c.hex}" aria-label="${c.id}"></button>`).join('');
   $('#avPick').querySelectorAll('button').forEach(b => b.onclick = () => { const a = b.dataset.av;
+    if(a==='custom'){ SFX.pop(); openDrawOwn(editing.custom, (cs) => { editing.custom = cs; if(cs.length) editing.av = 'custom'; if(editIsMe){ profile.custom = cs; saveProfile(); } renderPickers(); show('scrProfile'); }); return; }
     if(!editUnlocked.includes(a)){ if(editCredits<=0) return; editCredits--; editUnlocked.push(a); if(editIsMe){ profile.unlocked = editUnlocked.slice(); profile.credits = editCredits; saveProfile(); } SFX.reward(); }
     editing.av = a; SFX.tick(); renderPickers(); });
   $('#colPick').querySelectorAll('button').forEach(b => b.onclick = () => { editing.col = b.dataset.col; SFX.tick(); renderPickers(); });
@@ -667,13 +811,14 @@ $('#btnModeBack').onclick = () => openProfile();
 $('#btnOne').onclick = () => { SFX.pop(); openProfile('Who is player 2?', { name:'', av:'chicken', col: COLORS[(COLORS.findIndex(c=>c.id===profile.col)+1)%COLORS.length].id }, (p2) => startLocal({ ...profile }, p2), 'Friend', 0); };
 $('#btnBot').onclick = () => { SFX.pop(); renderLevels(); show('scrBot'); };
 $('#btnBotBack').onclick = () => show('scrMode');
-function renderLevels(){ $('#levels').innerHTML = Object.keys(BOT_LEVELS).map(k => `<button class="lvl" data-l="${k}">${svgIcon(ROBOS[['dumb','smart','genius'].indexOf(k)].av, '#3aa655', 52)}<div><b>${BOT_LEVELS[k].name}</b><span>${BOT_LEVELS[k].blurb}</span></div></button>`).join(''); $('#levels').querySelectorAll('button').forEach(b => b.onclick = () => { SFX.pop(); startBot(b.dataset.l); }); }
+const megaOpen = () => ['dumb','smart','genius'].every(k => (profile.roboBeat||{})[k] > 0);
+function renderLevels(){ $('#levels').innerHTML = ['dumb','smart','genius'].map((k,i) => `<button class="lvl" data-l="${k}">${svgIcon(ROBOS[i].av, '#3aa655', 52)}<div><b>${BOT_LEVELS[k].name}${(profile.roboBeat||{})[k] ? ' ✅' : ''}</b><span>${BOT_LEVELS[k].blurb}</span></div></button>`).join('') + (megaOpen() ? `<button class="lvl boss" data-l="mega">${svgIcon('megacluck', '#e2503f', 64)}<div><b>MEGA-CLUCK${profile.roboBeat.mega ? ' 👑' : ''}</b><span>${BOT_LEVELS.mega.blurb}</span></div></button>` : `<div class="lvl lockedboss">${svgIcon('megacluck', '#9aa3bd', 52)}<div><b>??? 🔒</b><span>Beat Dumb, Smart AND Genius to wake up the boss…</span></div></div>`); $('#levels').querySelectorAll('button.lvl').forEach(b => b.onclick = () => { SFX.pop(); startBot(b.dataset.l); }); }
 $('#btnTwo').onclick = () => { SFX.pop(); $('#roomStatus').textContent=''; $('#roomStatus').classList.remove('err'); show('scrTwo'); setTimeout(()=>$('#codeIn').focus(), 50); };
 $('#btnTwoBack').onclick = () => { netClose(); show('scrMode'); };
 $('#btnEnter').onclick = () => { SFX.pop(); netEnter(($('#codeIn').value||'').toLowerCase().replace(/[^a-z0-9]/g,'')); };
 $('#codeIn').addEventListener('keydown', e => { if(e.key==='Enter') $('#btnEnter').click(); });
 $('#aiBtn').onclick = () => toggleAuto();
-function goMenu(){ netClose(); Q.length = 0; gduelClose(); S = null; clearTimeout(botTimer); guardStop(); $('#cover').hidden = true; $('#ask').hidden = true; $('#pad').hidden = true; $('#duel').hidden = true; show('scrTitle'); }
+function goMenu(){ closeMenuSheet(); netClose(); Q.length = 0; gduelClose(); S = null; clearTimeout(botTimer); guardStop(); $('#cover').hidden = true; $('#ask').hidden = true; $('#pad').hidden = true; $('#duel').hidden = true; show('scrTitle'); }
 
 // ---------------- game UI ----------------
 let pieces = [];
@@ -689,58 +834,70 @@ function setPiece(pc){ pc.el.setAttribute('transform', `translate(${(pc.x+(pc.sw
 function placePiece(p){ const pc = pieces[p], pos = locXY(p, S.players[p].loc); pc.x = pos.x; pc.y = pos.y; pc.rot = 0; pc.sc = 1; pc.sy = 1; setPiece(pc); }
 function drawPieceBody(p, chickenMode){
   const pl = S.players[p], pc = pieces[p];
-  const inner = chickenMode ? ico('chicken','#f6c531') : (ico(pl.av, colHex(pl.col)) + scribSVG(pl.scribbles));
-  pc.el.querySelector('.body').innerHTML = `<g transform="scale(2.6)"><circle r="19" fill="#fff" opacity=".6"/>${inner}</g>`;
+  const inner = chickenMode ? ico('chicken','#f6c531') : (ico(pl.av, colHex(pl.col), pl.custom) + scribSVG(pl.scribbles));
+  const big = pl.av==='megacluck' && !chickenMode ? 3.4 : 2.6;
+  pc.el.querySelector('.body').innerHTML = `<g transform="scale(${big})"><circle r="19" fill="#fff" opacity=".6"/>${inner}</g>${chickenMode ? '' : auraRing(pl)}`;
 }
 function renderFlags(){
   for(const q of QUAD_LIST){ const o = S.owner[q], g = document.getElementById('flag-'+q); if(!g) continue;
-    if(o===null){ g.innerHTML = ''; continue; }
+    if(o===null){ g.innerHTML = `<g opacity=".85"><rect x="-78" y="-20" width="156" height="40" rx="12" fill="#fff" stroke="${QUADS[q].col}" stroke-width="4"/><g transform="translate(-56 0) scale(.95)">${ico(QUADS[q].icon, QUADS[q].col)}</g><text class="ftxt" x="12" y="8" font-size="21" fill="${shade(QUADS[q].col, .3)}" stroke="#fff" stroke-width="4">${esc(QUADS[q].short)}</text></g>`; continue; }
     const pl = S.players[o]; const w = Math.max(100, pl.name.length*19+40);
-    g.innerHTML = `<rect x="${-w/2}" y="-24" width="${w}" height="48" rx="12" fill="${colHex(pl.col)}" class="sh" stroke="${INK}" stroke-width="3" opacity=".93"/><g transform="translate(${-w/2+22} 0) scale(1.1)">${ico(locked(q)?'lock':'key', locked(q)?STAR_C:'#fff')}</g><text class="ftxt" x="12" y="10" font-size="28" fill="#fff" stroke="${INK}" stroke-width="5">${esc(pl.name)}</text>`; }
+    g.innerHTML = `<rect x="${-w/2}" y="-24" width="${w}" height="48" rx="12" fill="${colHex(pl.col)}" class="sh" stroke="${QUADS[q].col}" stroke-width="6" opacity=".93"/><g transform="translate(${-w/2+22} 0) scale(1.1)">${ico(locked(q)?'lock':'key', locked(q)?STAR_C:'#fff')}</g><text class="ftxt" x="12" y="10" font-size="28" fill="#fff" stroke="${INK}" stroke-width="5">${esc(pl.name)}</text>`; }
   const ropeOpen = S.players.some(p => p.rope); const lock = $('#ropeLock'); if(lock) lock.hidden = ropeOpen; const rg = $('#ropeG'); if(rg) rg.setAttribute('opacity', ropeOpen ? '1' : '.55');
-  for(const dir in LOOPS) for(const side of ['out','back']){ const q = ALLEY_QUADS[dir][side==='out'?0:1]; const d = document.getElementById(`door-${dir}-${side}`); if(d){ const col = S.owner[q]===null ? QUADS[q].col : colHex(S.players[S.owner[q]].col); d.querySelector('circle').setAttribute('fill', col); d.querySelector('g').innerHTML = ico(locked(q)?'lock':'door', col); } }
-  document.querySelectorAll('#board .stepmark').forEach(r => { const q = r.dataset.quad; const base = S.owner[q]!==null ? colHex(S.players[S.owner[q]].col) : QUADS[q].col; r.setAttribute('fill', r.dataset.acc==='1' ? shade(base,.32) : base); });
+  for(const dir in LOOPS) for(const side of ['out','back']){ const q = ALLEY_QUADS[dir][side==='out'?0:1]; const d = document.getElementById(`door-${dir}-${side}`); if(d){ const col = QUADS[q].col; const c = d.querySelector('circle'); c.setAttribute('fill', col); const o = S.owner[q]; c.setAttribute('stroke', o===null ? 'none' : colHex(S.players[o].col)); c.setAttribute('stroke-width', o===null ? 0 : 7); c.setAttribute('opacity', o===null ? '.55' : '.8'); d.querySelector('g').innerHTML = ico(locked(q)?'lock':'door', col); } }
 }
 function renderAll(){
   if(!S) return;
   [0,1].forEach(p => { const pl = S.players[p], card = $('#card'+p);
     const keys = QUAD_LIST.map(q => `<span class="k ${pl.keys[q]>0?'has':''}" title="${QUADS[q].name}">${svgIcon('key', QUADS[q].col, 22)}</span>`).join('');
-    card.innerHTML = `${avatarSVG(pl, 84, 'av')}<div class="who"><div class="nm">${esc(pl.name)}</div><div class="keys">${keys}</div></div><div class="crowns">${svgIcon('crown', STAR_C, 18).repeat(Math.min(pl.wins,5))}</div>${pl.auto && !(MODE==='bot' && p===1) ? '<div class="auto">🤖 AI</div>' : ''}`;
-    card.classList.toggle('active', S.phase==='play' && S.turn===p); drawPieceBody(p, false); });
+    const au = pl.auras || []; const ring = au.length ? `<div class="aura">${au.map((q,i) => `<i style="--a:${Math.round(i*360/au.length)}deg">${svgIcon(QUADS[q].aura, QUADS[q].auraCol, 22)}</i>`).join('')}</div>` : '';
+    const eggs = pl.eggs ? `<span class="eggs" aria-label="${pl.eggs} eggs">${'🥚'.repeat(pl.eggs)}</span>` : '';
+    card.innerHTML = `<div class="avw">${avatarSVG(pl, 84, 'av')}${ring}</div><div class="who"><div class="nm">${esc(pl.name)}</div><div class="keys">${keys}${eggs}</div></div><div class="crowns">${svgIcon('crown', STAR_C, 18).repeat(Math.min(pl.wins,5))}</div>${pl.auto && !(MODE==='bot' && p===1) ? '<div class="auto">🤖 AI</div>' : ''}`;
+    card.classList.toggle('active', S.phase==='play' && S.turn===p); card.classList.toggle('glow', au.length > 0); drawPieceBody(p, false); });
   renderFlags();
   $('#notes').innerHTML = [0,1].map(p => S.notes[p] ? `<div class="sticky"><b>${esc(S.players[p].name)}:</b> ${esc(S.notes[p])}</div>` : '').join('');
   const ctrl = controllable(); const pl = S.players[ctrl]; const mine = canRoll(ctrl);
-  const left = $('#leftCtl'); const tz = $('#taunts');
-  const atHub = S.phase==='play' && S.turn===ctrl && pl.loc.z==='hub' && !S.ask && !S.draw && !S.duel && !S.gduel && !S.dance && (MODE==='local' || ctrl===ME);
-  const btns = TAUNTS.map(t => `<button class="taunt" data-e="${t.e}" aria-label="${t.t}">${t.e}<small>${t.t}</small></button>`).join('');
-  if(S.dance && MODE==='local'){ if(!tz.classList.contains('dance')){ left.innerHTML = `<div class="dancewrap"><div class="keysbox">${esc(S.players[0].name)} 👇</div><div class="taunts dance">${btns}</div></div>`; left.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(0, b.dataset.e)); tz.className = 'taunts dance'; tz.innerHTML = btns; tz.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(1, b.dataset.e)); } }
-  else if(S.dance){ left.innerHTML = `<div class="keysbox">Tap the same emoji as ${esc(S.players[1-ME].name)} to make the chicken laugh! 👉</div>`; if(!tz.classList.contains('dance')){ rebuildTaunts(); tz.classList.add('dance'); } }
+  const left = $('#leftCtl'), right = $('#rightCtl'), tz = $('#taunts');
+  const myMove = S.phase==='play' && S.turn===ctrl && !S.ask && !S.draw && !S.duel && !S.gduel && !S.dance && !S.lucky && (MODE==='local' || ctrl===ME) && !pl.auto;
+  const atHub = myMove && pl.loc.z==='hub';
+  const btns = TAUNTS.map(t => `<button class="taunt" data-e="${t.e}" aria-label="${t.t}"><b>${t.e}</b><small>${t.t}</small></button>`).join('');
+  if(S.dance && MODE==='local'){ if(!tz.classList.contains('dance')){ left.innerHTML = `<div class="keysbox">${esc(S.players[0].name)}: top row 👇<br>${esc(S.players[1].name)}: bottom row</div>`; tz.className = 'taunts dance two'; tz.innerHTML = btns + btns; tz.querySelectorAll('button').forEach((b, i) => b.onclick = () => tauntTap(i < TAUNTS.length ? 0 : 1, b.dataset.e)); } right.innerHTML = ''; }
+  else if(S.dance){ left.innerHTML = `<div class="keysbox">Tap the same emoji as ${esc(S.players[1-ME].name)}!</div>`; right.innerHTML = ''; if(!tz.classList.contains('dance')){ rebuildTaunts(); tz.classList.add('dance'); } }
   else if(!tz.querySelector('.taunt') || tz.classList.contains('dance')) rebuildTaunts();
   if(S.dance){ }
   else if(atHub){ const chosen = pl.loc.dir; const rope = !!pl.rope;
-    const b = (dir) => `<button data-dir="${dir}" class="${chosen===dir?'on':''}" aria-label="${DIRS[dir].name} road">${DIRS[dir].arrow}</button>`;
-    left.innerHTML = `<div class="roads"><span></span>${b('N')}<span></span>${b('W')}<button data-dir="R" class="${chosen==='R'?'on':(rope?'rope':'')}" ${rope?'':'disabled'} aria-label="Rope to the star">${rope?'⭐':'🔒'}</button>${b('E')}<span></span>${b('S')}<span></span><div class="lab">${chosen ? 'Now swipe the dice!' : (rope ? 'Take the rope ⭐' : 'Pick a road!')}</div></div>`;
-    left.querySelectorAll('button').forEach(bt => bt.onclick = () => onPathTap(bt.dataset.dir)); }
-  else left.innerHTML = `<div class="keysbox">${ownedCount(pl)}/4 corners<br>${pl.rope ? '⭐ rope open!' : 'own all 4 for the rope'}</div>`;
+    const dots = (dir) => `<span class="dots">${ALLEY_QUADS[dir].map(q => `<i style="background:${QUADS[q].col}"></i>`).join('')}</span>`;
+    const b = (dir) => `<button data-dir="${dir}" class="${chosen===dir?'on':''}" aria-label="${DIRS[dir].name} road: ${ALLEY_QUADS[dir].map(q => QUADS[q].short).join(' and ')}">${DIRS[dir].arrow}${dots(dir)}</button>`;
+    left.innerHTML = `<div class="roads"><span></span>${b('N')}<span></span>${b('W')}<button data-dir="R" class="${chosen==='R'?'on':(rope?'rope':'')}" ${rope?'':'disabled'} aria-label="Rope to the star">${rope?'⭐':'🔒'}</button>${b('E')}<span></span>${b('S')}<span></span></div>`;
+    left.querySelectorAll('button').forEach(bt => bt.onclick = () => onPathTap(bt.dataset.dir, false));
+    if(chosen && chosen!=='R'){ const qs = ALLEY_QUADS[chosen]; const hint = luckyHint(ctrl);
+      right.innerHTML = `<div class="firstpick"><div class="lab">Go to first:</div>${qs.map((q,k) => `<button data-rev="${k}" class="${(k===1)===!!pl.loc.rev?'on':''}" style="--c:${QUADS[q].col}">${svgIcon(QUADS[q].icon, QUADS[q].col, 22)}<span>${QUADS[q].short}</span></button>`).join('')}<div class="lab">${hint ? esc(hint) : 'then swipe the dice!'}</div></div>`;
+      right.querySelectorAll('button').forEach(bt => bt.onclick = () => onPathTap(chosen, bt.dataset.rev==='1')); }
+    else right.innerHTML = `<div class="keysbox big">${chosen==='R' ? 'The rope! Swipe 🎲' : (rope ? 'Take the rope ⭐' : '👈 Pick a road!')}</div>`; }
+  else { left.innerHTML = `<div class="keysbox">${ownedCount(pl)}/4 corners<br>${pl.rope ? '⭐ rope open!' : 'own all 4 for the rope'}</div>`;
+    const hint = myMove ? luckyHint(ctrl) : '';
+    right.innerHTML = hint ? `<div class="keysbox hint">🍀 ${esc(hint)}</div>` : `<div class="keysbox">🥚 ${pl.eggs|0}/3 eggs<br><small>roll a 1 = egg</small></div>`; }
   const ring = $('#hubRing'); if(ring) ring.querySelector('circle').setAttribute('opacity', atHub ? '.9' : '0');
   const dice = $('#dice'); dice.classList.toggle('ready', mine); dice.classList.toggle('off', !mine);
+  swipeHint(mine);
   const bn = $('#banner'); bn.classList.remove('me');
   if(S.phase==='play'){ const tp = S.players[S.turn]; const me = (MODE==='local') || S.turn===ME; let msg;
     if(S.dance) msg = 'CHICKEN DANCE! Tap the same emoji together!';
-    else if(S.gduel) msg = 'GUARDIAN DUEL!';
+    else if(S.gduel) msg = S.gduel.q==='RAIN' ? 'CHICKEN RAIN!' : 'GUARDIAN DUEL!';
     else if(S.duel) msg = 'EMOJI DUEL!';
+    else if(S.lucky) msg = (MODE==='local' || S.lucky.p===ME) ? 'LUCKY STAR! Pick a die' : `${tp.name} got a Lucky Star…`;
     else if(S.ask) msg = me ? 'MATH TIME!' : `${tp.name} is doing math…`;
     else if(S.draw) msg = (MODE==='local' || S.draw.by===ME) ? 'Draw a mustache!' : `${S.players[S.draw.by].name} is drawing on you…`;
     else if(tp.loc.z==='hub' && !tp.loc.dir) msg = me ? (MODE==='local' ? `${tp.name}: pick a road!` : 'YOUR TURN! Pick a road') : `${tp.name} is picking a road…`;
     else msg = me ? (MODE==='local' ? `${tp.name}'s turn! Swipe the dice` : 'YOUR TURN! Swipe the dice') : (MODE==='bot' ? `${tp.name} is thinking…` : `Waiting for ${tp.name}…`);
     bn.textContent = msg; if(me) bn.classList.add('me'); }
   else bn.textContent = S.phase==='over' ? 'Round over!' : 'Get ready…';
-  const ai = $('#aiBtn'); const meP = MODE==='local' ? S.turn : ME; const canAuto = S.phase==='play' && !(MODE==='bot' && meP===1);
-  ai.hidden = !canAuto; const au = S.players[meP].auto; ai.classList.toggle('on', !!au); ai.textContent = au ? `🤖 AI playing · ${Math.max(0, Math.ceil((autoUntil[meP]-Date.now())/1000))}s · tap to stop` : (MODE==='local' ? `🤖 AI plays ${esc(S.players[meP].name)}` : '🤖 AI plays for me');
-  renderAsk(); renderPad(); renderDuel(); renderMusic();
+  const ai = $('#aiBtn'); const meP = MODE==='local' ? S.turn : ME; const au = S.phase==='play' && S.players[meP].auto && !(MODE==='bot' && meP===1);
+  ai.hidden = !au; if(au) ai.textContent = `🤖 AI playing · ${Math.max(0, Math.ceil((autoUntil[meP]-Date.now())/1000))}s · tap to stop`;
+  renderAsk(); renderPad(); renderDuel(); renderMusic(); renderLucky();
 }
 function controllable(){ return MODE==='local' ? S.turn : ME; }
-function canRoll(p){ return !!S && S.phase==='play' && S.turn===p && !busy() && !S.ask && !S.draw && !S.duel && !S.gduel && !S.dance && (MODE==='local' || p===ME) && !(S.players[p].loc.z==='hub' && !S.players[p].loc.dir); }
+function canRoll(p){ return !!S && S.phase==='play' && S.turn===p && !busy() && !S.ask && !S.draw && !S.duel && !S.gduel && !S.dance && !S.lucky && (MODE==='local' || p===ME) && !(S.players[p].loc.z==='hub' && !S.players[p].loc.dir); }
 function dieFace(v, el){
   const dots = {1:[[30,30]],2:[[18,18],[42,42]],3:[[18,18],[30,30],[42,42]],4:[[18,18],[42,18],[18,42],[42,42]],5:[[18,18],[42,18],[30,30],[18,42],[42,42]],6:[[18,16],[42,16],[18,30],[42,30],[18,44],[42,44]]}[v] || [];
   (el || $('#dieFace')).innerHTML = `<rect x="4" y="4" width="52" height="52" rx="12" fill="#fff" class="sh" stroke="${INK}" stroke-width="3"/>` + dots.map(d => `<circle cx="${d[0]}" cy="${d[1]}" r="5" fill="${INK}"/>`).join('');
@@ -800,14 +957,14 @@ function renderPad(){
   $('#padDone').onclick = () => { SFX.pop(); padSubmit(); };
   padEndsAt = performance.now() + d.secs*1000*SPEED; clearInterval(padTimer); padTimer = setInterval(padTick, 250);
 }
-function victimInfo(v){ if(typeof v==='string' && v.startsWith('g:')){ const q = v.slice(2); const kind = QUADS[q].guard; return { name:`the ${GUARD_NAME[kind]} guardian`, av:kind, col:null, guard:q, scribbles:S.gscrib[q] }; } const pl = S.players[v]; return { name:pl.name, av:pl.av, col:pl.col, scribbles:pl.scribbles }; }
+function victimInfo(v){ if(typeof v==='string' && v.startsWith('g:')){ const q = v.slice(2); const kind = QUADS[q].guard; return { name:`the ${GUARD_NAME[kind]} guardian`, av:kind, col:null, guard:q, scribbles:S.gscrib[q] }; } const pl = S.players[v]; return { name:pl.name, av:pl.av, col:pl.col, scribbles:pl.scribbles, custom:pl.custom }; }
 const guardColor = { chicken:'#f6c531', dog:'#c98a4b', duck:'#fff', cat:'#9fa8da' };
 const faceColor = (vi) => vi.col ? colHex(vi.col) : guardColor[vi.av];
 function fxTextPad(txt){ const h = $('#pad h3'); if(h) h.textContent = txt; }
 function padTick(){ const d = S && S.draw; if(!d){ clearInterval(padTimer); padTimer = null; return; } const left = Math.max(0, padEndsAt - performance.now()); const secs = Math.ceil(left/(1000*SPEED)); const c = $('#padClock'); if(c){ c.textContent = secs; c.classList.toggle('hot', secs<=5); } const mine = (MODE==='local') || d.by===ME; if(mine && left<=0 && !padSubmitted) padSubmit(); }
 function padSubmit(){ if(padSubmitted) return; padSubmitted = true; clearInterval(padTimer); padTimer = null; submitStache(compactStrokes(padStrokes)); }
 let padGhostImg = null;
-function padGhost(victim, cb){ const img = new Image(); img.onload = () => { padGhostImg = img; cb(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="260" height="260"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(victim.av, faceColor(victim))}</svg>`); padGhostImg = null; }
+function padGhost(victim, cb){ const img = new Image(); img.onload = () => { padGhostImg = img; cb(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="260" height="260"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(victim.av, faceColor(victim), victim.custom)}</svg>`); padGhostImg = null; }
 function padRedraw(){ if(!padCtx) return; padCtx.clearRect(0,0,300,300); if(padGhostImg){ padCtx.save(); padCtx.globalAlpha = .25; try { padCtx.drawImage(padGhostImg, 20, 20, 260, 260); } catch(e){} padCtx.restore(); } padCtx.save(); padCtx.translate(150,150); padCtx.scale(6.5,6.5); padCtx.lineWidth = 2.6; padCtx.lineCap = 'round'; padCtx.lineJoin = 'round'; padCtx.strokeStyle = '#1f2a4a'; for(const st of padStrokes){ padCtx.beginPath(); st.forEach((pt,i) => i ? padCtx.lineTo(pt[0],pt[1]) : padCtx.moveTo(pt[0],pt[1])); padCtx.stroke(); } padCtx.restore(); }
 function compactStrokes(strokes){ let out = strokes.filter(s => s.length).map(s => s.map(p => [clamp(p[0],-24,24), clamp(p[1],-24,24)])); let total = out.reduce((n,s) => n+s.length, 0); while(total > 220){ out = out.map(s => s.length>3 ? s.filter((_,i) => i%2===0 || i===s.length-1) : s); const t2 = out.reduce((n,s) => n+s.length, 0); if(t2===total) break; total = t2; } if(!out.length) out = [defaultStache()]; return out.slice(0,12); }
 function defaultStache(){ const pts=[]; for(let i=0;i<=16;i++){ const x=-11+i*22/16; pts.push([+x.toFixed(1), +(2 + Math.sin(i/16*Math.PI*2)*2.5 - Math.abs(x)/5).toFixed(1)]); } return pts; }
@@ -885,11 +1042,12 @@ function guardTick(now){
       if(k>=1){ if(g.phase==='walk'){ g.phase = 'tease'; g.t0 = now; SFX.raspberry(); const t = svgEl('text', { class:'ftxt', x: g.to.x, y: g.to.y-50, 'font-size':40, 'stroke-width':8, fill:'#e2503f' }, null, fx); t.textContent = pick(['nyah nyah!', 'pbbbt!', 'ha ha!', 'can\'t catch me!']); setTimeout(() => t.remove(), 1800*SPEED); const og = guards[g.target]; if(og && og.phase==='nap'){ og.phase = 'startle'; og.t0 = now; } } else { g.phase = 'nap'; g.t0 = now; g.next = now + (10000+rnd(12000))*SPEED; } } }
     else if(g.phase==='tease'){ const k = (now - g.t0)/(1800*SPEED); x = g.to.x; y = g.to.y - Math.abs(Math.sin(k*Math.PI*6))*18; rot = Math.sin(k*Math.PI*6)*25; sc = 1.1; flip = g.face; if(k>=1){ g.phase = 'walkback'; g.t0 = now; g.from = g.to; g.to = home; g.dur = 2600*SPEED; } }
     const col = guardColor[g.kind]; const cool = !!S.gcool[q]; const sc2 = S.gscrib[q] || [];
-    const key = g.kind + cool + JSON.stringify(sc2).length;
-    if(body.dataset.key !== key){ body.dataset.key = key; body.innerHTML = `<g class="gin">${ico(g.kind, col)}${scribSVG(sc2)}${cool ? coolBits(g.kind) : ''}</g>`; }
+    const hats = (S.ghats && S.ghats[q]) || 0; const key = g.kind + cool + JSON.stringify(sc2).length + 'h' + hats;
+    if(body.dataset.key !== key){ body.dataset.key = key; body.innerHTML = `<g class="gin">${ico(g.kind, col)}${scribSVG(sc2)}${cool ? coolBits(g.kind) : ''}${hatStack(g.kind, hats)}</g>`; }
     if(cool && g.phase==='nap') { rot = 0; y = home.y; }   // cool guardians don't nap, they pose
     body.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${(2.6*sc*flip).toFixed(3)} ${(2.6*sc).toFixed(3)})`);
   }
+  const spin = `rotate(${((now/22)%360).toFixed(1)})`; document.querySelectorAll('#pieces .auraSpin').forEach(a => a.setAttribute('transform', spin));
   // the rope sways once it is open, and climbers sway with it
   const open = S.players.some(p => p.rope); const rg = document.getElementById('ropeG');
   const ang = open ? Math.sin(now/700)*1.6 : 0;
@@ -914,49 +1072,53 @@ const Music = (() => {
   function play(){ if(!on || window.__SR_FAST) return; ensure(); if(!audio.src || !audio.src.endsWith(encodeURI(cur().f).split('/').pop())) audio.src = cur().f; if(audio.paused) tryPlay(); showTag(); }
   function showTag(msg){ const w = $('#boardwrap'); if(!w || $('#game').hidden) return; let t = w.querySelector('.songtag'); if(!t){ t = document.createElement('div'); t.className = 'songtag'; w.appendChild(t); } t.textContent = msg || `♪ ${cur().t} · ${cur().a} (CC0)`; t.hidden = false; clearTimeout(tagT); tagT = setTimeout(() => { t.hidden = true; }, 3500); }
   function next(){ idx++; save(); fails = 0; if(audio){ audio.src = cur().f; } if(on) play(); }
-  function toggle(){ on = !on; save(); if(on){ fails = 0; broken = false; play(); if(!location.protocol.startsWith('http')) showTag('Music plays on the StarChasers website'); } else if(audio) audio.pause(); renderMusic(); }
+  function toggle(){ on = !on; save(); if(on){ fails = 0; broken = false; play(); if(!location.protocol.startsWith('http')) showTag('Music plays on the QuadRun website'); } else if(audio) audio.pause(); renderMusic(); }
   // phones only allow music to start from a tap, so any tap (re)starts it while music is on
   document.addEventListener('pointerdown', () => { if(on && !broken && (!audio || audio.paused) && !window.__SR_FAST) play(); }, { passive:true });
-  return { start: play, next, toggle, get on(){ return on; }, get broken(){ return broken; } };
+  return { start: play, next, toggle, get on(){ return on; }, get broken(){ return broken; }, get playing(){ return on && !!audio && !audio.paused && !broken; }, get track(){ return cur(); } };
 })();
 function renderMusic(){ document.querySelectorAll('.musicbtn').forEach(b => { b.hidden = false; if(b.dataset.act==='toggle'){ b.classList.toggle('off', !Music.on || Music.broken); b.title = Music.broken ? 'Music could not load' : (Music.on ? 'Music on' : 'Music off'); } else b.hidden = !Music.on; }); }
-document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.musicbtn'); if(!b) return; SFX.unlock(); if(b.dataset.act==='next') Music.next(); else Music.toggle(); renderMusic(); });
+document.addEventListener('click', (e) => { const b = e.target.closest && e.target.closest('.musicbtn'); if(!b) return; SFX.unlock(); if(b.dataset.act==='next') Music.next(); else { const was = Music.on; Music.toggle(); if(was && !Music.on) musicSulk(); } renderMusic(); });
 renderMusic();
 
 // ---------------- guardian duels: each guardian invented its own 1-minute game ----------------
 const GAMES = {
-  NW: { id:'stache', title:'MUSTACHE SHOWDOWN', how:'Draw a mustache on your rival. The Chicken laughs at both faces: the FUNNIEST-LOOKING face wins, but has to keep wearing it!' },
+  NW: { id:'stache', title:'MUSTACHE SHOWDOWN', how:'Draw a mustache on your rival. The guardian picks the drawing it likes best. Loser wears the mustache!' },
   NE: { id:'bones',  title:'BONE FETCH', how:'Tap the bones as fast as you can. First to 15 wins!', target:15 },
   SW: { id:'duck',   title:'DUCK RACE', how:'Tap PADDLE super fast. First across the pond wins!', target:70 },
   SE: { id:'laser',  title:'LASER CHASE', how:'Keep your finger on the red laser dot. First to 10 seconds wins!', target:10000 },
+  RAIN: { id:'rain', title:'CHICKEN RAIN!', how:'Tap the falling chickens! Most catches wins 2 free steps.', ms:12000 },
 };
 const GDUEL_MS = 60000;
-const BOT_DUEL = { dumb:{ bones:.9, duck:4.5, laser:.42 }, smart:{ bones:1.3, duck:6.5, laser:.62 }, genius:{ bones:1.8, duck:8.5, laser:.82 } };
+const BOT_DUEL = { dumb:{ bones:.9, duck:4.5, laser:.42, rain:.5 }, smart:{ bones:1.3, duck:6.5, laser:.62, rain:.8 }, genius:{ bones:1.8, duck:8.5, laser:.82, rain:1.1 }, mega:{ bones:2.0, duck:9.5, laser:.88, rain:1.3 } };
+const gKind = (d) => d.q==='RAIN' ? 'chicken' : QUADS[d.q].guard;
+const isGuardSide = (d, p) => d.q!=='RAIN' && p===d.o;
 function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const BONE_SVG = `<svg viewBox="-37 -23 74 46"><g stroke="${INK}" stroke-width="3" fill="#fff"><path d="M-22 -6 h44 a9 9 0 1 1 6 9 a9 9 0 1 1 -6 9 h-44 a9 9 0 1 1 -6 -9 a9 9 0 1 1 6 -9 Z" transform="translate(0 -3)"/></g></svg>`;
 let GD = null;   // this device's view of the running duel
 
-function sideIcon(d, p, size){ return p===d.o ? svgIcon(QUADS[d.q].guard, guardColor[QUADS[d.q].guard], size) : avatarSVG(S.players[p], size); }
-function sideName(d, p){ return p===d.o ? `${S.players[p].name} as the ${GUARD_NAME[QUADS[d.q].guard]}` : S.players[p].name; }
+function sideIcon(d, p, size){ return isGuardSide(d, p) ? svgIcon(gKind(d), guardColor[gKind(d)], size) : avatarSVG(S.players[p], size); }
+function sideName(d, p){ return isGuardSide(d, p) ? `${S.players[p].name} as the ${GUARD_NAME[gKind(d)]}` : S.players[p].name; }
 function gLocalSides(d){ const sides = [d.o, d.c]; if(MODE==='local') return sides.filter(p => !S.players[p].auto); return sides.filter(p => p===ME && !S.players[p].auto); }
-function gScoreText(game, v){ if(game.id==='laser') return `${(v/1000).toFixed(1)}s`; if(game.target) return `${Math.floor(v)}/${game.target}`; return ''; }
+function gScoreText(game, v){ if(game.id==='laser') return `${(v/1000).toFixed(1)}s`; if(game.target) return `${Math.floor(v)}/${game.target}`; if(game.id==='rain') return `${Math.floor(v)} 🐔`; return ''; }
 
 function gduelOpen(d){
   gduelClose();
-  const el = $('#gduel'); const game = GAMES[d.q]; const kind = QUADS[d.q].guard; const local = gLocalSides(d);
-  GD = { d, t0: performance.now(), arenas:{}, prog:{}, done:{}, lastSent:0, iv:null };
-  let html = `<div class="ghead">${svgIcon(kind, guardColor[kind], 46)}<div class="gtitle">${esc(game.title)}<small>${esc(game.how)}</small></div><div class="gclock" id="gclock">60</div></div><div class="arenas">`;
+  const el = $('#gduel'); const game = GAMES[d.q]; const kind = gKind(d); const local = gLocalSides(d);
+  GD = { d, t0: performance.now(), ms: game.ms || GDUEL_MS, arenas:{}, prog:{}, done:{}, lastSent:0, iv:null };
+  let html = `<div class="ghead">${svgIcon(kind, guardColor[kind], 46)}<div class="gtitle">${esc(game.title)}<small>${esc(game.how)}</small></div><div class="gclock" id="gclock">${Math.round(GD.ms/1000)}</div></div><div class="arenas">`;
   for(const p of [d.o, d.c]){
-    if(local.includes(p)) html += `<div class="arena mine" id="ga-${p}"><div class="alabel">${sideIcon(d, p, 26)} ${esc(sideName(d, p))}</div><div class="ascore" id="gs-${p}">${gScoreText(game, 0)}</div></div>`;
+    if(local.includes(p)) html += `<div class="arena mine" id="ga-${p}"><div class="alabel">${sideIcon(d, p, 26)} ${esc(sideName(d, p))}</div><div class="ascore" id="gs-${p}">${gScoreText(game, 0)}</div>${game.target ? `<div class="mybar"><i id="gm-${p}"></i></div>` : ''}</div>`;
     else html += `<div class="remote" id="gr-${p}">${sideIcon(d, p, 34)}<span>${esc(sideName(d, p))}</span>${game.id==='stache' ? `<span class="rv" id="grv-${p}">✏️ drawing…</span>` : `<div class="rb"><i id="grb-${p}" style="width:0%"></i></div><span class="rv" id="grv-${p}">${gScoreText(game, 0)}</span>`}</div>`;
   }
   html += `</div>`;
   el.innerHTML = html; el.hidden = false;
-  for(const p of local){ const a = $('#ga-'+p); GD.arenas[p] = game.id==='bones' ? mkBones(a, p, mulberry32(d.seed)) : game.id==='duck' ? mkDuck(a, p, d) : game.id==='laser' ? mkLaser(a, p, d.seed) : mkStache(a, p, d); }
+  for(const p of local){ const a = $('#ga-'+p); GD.arenas[p] = game.id==='bones' ? mkBones(a, p, mulberry32(d.seed)) : game.id==='duck' ? mkDuck(a, p, d) : game.id==='laser' ? mkLaser(a, p, d.seed) : game.id==='rain' ? mkRain(a, p, d.seed) : mkStache(a, p, d); }
+  if(game.id==='stache'){ const h = document.createElement('div'); h.className = 'hintpop'; h.textContent = 'Psst… the Chicken-Heart guardian LOVES hearts ❤️'; el.appendChild(h); setTimeout(() => h.remove(), 3200); SFX.sparkle && SFX.sparkle(); }
   GD.iv = setInterval(gTick, 200); gTick();
 }
 function gTick(){
-  if(!GD) return; const left = Math.max(0, GDUEL_MS*SPEED - (performance.now()-GD.t0)); const secs = Math.ceil(left/(1000*SPEED));
+  if(!GD) return; const left = Math.max(0, GD.ms*SPEED - (performance.now()-GD.t0)); const secs = Math.ceil(left/(1000*SPEED));
   const c = $('#gclock'); if(c){ c.textContent = secs; c.classList.toggle('hot', secs <= 10); }
   if(secs <= 5 && secs !== GD.lastTick){ GD.lastTick = secs; SFX.tickTock(); }
   if(left <= 0){ for(const p in GD.arenas){ const a = GD.arenas[p]; if(a.finish) a.finish(); } }
@@ -965,18 +1127,19 @@ function gTick(){
 }
 function gduelClose(){ if(!GD) { const el = $('#gduel'); if(el) el.hidden = true; return; } clearInterval(GD.iv); for(const p in GD.arenas){ try { GD.arenas[p].stop(); } catch(e){} } GD = null; const el = $('#gduel'); el.hidden = true; el.innerHTML = ''; }
 function gReport(p, v){
-  if(!GD) return; GD.prog[p] = v; const sc = $('#gs-'+p); if(sc) sc.textContent = gScoreText(GAMES[GD.d.q], v);
+  if(!GD) return; GD.prog[p] = v; const game0 = GAMES[GD.d.q]; const sc = $('#gs-'+p); if(sc){ sc.textContent = gScoreText(game0, v); sc.classList.remove('bump'); void sc.offsetWidth; sc.classList.add('bump'); } const mb = $('#gm-'+p); if(mb && game0.target) mb.style.width = Math.min(100, v/game0.target*100).toFixed(1)+'%';
   if(ROLE==='host') hostGprog(p, v);
   else { const now = performance.now(); const game = GAMES[GD.d.q]; if(now - GD.lastSent > 150 || (game.target && v >= game.target)){ GD.lastSent = now; net && net.send({ t:'req', a:'gprog', v }); } }
 }
-function gUpdate(p, v){ if(!GD || GD.arenas[p]) return; const game = GAMES[GD.d.q]; const b = $('#grb-'+p), t = $('#grv-'+p); if(b && game.target) b.style.width = Math.min(100, v/game.target*100).toFixed(1)+'%'; if(t) t.textContent = gScoreText(game, v); }
+function gUpdate(p, v){ if(!GD || GD.arenas[p]) return; const game = GAMES[GD.d.q]; const b = $('#grb-'+p), t = $('#grv-'+p); if(b && game.target) b.style.width = Math.min(100, v/game.target*100).toFixed(1)+'%'; if(b && game.id==='rain') b.style.width = Math.min(100, v/20*100).toFixed(1)+'%'; if(t) t.textContent = gScoreText(game, v); }
 function gUpdateDone(p){ if(!GD) return; GD.done[p] = true; const t = $('#grv-'+p); if(t) t.textContent = '✓ done!'; }
 function gSubmitDraw(p, strokes){ if(!GD || GD.done[p]) return; GD.done[p] = true; if(ROLE==='host') hostGdraw(p, strokes); else net && net.send({ t:'req', a:'gdraw', strokes }); }
 
 function mkBones(el, p, rng){
   const T = GAMES.NE.target; let n = 0, stopped = false;
   const place = () => { if(stopped) return; const b = document.createElement('button'); b.className = 'bone'; b.style.left = (12 + rng()*76) + '%'; b.style.top = (24 + rng()*64) + '%'; b.innerHTML = BONE_SVG; b.setAttribute('aria-label', 'Bone');
-    b.onpointerdown = (e) => { e.preventDefault(); if(stopped) return; b.remove(); n++; SFX.bone(); if(n%5===0) SFX.woof(); gReport(p, n); if(n < T) place(); }; el.appendChild(b); };
+    b.onpointerdown = (e) => { e.preventDefault(); e.stopPropagation(); if(stopped) return; gBurst(el, e, '+1', '#3aa655'); b.remove(); n++; SFX.hit(); if(n%5===0) SFX.woof(); gReport(p, n); if(n < T) place(); }; el.appendChild(b); };
+  el.addEventListener('pointerdown', (e) => { if(stopped || e.target.closest('.bone')) return; gBurst(el, e, '✗', '#d2483a'); SFX.miss(); });
   place();
   return { stop(){ stopped = true; el.querySelectorAll('.bone').forEach(b => b.remove()); } };
 }
@@ -985,13 +1148,13 @@ function mkDuck(el, p, d){
   const racer = p===d.o ? svgIcon('duck', '#fff', 62) : avatarSVG(S.players[p], 62);
   el.insertAdjacentHTML('beforeend', `<div class="pond"><div class="finish"></div><div class="duck" style="left:8%">${racer}</div></div><button class="paddle">PADDLE! 🌊</button>`);
   const duck = el.querySelector('.duck'), btn = el.querySelector('.paddle');
-  btn.onpointerdown = (e) => { e.preventDefault(); if(stopped || n >= T) return; n++; duck.style.left = (8 + 80*n/T) + '%'; if(n%3===0) SFX.paddle(); if(n%14===0) SFX.quack(); gReport(p, n); };
+  btn.onpointerdown = (e) => { e.preventDefault(); if(stopped || n >= T) return; n++; duck.style.left = (8 + 80*n/T) + '%'; duck.classList.remove('kick'); void duck.offsetWidth; duck.classList.add('kick'); const r = duck.getBoundingClientRect(); gBurst(el, { clientX:r.left, clientY:r.top + r.height*.7 }, '💦', '#5aa9e8'); if(n%3===0) SFX.paddle(); if(n%14===0){ SFX.quack(); gBurst(el, e, n > T*.7 ? 'Almost there!' : 'Keep going!', INK); } gReport(p, n); };
   return { stop(){ stopped = true; btn.disabled = true; } };
 }
 function mkLaser(el, p, seed){
   const rng = mulberry32(seed ^ 0x5eed); const ph = [rng()*6, rng()*6, rng()*6, rng()*6];
-  const dot = document.createElement('div'); dot.className = 'dot'; el.appendChild(dot);
-  let fx = null, fy = null, acc = 0, last = performance.now(), raf = 0, lastRep = 0, stopped = false;
+  const dot = document.createElement('div'); dot.className = 'dot'; dot.innerHTML = '<span>🐾</span>'; el.appendChild(dot);
+  let fx = null, fy = null, acc = 0, last = performance.now(), raf = 0, lastRep = 0, stopped = false, wasOn = false;
   const pos = (t) => { const s = t/1000; return [.5 + .36*Math.sin(s*.95+ph[0])*Math.cos(s*.41+ph[1]), .56 + .3*Math.sin(s*1.17+ph[2])*Math.cos(s*.33+ph[3])]; };
   const at = (e) => { const r = el.getBoundingClientRect(); fx = e.clientX - r.left; fy = e.clientY - r.top; };
   el.onpointerdown = (e) => { e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch(x){} at(e); };
@@ -999,20 +1162,22 @@ function mkLaser(el, p, seed){
   el.onpointerup = el.onpointercancel = () => { fx = null; };
   const step = (t) => { if(stopped) return; const dt = Math.min(100, t-last); last = t; const [ux, uy] = pos((t - GD_t0())/SPEED);
     const x = ux*el.clientWidth, y = uy*el.clientHeight; dot.style.left = x+'px'; dot.style.top = y+'px';
-    const on = fx !== null && Math.hypot(fx-x, fy-y) < 46; dot.classList.toggle('on', on);
-    if(on){ acc += dt / SPEED; if(t - lastRep > 150){ lastRep = t; gReport(p, Math.round(acc)); SFX.laserOn(); } }
+    const on = fx !== null && Math.hypot(fx-x, fy-y) < 46; dot.classList.toggle('on', on); dot.classList.toggle('far', fx !== null && !on);
+    dot.style.setProperty('--fill', Math.min(100, acc/GAMES.SE.target*100).toFixed(1)+'%');
+    if(on){ acc += dt / SPEED; if(t - lastRep > 150){ lastRep = t; gReport(p, Math.round(acc)); SFX.laserOn(); } if(!wasOn){ SFX.hit(); } } else if(wasOn && fx !== null){ SFX.miss(); gBurst(el, { clientX: el.getBoundingClientRect().left + fx, clientY: el.getBoundingClientRect().top + fy }, 'oops!', '#d2483a'); }
+    wasOn = on;
     raf = requestAnimationFrame(step); };
   raf = requestAnimationFrame(step);
   return { stop(){ stopped = true; cancelAnimationFrame(raf); } };
 }
 const GD_t0 = () => GD ? GD.t0 : performance.now();
 function mkStache(el, p, d){
-  const target = p===d.c ? { av:QUADS[d.q].guard, col:null } : { av:S.players[d.c].av, col:S.players[d.c].col };
+  const target = p===d.c ? { av:QUADS[d.q].guard, col:null } : { av:S.players[d.c].av, col:S.players[d.c].col, custom:S.players[d.c].custom };
   const size = Math.max(140, Math.min(el.clientWidth - 24, el.clientHeight - 64)); const K2 = size/46;
   const cv = document.createElement('canvas'); cv.className = 'sc'; cv.width = size; cv.height = size; cv.style.width = size+'px'; cv.style.height = size+'px'; el.appendChild(cv);
   el.insertAdjacentHTML('beforeend', `<div class="ink2"><i style="width:100%"></i></div><button class="scdone">DONE ✓</button>`);
   const ctx = cv.getContext('2d'); const strokes = []; let drawing = false, ink = 260, done = false, ghost = null;
-  const img = new Image(); img.onload = () => { ghost = img; redraw(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="${size}" height="${size}"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(target.av, faceColor(target))}</svg>`);
+  const img = new Image(); img.onload = () => { ghost = img; redraw(); }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40" width="${size}" height="${size}"><style>.ink{fill:none;stroke-linecap:round;stroke-linejoin:round}.sh{stroke-linecap:round;stroke-linejoin:round}</style>${ico(target.av, faceColor(target), target.custom)}</svg>`);
   const redraw = () => { ctx.clearRect(0,0,size,size); if(ghost){ ctx.save(); ctx.globalAlpha = .4; ctx.drawImage(ghost, size*3/46, size*3/46, size*40/46, size*40/46); ctx.restore(); } ctx.save(); ctx.translate(size/2, size/2); ctx.scale(K2, K2); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1f2a4a'; for(const st of strokes){ ctx.beginPath(); st.forEach((q,i) => i ? ctx.lineTo(q[0],q[1]) : ctx.moveTo(q[0],q[1])); ctx.stroke(); } ctx.restore(); };
   const pt = (e) => { const r = cv.getBoundingClientRect(); return [ +(((e.clientX-r.left)/r.width*46) - 23).toFixed(1), +(((e.clientY-r.top)/r.height*46) - 23).toFixed(1) ]; };
   cv.onpointerdown = (e) => { if(done || ink <= 0) return; e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch(x){} drawing = true; strokes.push([pt(e)]); SFX.tick(); };
@@ -1036,28 +1201,275 @@ function funnyScore(strokes, rng){
 }
 function gduelResult(d, a){
   if(!GD){ gduelOpen(d); }
+  $('#gduel').querySelectorAll('.hintpop').forEach(h => h.remove());
   for(const p in GD.arenas){ try { GD.arenas[p].stop(); } catch(e){} } clearInterval(GD.iv);
-  const game = GAMES[d.q], kind = QUADS[d.q].guard, w = a.winner, cName = S.players[d.c].name;
+  const game = GAMES[d.q], kind = gKind(d), w = a.winner, cName = S.players[d.c].name;
+  if(game.id==='rain'){ const sc = a.scores || [0,0]; const r = document.createElement('div'); r.className = 'result';
+    r.innerHTML = `${w===null || w===undefined ? `<h2>A TIE!</h2>` : `${avatarSVG(S.players[w], 110, 'winav')}<h2>${esc(S.players[w].name)} WINS THE RAIN!</h2><p class="sub">2 free steps!</p>`}<div class="faces">${[0,1].map(p => `<div>${avatarSVG(S.players[p], 72)}${sc[p]|0} 🐔<small>${esc(S.players[p].name)}</small></div>`).join('')}</div>`; $('#gduel').appendChild(r); return; }
   const guardWins = w === d.o;
   let faces = '';
   if(game.id==='stache'){
     const onGuard = (a.draws && a.draws.c) || [], onCh = (a.draws && a.draws.o) || [];
-    faces = `<div class="faces"><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(kind, guardColor[kind])}${scribSVG(onGuard.length ? [onGuard] : [])}</svg>🐔 laughed ${a.scores[d.o]}×<small>${esc(cName)} drew this</small></div><div><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(S.players[d.c].av, colHex(S.players[d.c].col))}${scribSVG(onCh.length ? [onCh] : [])}</svg>🐔 laughed ${a.scores[d.c]}×<small>${esc(S.players[d.o].name)} drew this</small></div></div>`;
+    const h = a.hearts || { c:0, o:0 }; const meter = (v) => `<div class="hmeter" aria-label="heart meter"><i style="width:${Math.round(clamp(v,0,1)*100)}%"></i><span>❤️</span></div>`;
+    const win = (p) => w===p ? ' class="won"' : '';
+    faces = `<div class="faces"><div${win(d.c)}><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(kind, guardColor[kind])}${scribSVG(onGuard.length ? [onGuard] : [])}</svg><small>${esc(cName)} drew this</small>${meter(h.c)}<span class="sees">🐔 “I see… ${guardianSees(h.c, onGuard)}”</span></div><div${win(d.o)}><svg viewBox="-20 -20 40 40" width="96" height="96">${ico(S.players[d.c].av, colHex(S.players[d.c].col), S.players[d.c].custom)}${scribSVG(onCh.length ? [onCh] : [])}</svg><small>${esc(S.players[d.o].name)} drew this</small>${meter(h.o)}<span class="sees">🐔 “I see… ${guardianSees(h.o, onCh)}”</span></div></div>`;
   } else {
     faces = `<div class="faces"><div>${svgIcon(kind, guardColor[kind], 80)}${esc(gScoreText(game, a.scores[d.o]))}</div><div>${avatarSVG(S.players[d.c], 80)}${esc(gScoreText(game, a.scores[d.c]))}</div></div>`;
   }
   const head = guardWins ? `<svg viewBox="-20 -20 40 40" width="110" height="110" style="animation:dance .8s ease-in-out infinite">${ico(kind, guardColor[kind])}${coolBits(kind)}</svg><h2>THE ${GUARD_NAME[kind].toUpperCase()} WINS!</h2><p class="sub">The guardian is now SUPER COOL 😎</p>` : `${avatarSVG(S.players[d.c], 110, 'winav')}<h2>${esc(cName)} WINS!</h2><p class="sub">The ${GUARD_NAME[kind]} lost the duel.</p>`;
-  const note = game.id==='stache' ? `<p class="sub">Funniest-looking face wins… and has to keep wearing it! 😂</p>` : '';
+  const note = game.id==='stache' ? `<p class="sub">${a.why==='heart' ? 'The Chicken-Heart guardian LOVES hearts! ❤️' : 'No clear heart… so the funniest drawing wins!'} The loser wears the mustache! 😂</p>` : '';
   const r = document.createElement('div'); r.className = 'result'; r.innerHTML = head + faces + note; $('#gduel').appendChild(r);
 }
 // the squishy makes a new face every couple of seconds
 setInterval(() => { squishFace++; if(!S || $('#game').hidden) return; S.players.forEach((pl, p) => { if(pl.av!=='squishy') return; const a = $('#card'+p+' .av'); if(a) a.outerHTML = avatarSVG(pl, 84, 'av'); if(!S.dance && pieces[p]) drawPieceBody(p, false); }); }, 2200);
+
+// little pop-up text where you tapped: green for a hit, red for a miss
+function gBurst(el, e, txt, color){ const r = el.getBoundingClientRect(); const b = document.createElement('div'); b.className = 'burst'; b.textContent = txt; b.style.left = (e.clientX - r.left) + 'px'; b.style.top = (e.clientY - r.top) + 'px'; b.style.color = color; el.appendChild(b); setTimeout(() => b.remove(), 700); }
+// Chicken Rain: chickens fall from the sky (same pattern on both phones), tap to catch
+function mkRain(el, p, seed){
+  const rng = mulberry32(seed ^ 0xc41c); let n = 0, stopped = false, i = 0;
+  const drop = () => { if(stopped) return; const c = document.createElement('button'); c.className = 'rainchick'; c.setAttribute('aria-label', 'Chicken'); c.innerHTML = svgIcon('chicken', '#f6c531', 52); c.style.left = (8 + rng()*80) + '%'; const dur = 1.6 + rng()*1.2; c.style.animationDuration = (dur*SPEED) + 's'; el.appendChild(c);
+    c.onpointerdown = (e) => { e.preventDefault(); e.stopPropagation(); if(stopped) return; gBurst(el, e, '+1', '#3aa655'); c.remove(); n++; SFX.bawk(); gReport(p, n); };
+    setTimeout(() => c.remove(), dur*1000*SPEED); i++; setTimeout(drop, (350 + rng()*300)*SPEED); };
+  el.addEventListener('pointerdown', (e) => { if(stopped || e.target.closest('.rainchick')) return; gBurst(el, e, '✗', '#d2483a'); SFX.miss(); });
+  drop();
+  return { stop(){ stopped = true; el.querySelectorAll('.rainchick').forEach(c => c.remove()); } };
+}
+// The Chicken-Heart guardian judges hearts: closed loop, two bumps on top, a point at the bottom
+function heartScore(strokes){
+  if(!strokes || !strokes.length) return 0;
+  const one = (pts, parts) => {
+    if(pts.length < 10) return 0;
+    let minx=99,maxx=-99,miny=99,maxy=-99; for(const [x,y] of pts){ minx=Math.min(minx,x); maxx=Math.max(maxx,x); miny=Math.min(miny,y); maxy=Math.max(maxy,y); }
+    const w = maxx-minx, h = maxy-miny, size = Math.max(w,h); if(w < 4 || h < 4 || w/h < .5 || w/h > 2.2) return 0;
+    // 1) closed: one loop, or two halves whose ends meet
+    const gap = (a,b) => Math.hypot(a[0]-b[0], a[1]-b[1]);
+    let g = 99;
+    if(parts.length===1) g = gap(parts[0][0], parts[0][parts[0].length-1]);
+    else { const [A, B] = parts.slice().sort((x,y) => y.length - x.length); const a0 = A[0], a1 = A[A.length-1], b0 = B[0], b1 = B[B.length-1]; g = Math.min(Math.max(gap(a0,b0), gap(a1,b1)), Math.max(gap(a0,b1), gap(a1,b0))); }
+    const closed = 1 - clamp((g/size - .18)/.25, 0, 1); if(closed <= 0) return 0;
+    // 2) two bumps on top with a dip in the middle
+    const cols = 9, top = Array(cols).fill(null); for(const [x,y] of pts){ const c = Math.min(cols-1, Math.floor((x-minx)/w*cols)); if(top[c]===null || y < top[c]) top[c] = y; }
+    const T = (a,b) => { const v = top.slice(a,b).filter(q => q!==null); return v.length ? v : null; };
+    const L = T(0,4), Rr = T(5,9), M = T(3,6); if(!L || !Rr || !M) return 0;
+    const dip = (Math.max(...M) - Math.max(Math.min(...L), Math.min(...Rr))) / h;
+    const lobes = clamp((dip - .05)/.12, 0, 1);
+    // 3) one point at the bottom, in the middle
+    let lowx = 0, lowy = -99; for(const [x,y] of pts) if(y > lowy){ lowy = y; lowx = x; }
+    const centered = 1 - clamp((Math.abs(lowx - (minx+maxx)/2)/w - .12)/.2, 0, 1);
+    let bx0 = 99, bx1 = -99; for(const [x,y] of pts) if(y > maxy - h*.2){ bx0 = Math.min(bx0,x); bx1 = Math.max(bx1,x); }
+    const pointy = 1 - clamp(((bx1-bx0)/w - .3)/.35, 0, 1);
+    // 4) wide at the top
+    let tx0 = 99, tx1 = -99; for(const [x,y] of pts) if(y < miny + h*.35){ tx0 = Math.min(tx0,x); tx1 = Math.max(tx1,x); }
+    const wide = clamp(((tx1-tx0)/w - .5)/.3, 0, 1);
+    return closed * (.45*lobes + .3*centered*pointy + .25*wide);
+  };
+  let best = one(strokes.flat(), strokes);
+  for(const st of strokes) best = Math.max(best, one(st, [st]));
+  return Math.round(best*100)/100;
+}
+const HEART_YES = .55;
+function guardianSees(score, strokes){ const n = (strokes||[]).reduce((k, st) => k + st.length, 0); if(!n) return 'nothing at all! 👻'; if(score >= .8) return 'a BEAUTIFUL HEART! 💖'; if(score >= HEART_YES) return 'a heart! ❤️'; if(score >= .3) return 'a… wobbly potato? 🥔'; return ['a noodle. 🍜', 'a wiggly worm! 🐛', 'spaghetti! 🍝', 'a caterpillar? 🐛', 'a squiggle-monster! 👾'][n % 5]; }
+
+// ================= QuadRun v7 extras =================
+// ---------- auras: win a corner duel, wear its power; lose a duel, lose them all ----------
+function auraRing(pl){
+  const au = pl.auras || []; if(!au.length) return '';
+  const n = au.length;
+  return `<circle r="64" fill="none" stroke="${QUADS[au[0]].auraCol==='#fff' ? '#3aa655' : QUADS[au[0]].auraCol}" stroke-width="4" stroke-dasharray="6 10" opacity=".55"/><g class="auraSpin">${au.map((q, i) => { const a = i*2*Math.PI/n; return `<g transform="translate(${(Math.cos(a)*62).toFixed(1)} ${(Math.sin(a)*62).toFixed(1)}) scale(.95)">${ico(QUADS[q].aura, QUADS[q].auraCol)}</g>`; }).join('')}</g>`;
+}
+// ---------- guardian hats: every duel a guardian wins, it gets one more hat ----------
+const HAT_SVG = {
+  party:  `<polygon points="-5,0 5,0 0,-11" fill="#e85d9a" stroke="${INK}" stroke-width="1.1"/><path d="M-3 -4 L3 -5 M-2 -7 L2 -8" stroke="#f6c531" stroke-width="1.2"/><circle cy="-11.5" r="1.8" fill="#f6c531" stroke="${INK}" stroke-width=".8"/>`,
+  top:    `<rect x="-4.5" y="-9" width="9" height="9" fill="#1f2a4a" stroke="${INK}" stroke-width=".8"/><rect x="-7.5" y="-1" width="15" height="2.2" rx="1" fill="#1f2a4a"/><rect x="-4.5" y="-3.4" width="9" height="1.7" fill="#e2503f"/>`,
+  propeller: `<path d="M-5.5 0 A5.5 5.5 0 0 1 5.5 0 Z" fill="#2f6fe4" stroke="${INK}" stroke-width="1"/><path d="M-1.5 -5.5 L1.5 -5.5" stroke="#f6c531" stroke-width="2"/><line y1="-5.5" y2="-8" stroke="${INK}" stroke-width="1"/><path d="M-6 -8.6 L6 -7.6" stroke="#e2503f" stroke-width="2.2" stroke-linecap="round"/>`,
+  chef:   `<rect x="-4" y="-5" width="8" height="5" fill="#fff" stroke="${INK}" stroke-width="1"/><circle cx="-3" cy="-7" r="3" fill="#fff" stroke="${INK}" stroke-width="1"/><circle cx="3" cy="-7" r="3" fill="#fff" stroke="${INK}" stroke-width="1"/><circle cy="-9" r="3.3" fill="#fff" stroke="${INK}" stroke-width="1"/>`,
+  crown2: `<polygon points="-6,0 -7,-8 -3,-4 0,-10 3,-4 7,-8 6,0" fill="#f6c531" stroke="${INK}" stroke-width="1"/><circle cy="-3" r="1.3" fill="#e2503f"/>`,
+};
+const HAT_AT = { chicken:[-8,-13], dog:[-6,-12], duck:[-8,-13], cat:[-5,-12] };
+function hatStack(kind, n){ if(!n) return ''; const [hx, hy] = HAT_AT[kind] || [0,-14]; let s = ''; for(let i=0;i<Math.min(n,6);i++) s += `<g transform="translate(${hx + (i%2?1:-1)*.8} ${hy - i*7.5}) rotate(${(i%2?8:-8)})">${HAT_SVG[HATS[i % HATS.length]]}</g>`; return s; }
+
+// ---------- lucky-number hints (a switch in the menu, starts OFF) ----------
+let HINTS_ON = false; try { HINTS_ON = localStorage.getItem('qr_hints')==='1'; } catch(e){}
+function landSim(p, v){
+  const pl = S.players[p], foe = S.players[1-p]; let loc = { ...pl.loc };
+  if(loc.z==='hub' && !loc.dir) return null;
+  if(loc.z==='rope' || loc.dir==='R') return null;
+  for(let s=0;s<v;s++){ loc = nextLoc(loc); if(loc.z==='hub') return { hub:true }; }
+  const q = doorAt(loc);
+  if(sameSpot(loc, foe.loc) && q && S.owner[q]===1-p) return { loc, kind:'guardstep' };
+  if(q && pl.keys[q]===0 && !locked(q)) return { loc, q, kind: S.owner[q]===null ? 'door' : 'duel' };
+  if(sameSpot(loc, foe.loc)) return { loc, kind:'chicky' };
+  return { loc };
+}
+function luckyHint(p){
+  if(!HINTS_ON || !S) return ''; const pl = S.players[p];
+  if(pl.loc.z==='rope'){ const need = STAR_I - pl.loc.i; return need <= 3 ? `Roll a ${need} for the star!` : 'Climb! The star needs an exact roll.'; }
+  if(pl.loc.dir==='R') return 'Climb the rope!';
+  const parts = []; for(let v=1; v<=6; v++){ const r = landSim(p, v); if(!r || !r.kind) continue;
+    parts.push(r.kind==='door' ? `${v} = ${QUADS[r.q].short} door` : r.kind==='duel' ? `${v} = ${QUADS[r.q].short} duel` : r.kind==='chicky' ? `${v} = chicky!` : `${v} = guard step ⚠️`); }
+  return parts.length ? parts.join(' · ') : 'No doors in reach. Just roll!';
+}
+// bots (and the Lucky Star) pick the best number
+function luckScore(p, v){ const r = landSim(p, v); if(!r) return v; if(r.kind==='door') return 100; if(r.kind==='duel') return 60; if(r.kind==='chicky') return 50; if(r.kind==='guardstep') return -50; if(r.hub) return 1; return v; }
+
+// ---------- swipe hint: an animated finger until you have thrown the dice once ----------
+let swiped = false; try { swiped = localStorage.getItem('qr_swiped')==='1'; } catch(e){}
+function markSwiped(){ if(swiped) return; swiped = true; try { localStorage.setItem('qr_swiped', '1'); } catch(e){} swipeHint(false); }
+function swipeHint(on){ const d = $('#dice'); if(!d) return; let h = d.parentNode.querySelector('.swipehint'); if(on && !swiped){ if(!h){ h = document.createElement('div'); h.className = 'swipehint'; h.innerHTML = '👆<small>swipe up!</small>'; h.setAttribute('aria-hidden', 'true'); d.parentNode.appendChild(h); } } else if(h) h.remove(); }
+
+// ---------- menu sheet: AI, next song, hints, how to play, leave (with a check) ----------
+function closeMenuSheet(){ const el = $('#menuSheet'); if(el){ el.hidden = true; el.innerHTML = ''; } }
+function openMenuSheet(view){
+  const el = $('#menuSheet'); el.hidden = false;
+  const meP = S ? (MODE==='local' ? S.turn : ME) : 0; const canAuto = S && S.phase==='play' && !(MODE==='bot' && meP===1); const au = canAuto && S.players[meP].auto;
+  if(view==='leave'){ el.innerHTML = `<div class="sheet"><h3>Leave the game?</h3><p class="sub">${MODE==='net' ? 'Your friend’s game will end too.' : 'This round will be lost.'}</p><div class="row2"><button class="btn" data-m="close">Stay! 🎲</button><button class="btn ghost danger" data-m="really">Leave</button></div></div>`; }
+  else if(view==='how'){ el.innerHTML = `<div class="sheet how"><div id="howSheetBox"></div></div>`; renderHow($('#howSheetBox'), () => closeMenuSheet()); }
+  else el.innerHTML = `<div class="sheet"><h3>Menu</h3>
+    ${canAuto ? `<button class="mi" data-m="ai">${au ? '🤖 Stop the AI' : `🤖 AI plays for ${MODE==='local' ? esc(S.players[meP].name) : 'me'} (2 min)`}</button>` : ''}
+    <button class="mi" data-m="next">⏭ Next song</button>
+    <button class="mi sw ${HINTS_ON?'on':''}" data-m="hints" role="switch" aria-checked="${HINTS_ON}">🍀 Lucky-number hints <i>${HINTS_ON ? 'ON' : 'OFF'}</i></button>
+    <button class="mi" data-m="how">📖 How to play</button>
+    <button class="mi danger" data-m="leave">🏠 Leave game</button>
+    <button class="btn" data-m="close">Back to the game</button></div>`;
+  el.onclick = (e) => { const b = e.target.closest('[data-m]'); if(!b){ if(e.target===el) closeMenuSheet(); return; } SFX.tick(); const m = b.dataset.m;
+    if(m==='close') closeMenuSheet();
+    else if(m==='ai'){ closeMenuSheet(); toggleAuto(); }
+    else if(m==='next'){ Music.next(); renderMusic(); closeMenuSheet(); }
+    else if(m==='hints'){ HINTS_ON = !HINTS_ON; try { localStorage.setItem('qr_hints', HINTS_ON ? '1' : '0'); } catch(x){} openMenuSheet(); renderAll(); }
+    else if(m==='how') openMenuSheet('how');
+    else if(m==='leave') openMenuSheet('leave');
+    else if(m==='really') goMenu(); };
+}
+
+// ---------- how to play: six picture cards ----------
+function renderHow(box, onDone){
+  const av = svgIcon(profile.av || 'chicken', colHex(profile.col), 64, profile.custom);
+  const g = (k) => svgIcon(k, guardColor[k], 56);
+  const cards = [
+    { art:`${av}<span class="big">👉 🎲</span>`, t:'Pick a road. SWIPE the dice!', s:'Roll a 6: roll again. Roll a 1: get an egg 🥚. Three eggs hatch a BONUS roll!' },
+    { art:`${svgIcon('door', QUADS.NE.col, 64)}<span class="big">➜</span>${svgIcon('key', QUADS.NE.col, 56)}${svgIcon('key', QUADS.NE.col, 56)}`, t:'Land on a dark step by a door', s:'Nobody owns that corner? Do the math in 21 seconds and it is YOURS.' },
+    { art:`${g('chicken')}${g('dog')}${g('duck')}${g('cat')}`, t:'Corner taken? Guardian duel!', s:'Win the 1-minute game to own the corner forever and wear its aura ❤️ 🔥 ⚡ 🐰. Lose a duel and your auras are gone!' },
+    { art:`${g('chicken')}<span class="big">💕</span>${svgIcon('heart', QUADS.NW.col, 60)}`, t:'Psst… a secret!', s:'The Chicken-Heart guardian LOVES hearts. In the Mustache Showdown, draw a heart and see what happens ❤️' },
+    { art:`${svgIcon('chicken', '#f6c531', 64)}<span class="big">💃</span>`, t:'CHICKY-CHICKEN!', s:'Land on your friend: they dance back to the middle. Careful! Their GUARD STEPS (by corners they own) send YOU back.' },
+    { art:`${svgIcon('star', STAR_C, 72)}<span class="big">🪢</span>`, t:'Own all 4 corners. Climb to the star!', s:'Land on the star EXACTLY and solve the final puzzle. Behind? A Lucky Star 🌟 may let you pick your number.' },
+  ];
+  let i = 0;
+  const draw = () => { const c = cards[i];
+    box.innerHTML = `<div class="howcard"><div class="art">${c.art}</div><h3>${esc(c.t)}</h3><p>${esc(c.s)}</p></div><div class="hownav"><button class="btn ghost" data-h="prev" ${i===0?'disabled':''} aria-label="Previous">◀</button><div class="hdots">${cards.map((_,k) => `<i class="${k===i?'on':''}"></i>`).join('')}</div>${i < cards.length-1 ? `<button class="btn" data-h="next" aria-label="Next">▶</button>` : `<button class="btn" data-h="done">Let's play!</button>`}</div>`;
+    box.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { SFX.tick(); const h = b.dataset.h; if(h==='prev') i = Math.max(0, i-1); else if(h==='next') i = Math.min(cards.length-1, i+1); else return onDone(); draw(); }); };
+  let sx = null; box.onpointerdown = (e) => { sx = e.clientX; }; box.onpointerup = (e) => { if(sx===null) return; const dx = e.clientX - sx; sx = null; if(Math.abs(dx) > 50){ i = clamp(i + (dx < 0 ? 1 : -1), 0, cards.length-1); draw(); } };
+  draw();
+}
+
+// ---------- the Mustache Museum: every mustache ever drawn on this phone ----------
+function museumLoad(){ try { const m = JSON.parse(localStorage.getItem('sr_museum')||'[]'); return Array.isArray(m) ? m : []; } catch(e){ return []; } }
+function museumAdd(vi, strokes, byName){ if(!strokes || !strokes.length) return; const m = museumLoad(); m.unshift({ av:vi.av, col:vi.col ? colHex(vi.col) : (guardColor[vi.av] || '#f6c531'), custom:vi.custom || [], s:strokes, by:String(byName||'').slice(0,12), on:String(vi.name||'').slice(0,24), t:Date.now() }); try { localStorage.setItem('sr_museum', JSON.stringify(m.slice(0,60))); } catch(e){} }
+function renderMuseum(){ const m = museumLoad(); const box = $('#museumGrid');
+  box.innerHTML = m.length ? m.map(x => `<figure><svg viewBox="-20 -20 40 40" width="96" height="96" style="overflow:visible">${ico(x.av, x.col, x.custom)}${scribSVG([x.s])}</svg><figcaption>✏️ <b>${esc(x.by)}</b><br>on ${esc(x.on)}</figcaption></figure>`).join('') : `<p class="sub">No mustaches yet! Go play and draw some. 🖊️</p>`;
+  $('#museumCount').textContent = m.length ? `${m.length} masterpiece${m.length>1?'s':''}` : ''; }
+
+// ---------- draw your own doodle ----------
+function openDrawOwn(init, cb){
+  show('scrDraw'); const cv = $('#ownCv'), ctx = cv.getContext('2d'); let strokes = (init||[]).map(s => s.slice()); let drawing = false;
+  const col = colHex(editing.col || profile.col);
+  const pt = (e) => { const r = cv.getBoundingClientRect(); return [ +(((e.clientX-r.left)/r.width*40) - 20).toFixed(1), +(((e.clientY-r.top)/r.height*40) - 20).toFixed(1) ]; };
+  const redraw = () => { const W = cv.width; ctx.clearRect(0,0,W,W); ctx.save(); ctx.translate(W/2, W/2); ctx.scale(W/40, W/40); ctx.beginPath(); ctx.arc(0,0,17,0,Math.PI*2); ctx.fillStyle = col; ctx.globalAlpha = .3; ctx.fill(); ctx.globalAlpha = 1; ctx.lineWidth = 2.3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = INK; for(const st of strokes){ ctx.beginPath(); st.forEach((q,i) => i ? ctx.lineTo(q[0],q[1]) : ctx.moveTo(q[0],q[1])); ctx.stroke(); } ctx.restore(); };
+  cv.onpointerdown = (e) => { e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch(x){} if(strokes.length >= 14) return; drawing = true; strokes.push([pt(e)]); SFX.tick(); };
+  cv.onpointermove = (e) => { if(!drawing) return; e.preventDefault(); const st = strokes[strokes.length-1]; const q = pt(e), l = st[st.length-1]; if(Math.hypot(q[0]-l[0], q[1]-l[1]) < .8 || st.length >= 80) return; st.push(q); redraw(); };
+  cv.onpointerup = cv.onpointercancel = () => { drawing = false; };
+  $('#ownClear').onclick = () => { SFX.whoosh && SFX.whoosh(.4); strokes = []; redraw(); };
+  $('#ownUndo').onclick = () => { strokes.pop(); redraw(); };
+  $('#ownDone').onclick = () => { SFX.reward(); cb(cleanCustom(strokes)); };
+  $('#ownBack').onclick = () => cb(cleanCustom(init||[]));
+  redraw();
+}
+
+// ---------- Lucky Star: whoever is behind sometimes gets to pick between two dice ----------
+function renderLucky(){
+  const el = $('#lucky'); if(!el) return; const L = S && S.lucky;
+  if(!L){ el.hidden = true; el.innerHTML = ''; return; }
+  const mine = (MODE==='local' || L.p===ME) && !isBot(L.p);
+  if(el.dataset.k === `${L.p}-${L.a}-${L.b}-${mine}` && !el.hidden) return; el.dataset.k = `${L.p}-${L.a}-${L.b}-${mine}`;
+  el.hidden = false;
+  el.innerHTML = `<div class="lk"><div class="lkstar">🌟</div><h3>LUCKY STAR!</h3><p>${mine ? `${esc(S.players[L.p].name)}, you're behind, so YOU pick the number:` : `${esc(S.players[L.p].name)} is behind and gets to pick a die…`}</p><div class="lkdice">${[L.a, L.b].map(v => `<button data-v="${v}" ${mine?'':'disabled'} aria-label="Pick ${v}"><svg viewBox="0 0 60 60" width="84" height="84"></svg></button>`).join('')}</div></div>`;
+  el.querySelectorAll('button').forEach(b => { dieFace(+b.dataset.v, b.querySelector('svg')); b.onclick = () => { SFX.pop(); el.querySelectorAll('button').forEach(x => x.disabled = true); b.classList.add('on'); onLuckyPick(+b.dataset.v); }; });
+}
+function onLuckyPick(v){ if(!S || !S.lucky) return; const p = S.lucky.p; if(ROLE==='host') hostLuckyPick(p, v); else net && net.send({ t:'req', a:'lucky', v }); }
+
+// ---------- music fans: the emojis that love the current song groove to its beat ----------
+let sulkUntil = 0, sulkFans = [];
+function currentFans(){ const t = Music.track; if(!t) return null; return TRACK_FANS[t.f.split('/').pop().replace(/\.mp3$/, '')] || null; }
+const musicPlaying = () => !!(window.__SR_GROOVE || Music.playing);
+function musicSulk(){ const f = currentFans(); if(!f) return; sulkFans = f.fans.slice(); sulkUntil = Date.now() + 20000; grooveTick(); }
+function grooveTick(){
+  const tz = $('#taunts'); if(!tz || $('#game').hidden) return; const fans = currentFans(); const now = Date.now(); const dance = tz.classList.contains('dance');
+  tz.querySelectorAll('.taunt').forEach(b => { const e = b.dataset.e; const sulking = !dance && now < sulkUntil && sulkFans.includes(e);
+    const groove = !dance && !sulking && musicPlaying() && !!fans && fans.fans.includes(e);
+    b.classList.toggle('sulk', sulking); b.classList.toggle('groove', groove); b.disabled = sulking;
+    if(groove) b.style.setProperty('--beat', (60/fans.bpm).toFixed(3)+'s');
+    const em = b.querySelector('b'); if(em){ const want = sulking ? (now < sulkUntil - 17000 ? '😤' : '💤') : e; if(em.textContent !== want) em.textContent = want; }
+    const sm = b.querySelector('small'); if(sm){ const t = TAUNTS.find(x => x.e===e); const want = sulking ? 'sulking' : (t ? t.t : ''); if(sm.textContent !== want) sm.textContent = want; } });
+}
+setInterval(grooveTick, 400);
+// your doodle dances to the beat for a few beats
+const beatDancing = [false, false];
+async function danceBeat(p){
+  if(!S || !pieces[p] || beatDancing[p] || busy()) return; const fans = currentFans(); const bpm = fans ? fans.bpm : 90; beatDancing[p] = true;
+  const pc = pieces[p], x0 = pc.x, y0 = pc.y; const beats = 8; const ms = beats*60000/bpm;
+  fxText(x0, y0-90, '♪ ♫', INK, 40);
+  try { await tween(ms, (k) => { if(busy()) return; const b = k*beats; const ph = b % 1; pc.y = y0 - Math.abs(Math.sin(Math.PI*b))*22; pc.rot = (Math.floor(b)%2 ? 1 : -1)*14*Math.sin(Math.PI*ph); pc.sy = 1 + .12*Math.cos(Math.PI*2*b); setPiece(pc); }, (k)=>k); }
+  finally { beatDancing[p] = false; if(!busy() && S){ placePiece(p); } }
+}
+
+// ---------- win dances ----------
+function danceFrame(id, k){ const b = Math.sin(k*Math.PI*8);
+  if(id==='chicken') return { rot: b*10, dx: 0, dy: -Math.abs(Math.sin(k*Math.PI*6))*34, sc: 1, sy: 1 + .22*Math.sin(k*Math.PI*24) };
+  if(id==='robot'){ const st = Math.floor(k*12)%4; return { rot: [0,22,0,-22][st], dx: [0,12,0,-12][st], dy: 0, sc: 1, sy: 1 }; }
+  if(id==='floss') return { rot: Math.sin(k*Math.PI*14)*14, dx: Math.sin(k*Math.PI*14)*34, dy: -Math.abs(Math.sin(k*Math.PI*7))*10, sc: 1, sy: 1 };
+  if(id==='spin') return { rot: k*1440, dx: 0, dy: -Math.sin(k*Math.PI)*70, sc: 1 + Math.sin(k*Math.PI)*.35, sy: 1 };
+  return { rot: b*25, dx: 0, dy: -Math.abs(b)*40, sc: 1 + b*.2, sy: 1 };
+}
+function submitDance(p, id){ if(!S || !DANCES.some(d => d.id===id)) return; if(isMine(p)){ profile.dance = id; saveProfile(); } if(ROLE==='host') hostDo({ k:'setdance', p, d:id }); else net && net.send({ t:'req', a:'dance', d:id }); }
+
+// ---------- showdown: tell everyone clearly what just happened ----------
+async function showdownOverlay(){
+  const el = $('#bigmsg'); el.hidden = false;
+  el.innerHTML = `<div class="bm">${svgIcon('star', STAR_C, 80)}<h2>SHOWDOWN!</h2><p>All 4 corners are taken for good, and nobody has all four.</p><p><b>So the rope opens for BOTH of you!</b></p><p>Race up the rope ➜ land on the star exactly ➜ solve the final puzzle. First one wins!</p></div>`;
+  SFX.drumroll(); await wait(5200); el.hidden = true; el.innerHTML = '';
+}
+
+// ---------- robo glitches: the robot is not quite working right ----------
+async function roboGlitch(p, g){
+  const pc = pieces[p]; if(!pc) return; const r = roboOf(p); const x0 = pc.x, y0 = pc.y;
+  if(g===1){ SFX.glitch(); bubble(`${r.name.toUpperCase()}.EXE HAS STOPPED WORKING`, p, 2000); await tween(1100, (k) => { pc.x = x0 + (Math.random()-.5)*14; pc.sc = 1 + (Math.random()-.5)*.25; pc.el.style.opacity = Math.random() < .3 ? .3 : 1; setPiece(pc); }, (k)=>k); pc.el.style.opacity = 1; bubble('…rebooting… BAWK!', p, 1300); }
+  else if(g===2){ SFX.roboTalk(); const line = pick(r.lines); bubble(line.split('').reverse().join(''), p, 1800); await wait(900); bubble('Oops. Wrong way. ' + line, p, 1600); }
+  else if(g===3){ SFX.glitch(); fxText(x0, y0-90, 'MOONWALK.EXE', INK, 34); await tween(1500, (k) => { pc.x = x0 - Math.sin(k*Math.PI)*60; pc.rot = Math.sin(k*Math.PI*10)*6; pc.y = y0 - Math.abs(Math.sin(k*Math.PI*10))*6; setPiece(pc); }, (k)=>k); }
+  else { SFX.glitch(); bubble('ERROR 404: BRAIN NOT FOUND', p, 1800); await tween(1200, (k) => { pc.el.style.opacity = Math.floor(k*10)%2 ? .25 : 1; }, (k)=>k); pc.el.style.opacity = 1; }
+  pc.x = x0; pc.y = y0; pc.rot = 0; pc.sc = 1; setPiece(pc);
+}
+
+// ---------- the sneeze: a guardian sneezes its mustache onto a player ----------
+async function sneezeFx(q, to){
+  const home = GUARD_HOME[q]; const strokes = S.gscrib[q] || [];
+  fxText(home.x, home.y-80, 'AH…', INK, 40); await wait(500); fxText(home.x, home.y-90, 'AH…', INK, 46); await wait(500);
+  SFX.sneeze(); shake(); fxText(home.x, home.y-100, 'ACHOO!!', '#e2503f', 60);
+  const fly = svgEl('g', {}, `<g transform="scale(2.6)">${scribSVG(strokes)}</g>`);
+  const pc = pieces[to]; const from = { x:home.x, y:home.y }; const dest = { x:pc.x, y:pc.y };
+  await tween(800, (k) => { const x = from.x + (dest.x-from.x)*k, y = from.y + (dest.y-from.y)*k - Math.sin(Math.PI*k)*180; fly.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(k*720).toFixed(0)})`); }, (k)=>k);
+  fly.remove(); SFX.splat();
+  S.players[to].scribbles = strokes.slice(); S.gscrib[q] = []; renderAll();
+  fxText(dest.x, dest.y-80, 'Bless you!', '#3aa655', 44); await wait(600);
+}
+
+// ---------- the heart mustache: bots sometimes know the Chicken-Heart secret ----------
+function heartStroke(kind){ const [fx, fy] = FACE[kind] || [0,3]; const s = 0.5 + Math.random()*.15; const a = []; for(let i=0;i<=28;i++){ const t = i/28*Math.PI*2; a.push([+(fx + 16*Math.pow(Math.sin(t),3)*s*.6).toFixed(1), +(fy + 1 - (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t))*s*.6).toFixed(1)]); } return [a]; }
 // ---------------- the action queue: every device applies the same actions in the same order ----------------
 const Q = []; let running = false; const busy = () => running || Q.length>0;
 function enqueue(a){ return new Promise(res => { Q.push({ a, res }); pump(); }); }
 async function pump(){ if(running) return; running = true; try { while(Q.length){ const { a, res } = Q.shift(); try { if(S) await apply(a); } catch(e){ console.error('apply failed', a, e); } res(); } } finally { running = false; renderAll(); if(ROLE==='host') scheduleBots(); } }
-function resetRound(){ S.players.forEach(p => { p.loc={z:'hub',dir:null,i:0}; p.keys={NW:0,NE:0,SW:0,SE:0}; p.rope=false; }); S.owner={NW:null,NE:null,SW:null,SE:null}; S.perm={NW:null,NE:null,SW:null,SE:null}; S.gcool={NW:false,NE:false,SW:false,SE:false}; S.gscrib={NW:[],NE:[],SW:[],SE:[]}; S.ask=null; S.draw=null; S.duel=null; S.gduel=null; S.dance=null; S.lastStop=null; }
-function nextLoc(loc){ if(loc.z==='hub') return loc.dir==='R' ? { z:'rope', dir:'R', i:0 } : { z:'alley', dir:loc.dir, i:0 }; if(loc.z==='alley') return loc.i+1 >= LOOP ? { z:'hub', dir:null, i:0 } : { z:'alley', dir:loc.dir, i:loc.i+1 }; return { z:'rope', dir:'R', i:Math.min(STAR_I, loc.i+1) }; }
+function resetRound(){ S.players.forEach(p => { p.loc={z:'hub',dir:null,i:0}; p.keys={NW:0,NE:0,SW:0,SE:0}; p.rope=false; }); S.owner={NW:null,NE:null,SW:null,SE:null}; S.perm={NW:null,NE:null,SW:null,SE:null}; S.gcool={NW:false,NE:false,SW:false,SE:false}; S.gscrib={NW:[],NE:[],SW:[],SE:[]}; S.ask=null; S.draw=null; S.duel=null; S.gduel=null; S.dance=null; S.lastStop=null; S.lucky=null; S.sneezed=false; S.rained=false; S.players.forEach(p => { p.eggs = 0; }); }
+function nextLoc(loc){ if(loc.z==='hub') return loc.dir==='R' ? { z:'rope', dir:'R', i:0 } : { z:'alley', dir:loc.dir, i:0, rev:!!loc.rev }; if(loc.z==='alley') return loc.i+1 >= LOOP ? { z:'hub', dir:null, i:0 } : { z:'alley', dir:loc.dir, i:loc.i+1, rev:!!loc.rev }; return { z:'rope', dir:'R', i:Math.min(STAR_I, loc.i+1) }; }
 
 async function apply(a){
   renderAll();
@@ -1069,28 +1481,35 @@ async function apply(a){
       const cv = $('#cover'); cv.hidden = false;
       for(const n of ['3','2','1','GO!']){ cv.innerHTML = `<div class="countdown">${n}</div>`; if(n==='GO!') SFX.horn(); else SFX.beep(); await wait(n==='GO!'?600:650); }
       cv.hidden = true; Music.start();
+      if(a.k==='rematch'){ fxText(HUB.x, HUB.y-150, `${S.players[a.first].name} goes first!`, '#3aa655', 42); await wait(700); }
       break;
     }
-    case 'turn': { S.turn = a.p; S.lastStop = null; $('#diceTag').textContent = 'swipe!'; renderAll(); if(a.again){ SFX.ding(); fxText(HUB.x, HUB.y-150, 'ROLL AGAIN!', '#3aa655'); } if(isRoboP(a.p) && Math.random() < .7){ SFX.roboTalk(); bubble(pick(roboOf(a.p).lines), a.p, 1700); } break; }
-    case 'path': { const pl = S.players[a.p]; pl.loc = { z:'hub', dir:a.dir, i:0 }; SFX.whoosh(.6); renderAll(); fxText(HUB.x, HUB.y-130, a.dir==='R' ? 'THE ROPE!' : DIRS[a.dir].name+'!', null, 44); break; }
+    case 'turn': { S.turn = a.p; S.lastStop = null; S.lucky = null; $('#diceTag').textContent = 'swipe!'; renderAll(); if(a.again){ SFX.ding(); fxText(HUB.x, HUB.y-150, a.again==='egg' ? 'BONUS ROLL! 🐣' : 'ROLL AGAIN!', '#3aa655'); } if(a.glitch && isRoboP(a.p)){ await roboGlitch(a.p, a.glitch); } else if(isRoboP(a.p) && Math.random() < .7){ SFX.roboTalk(); bubble(pick(roboOf(a.p).lines), a.p, 1700); } break; }
+    case 'path': { const pl = S.players[a.p]; const same = pl.loc.dir===a.dir; pl.loc = { z:'hub', dir:a.dir, i:0, rev:a.dir!=='R' && !!a.rev }; SFX.whoosh(.6); renderAll(); fxText(HUB.x, HUB.y-130, a.dir==='R' ? 'THE ROPE!' : same ? `${QUADS[ALLEY_QUADS[a.dir][a.rev?1:0]].short} first!` : DIRS[a.dir].name+'!', a.dir==='R' ? null : QUADS[ALLEY_QUADS[a.dir][a.rev?1:0]].col, 44); break; }
     case 'roll': {
       const p = a.p, pl = S.players[p], foe = S.players[1-p];
+      S.lucky = null; $('#lucky').hidden = true;
       await throwDice(a.v, a.rope, a.sw);
-      let stop = null, bounced = false;
-      for(let s=0; s<a.v; s++){
+      const steps = a.v + (a.turbo ? 1 : 0);
+      if(a.turbo){ SFX.glitch(); fxText(pieces[p].x, pieces[p].y-90, 'TURBO CLUCK! +1', '#e2503f', 40); await wait(400); }
+      if(a.v===1 && !a.rope){ pl.eggs = Math.min(3, (pl.eggs|0)+1); SFX.egg(); fxText(pieces[p].x, pieces[p].y-90, pl.eggs>=3 ? 'EGG #3! 🥚🥚🥚' : 'AN EGG! 🥚', STAR2, 40); renderAll(); await wait(350); }
+      let stop = null, bounced = false; S.lastHatch = false;
+      for(let s=0; s<steps; s++){
         if(pl.loc.z==='rope' && pl.loc.i>=STAR_I && !bounced){ bounced = true; SFX.boing(); fxText(STAR.x, STAR.y+90, 'TOO MANY! BOING', '#e2503f', 40); }
         if(bounced){ pl.loc = { z:'rope', dir:'R', i:Math.max(0, pl.loc.i-1) }; await hop(p, locXY(p, pl.loc), 180, 40, s, true); continue; }
         pl.loc = nextLoc(pl.loc);
         await hop(p, locXY(p, pl.loc), 200, pl.loc.z==='rope'?34:40, s, pl.loc.z==='rope');
         if(pl.loc.z==='hub'){ stop = 'hub'; break; }
-        if(pl.loc.z==='rope' && pl.loc.i>=STAR_I && s===a.v-1){ stop = 'star'; break; }
+        if(pl.loc.z==='rope' && pl.loc.i>=STAR_I && s===steps-1){ stop = 'star'; break; }
       }
       // doors count only when the LAST hop lands on them
       const q = doorAt(pl.loc);
       if(stop==='hub'){ placePiece(p); SFX.ding(); fxText(HUB.x, HUB.y-130, 'The cross!', null, 44); await wait(300); }
       else if(stop==='star'){ fxText(STAR.x, STAR.y+90, 'THE STAR!', STAR2, 60); SFX.star(); await wait(500); }
+      else if(q && sameSpot(pl.loc, foe.loc) && S.owner[q]===1-p){ stop = 'guardstep'; SFX.guardian(); fxText(pieces[p].x, pieces[p].y-80, 'GUARD STEP!', '#e2503f', 44); await wait(500); await chicky(p, p); }
       else if(q && pl.keys[q]===0 && !locked(q)){ stop = S.owner[q]===null ? 'door' : 'guard'; SFX.knock(); pulseAt(QPOS[q]); fxText(pieces[p].x, pieces[p].y-70, S.owner[q]===null ? 'KNOCK KNOCK' : 'GUARDIAN!', INK, 44); await wait(500); }
-      else if(sameSpot(pl.loc, foe.loc)){ stop = 'chicky'; await chicky(p); }
+      else if(sameSpot(pl.loc, foe.loc)){ stop = 'chicky'; await chicky(p, 1-p); }
+      if(!stop && pl.eggs >= 3 && pl.loc.z==='alley'){ pl.eggs = 0; S.lastHatch = true; SFX.hatch(); fxText(pieces[p].x, pieces[p].y-90, 'HATCHED! 🐣🐣🐣', '#3aa655', 46); renderAll(); await wait(600); }
       S.lastStop = stop;
       break;
     }
@@ -1122,7 +1541,7 @@ async function apply(a){
       } else {
         SFX.shove(); shake(); fxText(pieces[p].x, pieces[p].y-70, a.i<0 ? 'TOO SLOW! Back 3' : 'SHOVED BACK 3!', '#e2503f', 44);
         const from = pl.loc.i; const to = Math.max(0, from-3);
-        for(let i=from-1;i>=to;i--){ pl.loc = { z:'alley', dir:pl.loc.dir, i }; await hop(p, locXY(p, pl.loc), 170, 40, i); }
+        for(let i=from-1;i>=to;i--){ pl.loc = { z:'alley', dir:pl.loc.dir, i, rev:!!pl.loc.rev }; await hop(p, locXY(p, pl.loc), 170, 40, i); }
         placePiece(p);
       }
       break;
@@ -1150,6 +1569,7 @@ async function apply(a){
       break;
     }
     case 'gduel_start': {
+      if(a.q==='RAIN'){ S.gduel = { q:'RAIN', c:0, o:1, seed:a.seed }; S.rained = true; renderAll(); SFX.bawk(); shake(); setTimeout(() => SFX.bawk(), 300*SPEED); await toast('chicken', 'CHICKEN RAIN!', 'Tap the falling chickens! Most catches wins 2 free steps.', 2200, '#f6c531'); gduelOpen(S.gduel); break; }
       S.gduel = { q:a.q, c:a.c, o:a.o, seed:a.seed }; renderAll();
       const kind = QUADS[a.q].guard; SFX.guardian(); SFX[guardSound[kind]]();
       await toast(kind, `The ${GUARD_NAME[kind]} guardian blocks the door!`, `${GAMES[a.q].title}! ${S.players[a.o].name} plays the ${GUARD_NAME[kind]}. 1 minute!`, 2400, guardColor[kind]);
@@ -1157,19 +1577,32 @@ async function apply(a){
       break;
     }
     case 'gduel_end': {
-      const d = S.gduel; if(!d) break; const { c, o, q } = d; const w = a.winner; const kind = QUADS[q].guard; const game = GAMES[q];
+      const d = S.gduel; if(!d) break;
+      if(d.q==='RAIN'){ gduelResult(d, a); SFX.fanfare(); await wait(2600); gduelClose(); S.gduel = null; renderAll(); const w = a.winner;
+        if(w===null || w===undefined){ fxText(HUB.x, HUB.y-150, 'A TIE! Nobody wins the rain', INK, 40); await wait(600); break; }
+        const pl = S.players[w]; fxText(pieces[w].x, pieces[w].y-90, 'RAIN CHAMPION!', '#3aa655', 44); await wait(400);
+        if(pl.loc.z==='alley'){ for(let s=0;s<2;s++){ const nl = nextLoc(pl.loc); if(nl.z==='hub') break; pl.loc = nl; await hop(w, locXY(w, pl.loc), 220, 40, s); } }
+        else if(pl.loc.z==='rope' && pl.loc.i < STAR_I-1){ pl.loc = { z:'rope', dir:'R', i:Math.min(STAR_I-1, pl.loc.i+2) }; await hop(w, locXY(w, pl.loc), 260, 34, 0, true); }
+        else { pl.eggs = Math.min(3, (pl.eggs|0)+1); SFX.egg(); fxText(pieces[w].x, pieces[w].y-130, '+1 EGG 🥚', STAR2, 40); }
+        renderAll(); await wait(400); break; }
+      const { c, o, q } = d; const w = a.winner; const kind = QUADS[q].guard; const game = GAMES[q];
       gduelResult(d, a);
       if(w===c) SFX.fanfare(); else { SFX.guardian(); SFX[guardSound[kind]](); }
       await wait(3400);
       gduelClose(); S.gduel = null;
       if(w===c){ S.owner[q] = c; S.players[c].keys[q] = 2; S.players[o].keys[q] = 0; S.perm[q] = c; S.gcool[q] = false; }
-      else { S.perm[q] = o; S.gcool[q] = true; }
+      else { S.perm[q] = o; S.gcool[q] = true; S.ghats[q] = (S.ghats[q]|0) + 1; }
+      const lo = w===c ? o : c, W = S.players[w], L = S.players[lo]; const lostAuras = (L.auras||[]).length; L.auras = []; if(!W.auras.includes(q)) W.auras.push(q);
       renderAll(); pulseAt(FLAG[q]); SFX.lockRope();
+      SFX.reward(); fxText(pieces[w].x, pieces[w].y-100, `${QUADS[q].aura==='bunny' ? '🐰' : QUADS[q].aura==='heart' ? '❤️' : QUADS[q].aura==='flame' ? '🔥' : '⚡'} AURA!`, QUADS[q].col==='#f6c531' ? STAR2 : QUADS[q].col, 46);
+      if(lostAuras) setTimeout(() => { if(S && pieces[lo]) fxText(pieces[lo].x, pieces[lo].y-100, 'auras gone! 💨', '#e2503f', 38); }, 500*SPEED);
+      if(w===o) setTimeout(() => { if(S) fxText(GUARD_HOME[q].x, GUARD_HOME[q].y-120, 'NEW HAT! 🎩', INK, 40); }, 900*SPEED);
       await toast(w===c ? 'key' : kind, w===c ? `${S.players[c].name} beat the ${GUARD_NAME[kind]}!` : `The ${GUARD_NAME[kind]} guardian wins!`, w===c ? `${QUADS[q].short} corner is ${S.players[c].name}'s for good.` : `${S.players[o].name} keeps ${QUADS[q].short} corner for good.`, 2000, QUADS[q].col);
       if(game.id==='stache'){
-        const strokes = (a.draws && (w===c ? a.draws.o : a.draws.c)) || [];   // the winner wears what was drawn on THEM
-        if(w===c) S.players[c].scribbles = strokes.length ? [strokes] : []; else S.gscrib[q] = strokes.length ? [strokes] : [];
-        renderAll(); SFX.splat(); shake(); fxText(w===c ? pieces[c].x : QPOS[q].x, (w===c ? pieces[c].y : QPOS[q].y) - 70, 'FUNNIEST FACE! KEEP IT ON!', INK, 40); await wait(800);
+        // the LOSER wears the mustache that was drawn on them
+        const strokes = (a.draws && (w===c ? a.draws.c : a.draws.o)) || [];
+        if(w===c){ S.gscrib[q] = strokes.length ? [strokes] : []; museumAdd(victimInfo('g:'+q), strokes, S.players[c].name); } else { S.players[c].scribbles = strokes.length ? [strokes] : []; museumAdd(victimInfo(c), strokes, S.players[o].name); }
+        renderAll(); SFX.splat(); shake(); fxText(w===c ? GUARD_HOME[q].x : pieces[c].x, (w===c ? GUARD_HOME[q].y : pieces[c].y) - 70, 'LOSER WEARS IT!', INK, 40); await wait(800);
       } else S.draw = { ...drawSpec(w, w===c ? 'g:'+q : c, 5), next:o };
       await checkRope(S.players[c]);
       break;
@@ -1181,6 +1614,7 @@ async function apply(a){
       S.draw = null; $('#pad').hidden = true;
       const sc = (a.strokes && a.strokes.length) ? [a.strokes] : [];
       if(isG) S.gscrib[vi.guard] = sc; else S.players[a.victim].scribbles = sc;
+      if(sc.length) museumAdd(vi, a.strokes, S.players[a.by] ? S.players[a.by].name : '');
       renderAll(); SFX.splat(); shake();
       if(!isG){ const card = $('#card'+a.victim); card.style.transform = 'scale(1.25) rotate(-4deg)'; await wait(500); card.style.transform = ''; fxText(pieces[a.victim].x, pieces[a.victim].y-70, 'SPLAT!', INK, 52); }
       else fxText(GUARD_HOME[vi.guard].x, GUARD_HOME[vi.guard].y-70, 'SPLAT!', INK, 52);
@@ -1188,14 +1622,18 @@ async function apply(a){
       if(robo){ SFX.evilLaugh(); bubble(pick(['BAWK HA HA HA!', 'Beep. Beautiful.', 'Frame it!', 'You look FABULOUS.']), a.by, 1800); emoji('😂', 'HA HA!', a.by); await wait(1200); }
       break;
     }
+    case 'lucky': { S.lucky = { p:a.p, a:a.a, b:a.b }; SFX.star(); renderAll(); fxText(HUB.x, HUB.y-150, 'LUCKY STAR! 🌟', STAR2, 50); break; }
+    case 'setdance': { if(S.players[a.p] && DANCES.some(d => d.id===a.d)) S.players[a.p].dance = a.d; break; }
+    case 'sneeze': { if(!S.gscrib[a.q] || !S.gscrib[a.q].length) break; S.sneezed = true; await sneezeFx(a.q, a.to); break; }
     case 'avatar': { const pl = S.players[a.p]; if(pl.unlocked.includes(a.av)) pl.av = a.av; renderAll(); SFX.reward(); const st = $('#avStatus'); if(st) st.textContent = `${pl.name} is now ${AV_NAME[a.av]||a.av}!`; break; }
     case 'auto': { S.players[a.p].auto = !!a.on; renderAll(); if(a.on){ SFX.beep(); fxText(HUB.x, HUB.y-150, `${S.players[a.p].name}: AI takes over`, INK, 36); } break; }
     case 'win': {
-      const p = a.p, pl = S.players[p]; S.phase = 'over'; pl.wins++; pl.stars = (pl.stars|0)+1; if(pl.unlocked.length < DOODLES.length) pl.credits++; pl.scribbles = []; S.notes = [null,null]; S.players.forEach(x => x.auto = false); renderAll();
+      const p = a.p, pl = S.players[p]; S.phase = 'over'; S.lastWin = p; pl.wins++;
+      if(MODE==='bot' && p===0){ profile.roboBeat = profile.roboBeat || {}; profile.roboBeat[BOT_LEVEL] = (profile.roboBeat[BOT_LEVEL]|0) + 1; saveProfile(); } pl.stars = (pl.stars|0)+1; if(pl.unlocked.length < DOODLES.length) pl.credits++; pl.scribbles = []; S.notes = [null,null]; S.players.forEach(x => x.auto = false); renderAll();
       if(isMine(p)){ profile.stars = Math.max(profile.stars|0, pl.stars); profile.credits = pl.credits; saveProfile(); }
       $('#starFace').hidden = false; SFX.kazoo(); confetti();
       const st = $('#goalStar'); tween(1600, (k) => st.setAttribute('transform', `translate(${STAR_ICON.x} ${STAR_ICON.y}) rotate(${k*720}) scale(${1+Math.sin(Math.PI*k)*.5})`)).then(()=>st.setAttribute('transform',`translate(${STAR_ICON.x} ${STAR_ICON.y})`));
-      const pc = pieces[p]; const wy = pc.y; await tween(1500, (k) => { pc.rot = Math.sin(k*Math.PI*8)*25; pc.sc = 1+Math.sin(k*Math.PI*8)*.2; pc.y = wy - Math.abs(Math.sin(k*Math.PI*8))*40; setPiece(pc); }); pc.rot = 0; pc.sc = 1; pc.y = wy; setPiece(pc);
+      const pc = pieces[p]; const wx = pc.x, wy = pc.y; fxText(wx, wy-120, (DANCES.find(d => d.id===pl.dance) || DANCES[0]).name.toUpperCase() + '!', STAR2, 40); await tween(2000, (k) => { const f = danceFrame(pl.dance, k); pc.rot = f.rot; pc.sc = f.sc; pc.sy = f.sy; pc.x = wx + f.dx; pc.y = wy + f.dy; setPiece(pc); }, (k)=>k); pc.rot = 0; pc.sc = 1; pc.sy = 1; pc.x = wx; pc.y = wy; setPiece(pc);
       SFX.trombone(); const lp = pieces[1-p]; await tween(700, (k) => { lp.rot = 90*k; lp.sy = 1-.4*k; setPiece(lp); });
       await wait(400); showWin(p);
       break;
@@ -1206,11 +1644,11 @@ async function apply(a){
 }
 const isMine = (p) => (MODE==='local' && p===0) || (MODE!=='local' && p===ME);
 const isRoboP = (p) => MODE==='bot' && p===1;
-const roboOf = (p) => ROBOS[S.players[p].robo|0] || ROBOS[0];
+const roboOf = (p) => S.players[p].robo===9 ? MEGA : (ROBOS[S.players[p].robo|0] || ROBOS[0]);
 function drawSpec(by, victim, left){ const bonus = clamp(Math.round(left||0), 0, 21); return { by, victim, bonus, secs: Math.round(DRAW_BASE_MS/1000) + bonus, ink: 70 + bonus*6 }; }
 async function checkRope(pl){
   if(hasAll(pl) && !pl.rope){ pl.rope = true; renderFlags(); SFX.unlockRope(); fxText(ROPE_LOCK.x, ROPE_LOCK.y, 'ROPE UNLOCKED!', STAR2, 48); await wait(700); }
-  else if(QUAD_LIST.every(locked) && !S.players.some(hasAll) && !S.players.every(x => x.rope)){ S.players.forEach(x => x.rope = true); renderFlags(); SFX.unlockRope(); shake(); await toast('star', 'SHOWDOWN!', 'All four corners are settled for good. The rope is open for everyone. Race!', 2000, STAR_C); }
+  else if(QUAD_LIST.every(locked) && !S.players.some(hasAll) && !S.players.every(x => x.rope)){ S.players.forEach(x => x.rope = true); renderFlags(); SFX.unlockRope(); shake(); await showdownOverlay(); }
 }
 // the robo draws in public: its face bounces in the corner, it narrates, the pen jitters, it giggles
 async function roboDrawShow(strokes, victim, by){
@@ -1228,9 +1666,9 @@ async function roboDrawShow(strokes, victim, by){
   padStrokes = strokes.map(st => st.slice()); padRedraw(); if(face) face.style.transform = 'scale(1.3)';
   const s3 = $('#roboSays'); if(s3) s3.textContent = '✨ Signed: ' + r.name; SFX.roboLaugh(); await wait(900);
 }
-async function chicky(p){
-  const fp = 1-p, foe = S.players[fp];
-  shake(); SFX.bawk(); fxText(pieces[p].x, pieces[p].y-80, 'CHICKY-CHICKEN!', '#e2503f', 48); await wait(300);
+async function chicky(p, victim){
+  const fp = victim===undefined ? 1-p : victim, foe = S.players[fp];
+  shake(); SFX.bawk(); fxText(pieces[p].x, pieces[p].y-80, fp===p ? 'YOU GOT CHICKY-CHICKENED!' : 'CHICKY-CHICKEN!', '#e2503f', fp===p ? 40 : 48); await wait(300);
   drawPieceBody(fp, true); SFX.dance(); setTimeout(() => SFX.dance(), 2200*SPEED);
   S.dance = { victim:fp, laughs:0, last:[null,null] }; dancePiece = pieces[fp]; renderAll();
   const pc = pieces[fp], x0 = pc.x, y0 = pc.y;
@@ -1289,10 +1727,11 @@ function onDiceThrow(sw){
   const p = controllable();
   if(!canRoll(p)){ const d=$('#dice'); d.classList.remove('nope'); void d.offsetWidth; d.classList.add('nope'); if(S.turn!==p) fxText(HUB.x, HUB.y-150, 'Not your turn!', null, 40); else if(S.players[p].loc.z==='hub' && !S.players[p].loc.dir) fxText(HUB.x, HUB.y-150, 'Pick a road first!', null, 40); return; }
   if(S.players[p].auto) return;
+  markSwiped();
   if(ROLE==='host') hostRoll(p, sw);
   else { net && net.send({ t:'req', a:'roll', sw }); $('#diceTag').textContent = 'rolling…'; }
 }
-function onPathTap(dir){ if(!S || S.phase!=='play' || busy()) return; const p = controllable(); if(S.turn!==p || S.players[p].loc.z!=='hub' || (dir==='R' && !S.players[p].rope) || S.players[p].auto) return; if(ROLE==='host') hostPath(p, dir); else net && net.send({ t:'req', a:'path', dir }); }
+function onPathTap(dir, rev){ if(!S || S.phase!=='play' || busy()) return; const p = controllable(); if(S.turn!==p || S.players[p].loc.z!=='hub' || (dir==='R' && !S.players[p].rope) || S.players[p].auto) return; SFX.tick(); if(ROLE==='host') hostPath(p, dir, !!rev); else net && net.send({ t:'req', a:'path', dir, rev:!!rev }); }
 function onAnswerTap(i){ if(!S || !S.ask || S.ask.answered || busy()) return; const p = S.ask.p; if(!(MODE==='local' || p===ME) || S.players[p].auto) return; if(ROLE==='host') hostAnswer(p, i); else { net && net.send({ t:'req', a:'answer', i }); $('#ask').querySelectorAll('.opts button').forEach(b => b.disabled = true); } }
 function submitStache(strokes){ if(!S || !S.draw) return; if(ROLE==='host') hostStache(strokes); else net && net.send({ t:'req', a:'stache', strokes }); $('#pad').hidden = true; }
 function submitNote(w, txt){ if(!S) return; if(ROLE==='host') hostDo({ k:'note', p:w, text:txt }); else net && net.send({ t:'req', a:'note', text:txt }); }
@@ -1300,8 +1739,8 @@ function submitAvatar(p, av){ if(!S || !S.players[p].unlocked.includes(av)) retu
 function submitUnlock(p, av){ if(!S || !DOODLES.includes(av) || S.players[p].unlocked.includes(av) || S.players[p].credits <= 0) return; if(ROLE==='host') hostUnlock(p, av); else net && net.send({ t:'req', a:'unlock', av }); }
 async function hostUnlock(p, av){ const pl = S.players[p]; if(!DOODLES.includes(av) || pl.unlocked.includes(av) || pl.credits <= 0) return; await hostDo({ k:'unlock', p, av }); }
 function toggleAuto(){ if(!S || S.phase!=='play') return; const p = MODE==='local' ? S.turn : ME; const on = !S.players[p].auto; SFX.pop(); if(ROLE==='host') hostAuto(p, on); else net && net.send({ t:'req', a:'auto', on }); }
-function rebuildTaunts(){ const t = $('#taunts'); t.className = 'taunts'; t.innerHTML = TAUNTS.map(x => `<button class="taunt" data-e="${x.e}" aria-label="${x.t}">${x.e}<small>${x.t}</small></button>`).join(''); t.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(MODE==='local' ? (S?S.turn:0) : ME, b.dataset.e)); }
-function tauntTap(p, e){ SFX.unlock(); showTaunt(p, e); if(ROLE==='host') hostTaunt(p, e); else if(net) net.send({ t:'taunt', e }); }
+function rebuildTaunts(){ const t = $('#taunts'); t.className = 'taunts'; t.innerHTML = TAUNTS.map(x => `<button class="taunt" data-e="${x.e}" aria-label="${x.t}"><b>${x.e}</b><small>${x.t}</small></button>`).join(''); t.querySelectorAll('button').forEach(b => b.onclick = () => tauntTap(MODE==='local' ? (S?S.turn:0) : ME, b.dataset.e, b.classList.contains('groove'))); grooveTick(); }
+function tauntTap(p, e, groove){ SFX.unlock(); showTaunt(p, e); if(groove) danceBeat(p); if(MODE==='net' && net) net.send({ t:'taunt', e, d: groove ? 1 : 0 }); if(ROLE==='host') hostTaunt(p, e); }
 function showTaunt(p, e){ const t = TAUNTS.find(x => x.e===e) || TAUNTS[0]; emoji(t.e, t.t, p); SFX.taunt(t.e); }
 function hostTaunt(p, e){
   if(!S || !S.dance) return; const now = performance.now(); S.dance.last[p] = { e, t:now }; const o = S.dance.last[1-p];
@@ -1316,10 +1755,13 @@ function showWin(p){
   const locked = DOODLES.filter(a => !pl.unlocked.includes(a));
   const avPick = canPick ? `<div class="field"><label>${pl.credits > 0 && locked.length ? `${esc(pl.name)}: pick ONE doodle to unlock!` : 'Pick your doodle'}</label><div class="picker">${(pl.credits > 0 ? locked : pl.unlocked).map(a => `<button class="pick ${pl.av===a?'on':''}" data-av="${a}" data-mode="${pl.credits > 0 && locked.length ? 'unlock' : 'pick'}" aria-label="${AV_NAME[a]}">${svgIcon(a, colHex(pl.col), 48)}</button>`).join('')}</div><p class="status" id="avStatus"></p></div>` : '';
   const notes = writers.map(w => `<div class="notewrite"><label for="noteIn${w}" class="tiny">${esc(S.players[w].name)}, leave a note for next round:</label><div class="row"><input class="txt" id="noteIn${w}" maxlength="60" placeholder="you're going DOWN 😜"><button class="btn" id="noteBtn${w}">Send</button></div><p class="status" id="noteStatus${w}"></p></div>`).join('');
-  cv.innerHTML = `${avatarSVG(pl, 150, 'winav')}<h2>${esc(pl.name)} WINS!</h2><div class="tally">${tally}</div>${avPick}<div class="stack"><button class="btn big" id="btnAgain">PLAY AGAIN</button></div>${notes}<button class="btn ghost" id="btnMenu2">Menu</button>`;
+  const dances = canPick ? `<div class="field"><label>Victory dance for next time</label><div class="picker dances">${DANCES.map(d => { const ok = (pl.stars|0) >= d.need; return `<button class="pick dn ${pl.dance===d.id?'on':''}" data-d="${d.id}" ${ok?'':'disabled'} aria-label="${d.name}${ok?'':' (locked)'}">${ok ? d.name : `🔒 ${d.need}⭐`}</button>`; }).join('')}</div></div>` : '';
+  const boss = MODE==='bot' && p===0 && BOT_LEVEL!=='mega' && megaOpen() && !profile.megaSeen ? (profile.megaSeen = 1, saveProfile(), `<div class="bossnews">${svgIcon('megacluck', '#e2503f', 70)}<b>You beat all three robots… MEGA-CLUCK has WOKEN UP! 😱</b><small>Find him in VS ROBO-CHICKEN.</small></div>`) : '';
+  cv.innerHTML = `${avatarSVG(pl, 150, 'winav')}<h2>${esc(pl.name)} WINS!</h2><div class="tally">${tally}</div>${boss}${avPick}${dances}<div class="stack"><button class="btn big" id="btnAgain">PLAY AGAIN</button></div>${notes}<button class="btn ghost" id="btnMenu2">Menu</button>`;
   $('#btnAgain').onclick = () => { SFX.pop(); if(ROLE==='host') hostRematch(); else { net && net.send({ t:'req', a:'rematch' }); $('#btnAgain').textContent = 'Asking your friend…'; } };
   $('#btnMenu2').onclick = () => goMenu();
   cv.querySelectorAll('.pick').forEach(b => b.onclick = () => { SFX.tick(); const av = b.dataset.av; if(b.dataset.mode==='unlock'){ submitUnlock(p, av); cv.querySelectorAll('.pick').forEach(x => { x.disabled = true; x.classList.toggle('on', x===b); }); } else { submitAvatar(p, av); cv.querySelectorAll('.pick').forEach(x => x.classList.toggle('on', x===b)); } cv.querySelector('.winav').outerHTML = avatarSVG({ ...pl, av }, 150, 'winav'); });
+  cv.querySelectorAll('.pick.dn').forEach(b => b.onclick = () => { SFX.tick(); submitDance(p, b.dataset.d); cv.querySelectorAll('.pick.dn').forEach(x => x.classList.toggle('on', x===b)); const wa = cv.querySelector('.winav'); if(wa){ wa.style.animation = 'none'; void wa.offsetWidth; wa.style.animation = `dance-${b.dataset.d} 1s ease-in-out 2`; } });
   writers.forEach(w => { $('#noteBtn'+w).onclick = () => { const txt = ($('#noteIn'+w).value||'').trim().slice(0,60); SFX.pop(); submitNote(w, txt); }; $('#noteIn'+w).addEventListener('keydown', e => { if(e.key==='Enter') $('#noteBtn'+w).click(); }); });
 }
 
@@ -1331,22 +1773,30 @@ async function hostDo(a){ broadcast(a); await enqueue(a); }
 async function whenIdle(){ for(let i=0;i<400 && (busy()||lock);i++) await new Promise(r => setTimeout(r, 50)); }
 const isBot = (p) => (MODE==='bot' && p===1) || !!(S && S.players[p].auto);
 const botProfile = (p) => (MODE==='bot' && p===1) ? BOT_LEVELS[BOT_LEVEL] : BOT_LEVELS.smart;
-async function hostPath(p, dir){ if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel) return; const pl = S.players[p]; if(pl.loc.z!=='hub' || (!DIRS[dir] && dir!=='R') || (dir==='R' && !pl.rope)) return; lock = true; try { await hostDo({ k:'path', p, dir }); } finally { lock = false; } scheduleBots(); }
-async function hostRoll(p, sw){
-  if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel) return; const pl = S.players[p]; if(pl.loc.z==='hub' && !pl.loc.dir) return;
+// how often the surprises happen (tests turn them off)
+const EV = Object.assign({ sneeze:.1, rain:.06, glitch:.2, lucky:.35, turbo:.25 }, window.__SR_EVENTS || {});
+let luckySw = null;
+async function hostPath(p, dir, rev){ if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel || S.lucky) return; const pl = S.players[p]; if(pl.loc.z!=='hub' || (!DIRS[dir] && dir!=='R') || (dir==='R' && !pl.rope)) return; lock = true; try { await hostDo({ k:'path', p, dir, rev: dir!=='R' && !!rev }); } finally { lock = false; } scheduleBots(); }
+async function hostRoll(p, sw, forced){
+  if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel || S.gduel) return; if(S.lucky && forced===undefined) return; const pl = S.players[p]; if(pl.loc.z==='hub' && !pl.loc.dir) return;
   lock = true;
   try {
-    const onRope = pl.loc.z==='rope' || (pl.loc.z==='hub' && pl.loc.dir==='R'); const v = 1+rnd(onRope ? 3 : 6);
+    const onRope = pl.loc.z==='rope' || (pl.loc.z==='hub' && pl.loc.dir==='R');
     const s = sw && isFinite(sw.dx) && isFinite(sw.dy) ? { dx:clamp(+sw.dx,-1,1), dy:clamp(+sw.dy,-1,1), sp:clamp(+sw.sp||.5,.25,1) } : { dx:(Math.random()-.5)*.6, dy:-1, sp:.5 };
-    await hostDo({ k:'roll', p, v, rope:onRope, sw:s });
+    // Lucky Star: whoever owns fewer corners sometimes picks between two dice
+    if(forced===undefined && !onRope && ownedCount(pl) < ownedCount(S.players[1-p]) && Math.random() < EV.lucky){ const a = 1+rnd(6); const b = 1 + (a + rnd(5)) % 6; luckySw = s; await hostDo({ k:'lucky', p, a, b }); return; }
+    const v = forced!==undefined ? forced : 1+rnd(onRope ? 3 : 6);
+    const turbo = (isRoboP(p) && BOT_LEVEL==='mega' && !onRope && Math.random() < EV.turbo) ? 1 : 0;
+    await hostDo({ k:'roll', p, v, rope:onRope, sw:s, turbo });
     if(!S || S.phase!=='play') return;
     const stop = S.lastStop;
     if(stop==='star'){ await hostAsk(p, 'star', null, 3); return; }
     if(stop==='door'){ const q = doorAt(pl.loc); await hostAsk(p, 'own', q, 1); return; }
     if(stop==='guard'){ const q = doorAt(pl.loc); lock = false; await hostGuardDuel(p, q); return; }
-    const again = v===6 && !stop && !onRope; await nextTurn(again ? p : 1-p, again);
+    const again = (v===6 || S.lastHatch) && !stop && !onRope; await nextTurn(again ? p : 1-p, again ? (S.lastHatch && v!==6 ? 'egg' : true) : false);
   } finally { lock = false; }
 }
+async function hostLuckyPick(p, v){ if(!S || !S.lucky || S.lucky.p!==p || (v!==S.lucky.a && v!==S.lucky.b)) return; await whenIdle(); if(!S || !S.lucky) return; await hostRoll(p, luckySw, v); }
 async function hostAsk(p, kind, quad, level){ const pl = S.players[p]; await hostDo({ k:'ask', p, kind, quad, q:makeQ(level, pl.skill) }); clearTimeout(askHostTimer); const t0 = performance.now(); if(S && S.ask) S.ask.hostT0 = t0; askHostTimer = setTimeout(() => { if(S && S.ask && S.ask.p===p && !S.ask.answered) hostAnswer(p, -1); }, (ASK_MS+800)*SPEED); scheduleBots(); }
 async function hostAnswer(p, i){
   if(lock || !S || !S.ask || S.ask.p!==p || S.ask.answered || busy()) return; lock = true; clearTimeout(askHostTimer);
@@ -1391,8 +1841,15 @@ async function finishDuel(w){
 }
 async function hostStache(strokes){ if(lock || !S || !S.draw || busy()) return; lock = true; clearTimeout(drawHostTimer); try { await hostStacheInner(strokes); } finally { lock = false; } }
 async function hostStacheInner(strokes){ const d = S.draw; if(!d) return; const clean = Array.isArray(strokes) ? compactStrokes(strokes.filter(s => Array.isArray(s)).map(s => s.filter(pt => Array.isArray(pt) && pt.length===2 && isFinite(pt[0]) && isFinite(pt[1])).map(pt => [+(+pt[0]).toFixed(1), +(+pt[1]).toFixed(1)]))) : [defaultStache()]; await hostDo({ k:'stache', victim:d.victim, by:d.by, strokes:clean }); if(!S || S.phase!=='play') return; await nextTurn(d.next!==undefined ? d.next : 1-d.by, false); }
-async function nextTurn(np, again){ if(!S || S.phase!=='play') return; await hostDo({ k:'turn', p:np, again }); scheduleBots(); }
-async function hostRematch(){ if(!S || S.phase!=='over' || busy() || lock) return; const first = 1 - (S.players[0].wins + S.players[1].wins) % 2; await hostDo({ k:'rematch', first }); await nextTurn(first, false); }
+async function nextTurn(np, again, quiet){ if(!S || S.phase!=='play') return;
+  if(!quiet){
+    if(!S.sneezed && Math.random() < EV.sneeze){ const qs = QUAD_LIST.filter(q => S.gscrib[q] && S.gscrib[q].length); if(qs.length) await hostDo({ k:'sneeze', q:pick(qs), to:rnd(2) }); if(!S || S.phase!=='play') return; }
+    if(!S.rained && Math.random() < EV.rain){ await hostRain(np, again); return; }
+  }
+  const glitch = isRoboP(np) && Math.random() < EV.glitch ? 1+rnd(4) : 0;
+  await hostDo({ k:'turn', p:np, again, glitch }); scheduleBots(); }
+async function hostRain(np, again){ gHost = { prog:{}, draws:{}, done:false, deadline:null, sim:null, after:{ np, again } }; await hostDo({ k:'gduel_start', q:'RAIN', c:0, o:1, seed: 1 + rnd(2**30) }); if(!S || !S.gduel) return; gHost.deadline = setTimeout(() => hostGduelFinish(), (GAMES.RAIN.ms + 1500) * SPEED); gHost.botT0 = performance.now(); gHost.sim = setInterval(gSimBots, 250); }
+async function hostRematch(){ if(!S || S.phase!=='over' || busy() || lock) return; const first = (S.lastWin===0 || S.lastWin===1) ? 1 - S.lastWin : 1 - (S.players[0].wins + S.players[1].wins) % 2; /* the loser goes first */ await hostDo({ k:'rematch', first }); await nextTurn(first, false); }
 async function hostAuto(p, on){ if(!S || S.phase!=='play') return; autoUntil[p] = on ? Date.now() + AUTO_MS : 0; await hostDo({ k:'auto', p, on }); scheduleBots(); }
 // ---------------- guardian duels (host side) ----------------
 let gHost = null;
@@ -1406,8 +1863,8 @@ async function hostGuardDuel(c, q){
 function gSimBots(){
   if(!S || !S.gduel || !gHost || gHost.done) return; const d = S.gduel; const game = GAMES[d.q];
   for(const p of [d.c, d.o]){ if(!isBot(p)) continue; const lvl = (MODE==='bot' && p===1) ? BOT_LEVEL : 'smart'; const r = BOT_DUEL[lvl];
-    if(game.id==='stache'){ if(!gHost.draws[p] && performance.now() - gHost.botT0 > (7000 + (p*997 % 9000)) * SPEED){ const kind = p===d.c ? QUADS[d.q].guard : S.players[d.c].av; hostGdraw(p, botStache(kind, lvl==='genius' ? 2 : 1)); } continue; }
-    const step = game.id==='bones' ? r.bones*.25 : game.id==='duck' ? r.duck*.25 : r.laser*250;
+    if(game.id==='stache'){ if(!gHost.draws[p] && performance.now() - gHost.botT0 > (7000 + (p*997 % 9000)) * SPEED){ const kind = p===d.c ? QUADS[d.q].guard : S.players[d.c].av; const knows = { dumb:.1, smart:.3, genius:.5, mega:.7 }[lvl] || .3; const st = botStache(kind, lvl==='genius' || lvl==='mega' ? 2 : 1); hostGdraw(p, Math.random() < knows ? heartStroke(kind).concat(st.slice(0,1)) : st); } continue; }
+    const step = game.id==='bones' ? r.bones*.25 : game.id==='duck' ? r.duck*.25 : game.id==='rain' ? r.rain*.25 : r.laser*250;
     const v = (gHost.prog[p] || 0) + step * (.6 + Math.random()*.8);
     hostGprog(p, game.id==='laser' ? Math.round(v) : v); }
 }
@@ -1428,11 +1885,17 @@ async function hostGduelFinish(winner){
   while(lock || busy()) await new Promise(r => setTimeout(r, 50));
   lock = true;
   try {
-    const d = S.gduel; const game = GAMES[d.q]; const scores = [0,0]; let draws = null;
-    if(game.id==='stache'){ const rng = Math.random; scores[d.o] = funnyScore(gHost.draws[d.c], rng); scores[d.c] = funnyScore(gHost.draws[d.o], rng); winner = scores[d.c] > scores[d.o] ? d.c : scores[d.o] > scores[d.c] ? d.o : pick([d.c, d.o]); draws = { c:gHost.draws[d.c] || [], o:gHost.draws[d.o] || [] }; }
+    const d = S.gduel; const game = GAMES[d.q]; const scores = [0,0]; let draws = null, hearts = null, why = null;
+    if(d.q==='RAIN'){ const after = gHost.after || { np:S.turn, again:false }; scores[0] = Math.floor(gHost.prog[0] || 0); scores[1] = Math.floor(gHost.prog[1] || 0); winner = scores[0] > scores[1] ? 0 : scores[1] > scores[0] ? 1 : null;
+      await hostDo({ k:'gduel_end', winner, scores }); if(!S || S.phase!=='play') return; await nextTurn(after.np, after.again, true); return; }
+    if(game.id==='stache'){
+      // the Chicken-Heart guardian loves hearts: a clear heart beats everything; otherwise the funniest drawing wins. Either way the LOSER wears the mustache.
+      const dc = gHost.draws[d.c] || [], dO = gHost.draws[d.o] || []; const hc = heartScore(dc), ho = heartScore(dO); hearts = { c:hc, o:ho }; draws = { c:dc, o:dO };
+      if(Math.max(hc, ho) >= HEART_YES && Math.abs(hc - ho) > .1){ winner = hc > ho ? d.c : d.o; why = 'heart'; }
+      else { const rng = Math.random; scores[d.c] = funnyScore(dc, rng); scores[d.o] = funnyScore(dO, rng); winner = scores[d.c] > scores[d.o] ? d.c : scores[d.o] > scores[d.c] ? d.o : pick([d.c, d.o]); why = 'funny'; } }
     else { scores[d.c] = gHost.prog[d.c] || 0; scores[d.o] = gHost.prog[d.o] || 0; if(winner===undefined) winner = scores[d.c] > scores[d.o] ? d.c : d.o; }
     const c = d.c;
-    await hostDo({ k:'gduel_end', winner, scores, draws });
+    await hostDo({ k:'gduel_end', winner, scores, draws, hearts, why });
     if(!S || S.phase!=='play') return;
     if(S.draw){ armDrawTimer(); return; }
     await nextTurn(1-c, false);
@@ -1445,20 +1908,21 @@ async function botStep(){
   for(const p of [0,1]){ if(S.players[p].auto && !(MODE==='bot' && p===1) && Date.now() > autoUntil[p]){ await hostAuto(p, false); return; } }
   if(busy() || lock){ scheduleBots(); return; }
   if(S.gduel) return;
+  if(S.lucky && isBot(S.lucky.p)){ const L = S.lucky; await new Promise(r => setTimeout(r, (900+rnd(900))*SPEED)); if(!S || S.lucky!==L) return; const v = luckScore(L.p, L.a) >= luckScore(L.p, L.b) ? L.a : L.b; await hostLuckyPick(L.p, v); return; }
   for(const p of [0,1]){
     if(!isBot(p)) continue; const prof = botProfile(p), me = S.players[p];
     if(S.ask && S.ask.p===p && !S.ask.answered){ const i = Math.random()<prof.math ? S.ask.q.ans : pick(S.ask.q.opts.map((_,j)=>j).filter(j=>j!==S.ask.q.ans)); await new Promise(r => setTimeout(r, (1500+rnd(3500))*SPEED)); await hostAnswer(p, i); return; }
     if(S.draw && S.draw.by===p){ await hostStache(botStache(victimInfo(S.draw.victim).av)); return; }
     if(S.duel){ const d = S.duel; if(d.phase==='input' && !duelAns[p] && !d.done[p]){ const combo = d.combos[d.round]; const seq = Math.random()<prof.duel ? combo.slice() : combo.map(e => Math.random()<.6 ? e : pick(TAUNTS).e); d.done[p] = true; renderDuel(); setTimeout(() => hostDuelAnswer(p, d.round, seq, 1200+rnd(1800)), (1200+rnd(1800))*SPEED); } continue; }
     if(S.turn!==p || S.dance) continue;
-    if(me.loc.z==='hub' && !me.loc.dir){ let dir = 'W'; if(me.rope) dir = 'R'; else { const score = (d) => ALLEY_QUADS[d].filter(q => me.keys[q]===0 && !locked(q)).length + Math.random()*.5; dir = Object.keys(DIRS).sort((a,b) => score(b)-score(a))[0]; } await hostPath(p, dir); return; }
+    if(me.loc.z==='hub' && !me.loc.dir){ let dir = 'W'; if(me.rope) dir = 'R'; else { const score = (d) => ALLEY_QUADS[d].filter(q => me.keys[q]===0 && !locked(q)).length + Math.random()*.5; dir = Object.keys(DIRS).sort((a,b) => score(b)-score(a))[0]; } const need = (q) => me.keys[q]===0 && !locked(q); const rev = dir!=='R' && !need(ALLEY_QUADS[dir][0]) && need(ALLEY_QUADS[dir][1]); await hostPath(p, dir, rev); return; }
     await hostRoll(p, { dx:(Math.random()-.5), dy:-(.4+Math.random()*.6), sp:.4+Math.random()*.6 }); return;
   }
 }
 
 // ---------------- game starters ----------------
 async function startLocal(p0, p1){ MODE='local'; ROLE='host'; ME=0; netClose(); S = freshState(p0, p1); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
-async function startBot(level){ MODE='bot'; ROLE='host'; ME=0; BOT_LEVEL = BOT_LEVELS[level] ? level : 'dumb'; netClose(); const ri = rnd(ROBOS.length); const robo = ROBOS[ri]; S = freshState(profile, { name:robo.name, av:robo.av, col:pick(COLORS.filter(c => c.id!==profile.col)).id, robo:ri }); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
+async function startBot(level){ MODE='bot'; ROLE='host'; ME=0; BOT_LEVEL = BOT_LEVELS[level] ? level : 'dumb'; if(BOT_LEVEL==='mega' && !megaOpen()) BOT_LEVEL = 'genius'; netClose(); const ri = BOT_LEVEL==='mega' ? 9 : rnd(ROBOS.length); const robo = BOT_LEVEL==='mega' ? MEGA : ROBOS[ri]; S = freshState(profile, { name:robo.name, av:robo.av, col:pick(COLORS.filter(c => c.id!==profile.col)).id, robo:ri }); startGameScreen(); await hostDo({ k:'start', first:0 }); await nextTurn(0, false); }
 
 // ---------------- networking: password rooms (PeerJS on a website; the Claude room inside the viewer) ----------------
 let net = null;
@@ -1467,7 +1931,7 @@ function roomStatus(msg, err){ const st = $('#roomStatus'); st.textContent = msg
 function netEnter(pw){
   if(!ROOMS.includes(pw)){ roomStatus('Room passwords are enso1 to enso5', true); return; }
   netClose(); MODE='net'; S = null; roomStatus('Knocking on room ' + pw + '…');
-  const hello = () => net && net.send({ t:'hello', p:{ name:profile.name, av:profile.av, col:profile.col, stars:profile.stars|0, unlocked:profile.unlocked, credits:profile.credits|0 } });
+  const hello = () => net && net.send({ t:'hello', p:{ name:profile.name, av:profile.av, col:profile.col, stars:profile.stars|0, unlocked:profile.unlocked, credits:profile.credits|0, custom:profile.custom, dance:profile.dance } });
   openTransport(pw, {
     onHost(){ ROLE='host'; ME=0; roomStatus(`You opened room ${pw}. Waiting for a friend…`); },
     onGuest(){ ROLE='guest'; ME=1; roomStatus('Found the room! Joining…'); hello(); let n = 0; const iv = setInterval(() => { if(S || !net || n++>20){ clearInterval(iv); return; } hello(); }, 2000*Math.max(SPEED,.1)); },
@@ -1480,17 +1944,17 @@ function netEnter(pw){
 function onNetLost(){ if(!S || S.phase==='lobby'){ roomStatus('Connection closed. Try again.', true); return; } const cv = $('#cover'); cv.hidden = false; cv.innerHTML = `<h2>Lost your friend!</h2><p class="sub">Check the wifi, then enter the room again.</p><button class="btn" id="btnMenu3">Menu</button>`; $('#btnMenu3').onclick = () => goMenu(); }
 function hostOnMessage(m){
   if(!m || typeof m!=='object') return;
-  if(m.t==='hello' && m.p && typeof m.p==='object'){ if(S) return; const col = (m.p.col===profile.col) ? COLORS[(COLORS.findIndex(c=>c.id===profile.col)+1)%COLORS.length].id : m.p.col; S = freshState(profile, { name:m.p.name, av:m.p.av, col, stars:clamp(m.p.stars|0, 0, 999), unlocked:m.p.unlocked, credits:m.p.credits }); net.send({ t:'sync', s:S }); startGameScreen(); hostDo({ k:'start', first:0 }).then(() => nextTurn(0, false)); }
+  if(m.t==='hello' && m.p && typeof m.p==='object'){ if(S) return; const col = (m.p.col===profile.col) ? COLORS[(COLORS.findIndex(c=>c.id===profile.col)+1)%COLORS.length].id : m.p.col; S = freshState(profile, { name:m.p.name, av:m.p.av, col, stars:clamp(m.p.stars|0, 0, 999), unlocked:m.p.unlocked, credits:m.p.credits, custom:m.p.custom, dance:m.p.dance }); net.send({ t:'sync', s:S }); startGameScreen(); hostDo({ k:'start', first:0 }).then(() => nextTurn(0, false)); }
   else if(m.t==='req' && m.a==='gprog'){ hostGprog(1, m.v); }
   else if(m.t==='req' && m.a==='gdraw'){ hostGdraw(1, m.strokes); }
-  else if(m.t==='req'){ whenIdle().then(() => { if(!S) return; if(m.a==='roll') hostRoll(1, m.sw); else if(m.a==='path') hostPath(1, String(m.dir)); else if(m.a==='answer') hostAnswer(1, (+m.i|0)); else if(m.a==='stache') hostStache(m.strokes); else if(m.a==='duel') hostDuelAnswer(1, +m.round|0, m.seq, +m.ms|0); else if(m.a==='note') hostDo({ k:'note', p:1, text:String(m.text||'').slice(0,60) }); else if(m.a==='avatar'){ const av = String(m.av); if(S.players[1].unlocked.includes(av)) hostDo({ k:'avatar', p:1, av }); } else if(m.a==='unlock') hostUnlock(1, String(m.av)); else if(m.a==='auto') hostAuto(1, !!m.on); else if(m.a==='rematch') hostRematch(); }); }
-  else if(m.t==='taunt'){ showTaunt(1, String(m.e)); hostTaunt(1, String(m.e)); }
+  else if(m.t==='req'){ whenIdle().then(() => { if(!S) return; if(m.a==='roll') hostRoll(1, m.sw); else if(m.a==='path') hostPath(1, String(m.dir), !!m.rev); else if(m.a==='lucky') hostLuckyPick(1, +m.v|0); else if(m.a==='dance'){ const dd = DANCES.find(x => x.id===String(m.d)); if(dd && (S.players[1].stars|0) >= dd.need) hostDo({ k:'setdance', p:1, d:dd.id }); } else if(m.a==='answer') hostAnswer(1, (+m.i|0)); else if(m.a==='stache') hostStache(m.strokes); else if(m.a==='duel') hostDuelAnswer(1, +m.round|0, m.seq, +m.ms|0); else if(m.a==='note') hostDo({ k:'note', p:1, text:String(m.text||'').slice(0,60) }); else if(m.a==='avatar'){ const av = String(m.av); if(S.players[1].unlocked.includes(av)) hostDo({ k:'avatar', p:1, av }); } else if(m.a==='unlock') hostUnlock(1, String(m.av)); else if(m.a==='auto') hostAuto(1, !!m.on); else if(m.a==='rematch') hostRematch(); }); }
+  else if(m.t==='taunt'){ showTaunt(1, String(m.e)); if(m.d) danceBeat(1); hostTaunt(1, String(m.e)); }
 }
 function guestOnMessage(m){
   if(!m || typeof m!=='object') return;
   if(m.t==='sync' && m.s && typeof m.s==='object' && Array.isArray(m.s.players)){ if(S) return; S = freshState(m.s.players[0], m.s.players[1]); S.players.forEach((pl,i) => { pl.wins = m.s.players[i].wins|0; }); MODE='net'; ROLE='guest'; ME=1; startGameScreen(); }
   else if(m.t==='act' && m.a && typeof m.a==='object' && S){ enqueue(m.a); }
-  else if(m.t==='taunt'){ showTaunt(0, String(m.e)); }
+  else if(m.t==='taunt'){ showTaunt(0, String(m.e)); if(m.d) danceBeat(0); }
   else if(m.t==='laugh'){ showLaugh(); }
   else if(m.t==='gprog'){ gUpdate(+m.p|0, +m.v||0); }
   else if(m.t==='gdone'){ gUpdateDone(+m.p|0); }
@@ -1502,7 +1966,7 @@ function openTransport(pw, cb){
 }
 function openPeerTransport(pw, cb){
   if(!window.Peer){ cb.onError('No internet lobby here. Try 1 PHONE instead.'); return; }
-  let peer = null, conn = null, closed = false, role = null; const id = 'starchasers-' + pw;
+  let peer = null, conn = null, closed = false, role = null; const id = 'quadrun-' + pw;
   const wire = (c) => { conn = c; c.on('open', () => { if(!closed) cb.onOpen(); }); c.on('data', (d) => { if(!closed) cb.onMessage(d); }); c.on('close', () => { if(!closed) cb.onClose(); }); c.on('error', () => { if(!closed) cb.onClose(); }); };
   const asGuest = () => { role = 'guest'; peer = new Peer(undefined, { debug:0 }); peer.on('open', () => { if(closed) return; cb.onGuest(); wire(peer.connect(id, { reliable:true })); }); peer.on('error', (e) => { if(closed) return; const t = e && e.type; if(t==='peer-unavailable') cb.onError('The room vanished. Try again.'); else cb.onError("Can't reach the internet lobby. Check the wifi."); }); peer.on('disconnected', () => { if(!closed){ try{ peer.reconnect(); }catch(e){} } }); };
   const asHost = () => { role = 'host'; peer = new Peer(id, { debug:0 });
@@ -1519,7 +1983,7 @@ async function openRoomTransport(pw, cb){
   let room = null; try { room = await window.claude.use('room'); } catch(e){ room = null; }
   if(closed || net!==myNet) return;
   if(!room){ cb.onError('2 PHONES on this link needs both phones signed in to the same Claude account. On the game\'s own website the password works for anyone.'); return; }
-  try { r = await room.join('starchasers-'+pw); } catch(e){ cb.onError("Couldn't open the room: "+((e&&e.code)||'error')); return; }
+  try { r = await room.join('quadrun-'+pw); } catch(e){ cb.onError("Couldn't open the room: "+((e&&e.code)||'error')); return; }
   if(closed || net!==myNet){ r.leave().catch(()=>{}); return; }
   await wait(1500 / Math.max(SPEED, .05) * SPEED);
   const others = r.peers().filter(p => !p.sameTab).length;
@@ -1530,7 +1994,7 @@ async function openRoomTransport(pw, cb){
   if(role==='host') cb.onHost(); else cb.onGuest();
 }
 
-window.__sr = { get S(){ return S; }, hostRoll, hostPath, hostAnswer, hostStache, hostRematch, hostAuto, startLocal, hostGprog, hostGdraw, hostGuardDuel, startBot, busy, set speed(v){ SPEED = v; }, get mode(){ return MODE; }, netEnter, get net(){ return net; }, get lock(){ return lock; }, makeQ, hasAll, get profile(){ return profile; }, get role(){ return ROLE; } };
+window.__sr = { get S(){ return S; }, hostRoll, hostPath, hostAnswer, hostStache, hostRematch, hostAuto, startLocal, hostGprog, hostGdraw, hostGuardDuel, startBot, busy, set speed(v){ SPEED = v; }, get mode(){ return MODE; }, netEnter, get net(){ return net; }, get lock(){ return lock; }, makeQ, hasAll, get profile(){ return profile; }, get role(){ return ROLE; }, heartScore, heartStroke, botStache, funnyScore, hostLuckyPick, hostRain, hostDo, nextTurn, EV, landSim, luckyHint, megaOpen, get hints(){ return HINTS_ON; }, renderAll };
 show('scrTitle');
 })();
 
