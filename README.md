@@ -4,4 +4,6 @@ Enso's board game, built from his drawing. Open the site, pick a name and a colo
 
 Four corners, four guardians: Chicken-Heart, Fire, Electricity and Forest. Win a corner's duel to wear its aura. Psst: the Chicken-Heart guardian loves hearts.
 
+Play in English, French or Spanish (EN / FR / ES buttons on the title screen and in the menu).
+
 Everything is in `index.html`. Music credits are in `CREDITS.md`.
