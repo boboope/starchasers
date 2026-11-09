@@ -619,6 +619,8 @@ function locXY(p, loc){
 const DOOR_OUT = STEPS-1, DOOR_BACK = STEPS;
 const isAccess = (i) => (i > DOOR_OUT-ACCESS && i <= DOOR_OUT) || (i >= DOOR_BACK && i < DOOR_BACK+ACCESS);
 // loc.i counts steps walked; going the other way round (rev) walks the loop backwards
+// the 6-in-the-middle shortcut only exists once SOMEONE has earned the rope
+const ropeEarned = () => !!(S && S.players.some(p => p.rope));
 const phys = (loc) => loc.rev ? LOOP-1-loc.i : loc.i;
 const doorAt = (loc) => { if(loc.z!=='alley') return null; const i = phys(loc); return isAccess(i) ? ALLEY_QUADS[loc.dir][i<=DOOR_OUT?0:1] : null; };
 const shade = (hex, k) => { const n = parseInt(hex.slice(1),16); const f = (v) => Math.max(0, Math.round(v*(1-k))); return '#'+[(n>>16)&255,(n>>8)&255,n&255].map(f).map(v=>v.toString(16).padStart(2,'0')).join(''); };
@@ -780,6 +782,11 @@ document.addEventListener('click', (e) => { const b = e.target.closest && e.targ
 
 // translations (English -> French / Spanish). {1}, {2}… are names or numbers that get filled in.
 Object.assign(I18N.fr, {
+"{1}: roll a 6 in the middle to climb too!": "{1} : fais un 6 au milieu pour grimper aussi !",
+"rope: roll a 6 in the middle!": "corde : fais un 6 au milieu !",
+"rope: own 4 corners or visit 4 doors": "corde : 4 coins ou les 4 portes",
+"Rope is locked": "La corde est verrouillée",
+"The rope opens when you own all 4 corners or land by all 4 doors. Once someone opens it, the other player can pick the rope in the middle and roll a 6 to jump on! Land on the star EXACTLY, then solve the final puzzle.": "La corde s'ouvre quand tu as les 4 coins ou que tu es passé par les 4 portes. Dès que quelqu'un l'ouvre, l'autre joueur peut choisir la corde au milieu et faire un 6 pour monter dessus ! Arrive PILE sur l'étoile, puis résous l'énigme finale.",
 "Draw a mustache on the {1} guardian!": "Dessine une moustache au gardien {1} !",
 "Draw a mustache on {1}!": "Dessine une moustache à {1} !",
 "{1} is drawing a mustache on the {2} guardian…": "{1} dessine une moustache au gardien {2}…",
@@ -1246,6 +1253,11 @@ Object.assign(I18N.fr, {
 "Draw your own doodle": "Dessine ton propre perso"
 });
 Object.assign(I18N.es, {
+"{1}: roll a 6 in the middle to climb too!": "{1}: ¡saca un 6 en el centro para subir también!",
+"rope: roll a 6 in the middle!": "cuerda: ¡saca un 6 en el centro!",
+"rope: own 4 corners or visit 4 doors": "cuerda: 4 esquinas o las 4 puertas",
+"Rope is locked": "La cuerda está cerrada",
+"The rope opens when you own all 4 corners or land by all 4 doors. Once someone opens it, the other player can pick the rope in the middle and roll a 6 to jump on! Land on the star EXACTLY, then solve the final puzzle.": "La cuerda se abre cuando tienes las 4 esquinas o has caído junto a las 4 puertas. ¡Cuando alguien la abre, el otro jugador puede elegir la cuerda en el centro y sacar un 6 para subirse! Llega JUSTO a la estrella y resuelve el acertijo final.",
 "Draw a mustache on the {1} guardian!": "¡Dibuja un bigote al guardián {1}!",
 "Draw a mustache on {1}!": "¡Dibuja un bigote a {1}!",
 "{1} is drawing a mustache on the {2} guardian…": "{1} le dibuja un bigote al guardián {2}…",
@@ -1843,13 +1855,13 @@ function renderAll(){
   else if(atHub){ const chosen = pl.loc.dir; const rope = !!pl.rope;
     const dots = (dir) => `<span class="dots">${ALLEY_QUADS[dir].map(q => `<i style="background:${QUADS[q].col}"></i>`).join('')}</span>`;
     const b = (dir) => `<button data-dir="${dir}" class="${chosen===dir?'on':''}" aria-label="${DIRS[dir].name} road: ${ALLEY_QUADS[dir].map(q => QUADS[q].short).join(' and ')}">${DIRS[dir].arrow}${dots(dir)}</button>`;
-    left.innerHTML = `<div class="roads"><span></span>${b('N')}<span></span>${b('W')}<button data-dir="R" class="${chosen==='R'?'on':'rope'}" aria-label="${rope ? 'Rope to the star' : 'Rope: roll a 6 to climb'}">${rope?'⭐':'<span class="six">6</span>'}</button>${b('E')}<span></span>${b('S')}<span></span></div>`;
+    left.innerHTML = `<div class="roads"><span></span>${b('N')}<span></span>${b('W')}<button data-dir="R" class="${chosen==='R'?'on':(rope||ropeEarned()?'rope':'')}" ${rope||ropeEarned()?'':'disabled'} aria-label="${rope ? 'Rope to the star' : ropeEarned() ? 'Rope: roll a 6 to climb' : 'Rope is locked'}">${rope?'⭐':ropeEarned()?'<span class="six">6</span>':'🔒'}</button>${b('E')}<span></span>${b('S')}<span></span></div>`;
     left.querySelectorAll('button').forEach(bt => bt.onclick = () => onPathTap(bt.dataset.dir, false));
     if(chosen && chosen!=='R'){ const qs = ALLEY_QUADS[chosen]; const hint = luckyHint(ctrl);
       right.innerHTML = `<div class="firstpick"><div class="lab">Go to first:</div>${qs.map((q,k) => `<button data-rev="${k}" class="${(k===1)===!!pl.loc.rev?'on':''}" style="--c:${QUADS[q].col}">${svgIcon(QUADS[q].icon, QUADS[q].col, 22)}<span>${QUADS[q].short}</span></button>`).join('')}<div class="lab">${hint ? esc(hint) : 'then swipe the dice!'}</div></div>`;
       right.querySelectorAll('button').forEach(bt => bt.onclick = () => onPathTap(chosen, bt.dataset.rev==='1')); }
     else right.innerHTML = `<div class="keysbox big">${chosen==='R' ? (rope ? 'The rope! Swipe 🎲' : 'Roll a 6 to climb!') : (rope ? 'Take the rope ⭐' : '👈 Pick a road!')}</div>`; }
-  else { left.innerHTML = `<div class="keysbox">${ownedCount(pl)}/4 corners<br><span class="drs" aria-label="doors visited">${QUAD_LIST.map(q => `<i style="${(pl.doors||[]).includes(q) ? `background:${QUADS[q].col}` : ''}"></i>`).join('')}</span> doors<br><small>${pl.rope ? '⭐ rope open!' : 'rope: 4 doors or a 6 in the middle'}</small></div>`;
+  else { left.innerHTML = `<div class="keysbox">${ownedCount(pl)}/4 corners<br><span class="drs" aria-label="doors visited">${QUAD_LIST.map(q => `<i style="${(pl.doors||[]).includes(q) ? `background:${QUADS[q].col}` : ''}"></i>`).join('')}</span> doors<br><small>${pl.rope ? '⭐ rope open!' : ropeEarned() ? 'rope: roll a 6 in the middle!' : 'rope: own 4 corners or visit 4 doors'}</small></div>`;
     const hint = myMove ? luckyHint(ctrl) : '';
     right.innerHTML = hint ? `<div class="keysbox hint">🍀 ${esc(hint)}</div>` : `<div class="keysbox">🥚 ${pl.eggs|0}/3 eggs<br><small>roll a 1 = egg</small></div>`; }
   const ring = $('#hubRing'); if(ring) ring.querySelector('circle').setAttribute('opacity', atHub ? '.9' : '0');
@@ -2328,7 +2340,7 @@ function renderHow(box, onDone){
     { art:`${g('chicken')}${g('dog')}${g('duck')}${g('cat')}`, t:'Corner taken? Guardian duel!', s:'Win the 1-minute game to own the corner forever and wear its aura ❤️ 🔥 ⚡ 🐰. Lose a duel and your auras are gone!' },
     { art:`${g('chicken')}<span class="big">💕</span>${svgIcon('heart', QUADS.NW.col, 60)}`, t:'Psst… a secret!', s:'The Chicken-Heart guardian LOVES hearts. In the Mustache Showdown, draw a heart and see what happens ❤️' },
     { art:`${svgIcon('chicken', '#f6c531', 64)}<span class="big">💃</span>`, t:'CHICKY-CHICKEN!', s:'Land on your friend: they dance back to the middle. Careful! Their GUARD STEPS (by corners they own) send YOU back.' },
-    { art:`${svgIcon('star', STAR_C, 72)}<span class="big">🪢</span>`, t:'Climb the rope to the star!', s:'The rope opens when you own all 4 corners or land by all 4 doors. Or pick the rope in the middle and roll a 6! Land on the star EXACTLY, then solve the final puzzle.' },
+    { art:`${svgIcon('star', STAR_C, 72)}<span class="big">🪢</span>`, t:'Climb the rope to the star!', s:'The rope opens when you own all 4 corners or land by all 4 doors. Once someone opens it, the other player can pick the rope in the middle and roll a 6 to jump on! Land on the star EXACTLY, then solve the final puzzle.' },
   ];
   let i = 0;
   const draw = () => { const c = cards[i];
@@ -2440,6 +2452,9 @@ async function sneezeFx(q, to){
 
 // ---------- the heart mustache: bots sometimes know the Chicken-Heart secret ----------
 function heartStroke(kind){ const [fx, fy] = FACE[kind] || [0,3]; const s = 0.5 + Math.random()*.15; const a = []; for(let i=0;i<=28;i++){ const t = i/28*Math.PI*2; a.push([+(fx + 16*Math.pow(Math.sin(t),3)*s*.6).toFixed(1), +(fy + 1 - (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t))*s*.6).toFixed(1)]); } return [a]; }
+
+// the first time someone opens the rope, tell the other player about the 6 shortcut
+async function ropeNews(p){ const o = S && S.players[1-p]; if(!o || o.rope) return; fxText(HUB.x, HUB.y-150, `${o.name}: roll a 6 in the middle to climb too!`, '#3aa655', 34); await wait(900); }
 // ---------------- the action queue: every device applies the same actions in the same order ----------------
 const Q = []; let running = false; const busy = () => running || Q.length>0;
 function enqueue(a){ return new Promise(res => { Q.push({ a, res }); pump(); }); }
@@ -2487,7 +2502,7 @@ async function apply(a){
       const q = doorAt(pl.loc);
       // landing by a door counts as a visit (win or lose); all four doors = rope pass
       if(q && stop!=='hub' && !(pl.doors||[]).includes(q)){ pl.doors = (pl.doors||[]).concat(q); renderAll();
-        if(pl.doors.length===4 && !pl.rope){ pl.rope = true; renderFlags(); SFX.unlockRope(); fxText(ROPE_LOCK.x, ROPE_LOCK.y, 'ALL 4 DOORS! ROPE OPEN!', STAR2, 42); await wait(700); }
+        if(pl.doors.length===4 && !pl.rope){ pl.rope = true; renderFlags(); SFX.unlockRope(); fxText(ROPE_LOCK.x, ROPE_LOCK.y, 'ALL 4 DOORS! ROPE OPEN!', STAR2, 42); await wait(700); await ropeNews(p); }
         else if(pl.doors.length < 4){ fxText(pieces[p].x, pieces[p].y-120, `Door ${pl.doors.length}/4`, QUADS[q].col==='#f6c531' ? STAR2 : QUADS[q].col, 34); } }
       if(stop==='hub'){ placePiece(p); SFX.ding(); fxText(HUB.x, HUB.y-130, 'The cross!', null, 44); await wait(300); }
       else if(stop==='star'){ fxText(STAR.x, STAR.y+90, 'THE STAR!', STAR2, 60); SFX.star(); await wait(500); }
@@ -2632,7 +2647,7 @@ const isRoboP = (p) => MODE==='bot' && p===1;
 const roboOf = (p) => S.players[p].robo===9 ? MEGA : (ROBOS[S.players[p].robo|0] || ROBOS[0]);
 function drawSpec(by, victim, left){ const bonus = clamp(Math.round(left||0), 0, 21); return { by, victim, bonus, secs: Math.round(DRAW_BASE_MS/1000) + bonus, ink: 70 + bonus*6 }; }
 async function checkRope(pl){
-  if(hasAll(pl) && !pl.rope){ pl.rope = true; renderFlags(); SFX.unlockRope(); fxText(ROPE_LOCK.x, ROPE_LOCK.y, 'ROPE UNLOCKED!', STAR2, 48); await wait(700); }
+  if(hasAll(pl) && !pl.rope){ pl.rope = true; renderFlags(); SFX.unlockRope(); fxText(ROPE_LOCK.x, ROPE_LOCK.y, 'ROPE UNLOCKED!', STAR2, 48); await wait(700); await ropeNews(S.players.indexOf(pl)); }
   else if(QUAD_LIST.every(locked) && !S.players.some(hasAll) && !S.players.every(x => x.rope)){ S.players.forEach(x => x.rope = true); renderFlags(); SFX.unlockRope(); shake(); await showdownOverlay(); }
 }
 // the robo draws in public: its face bounces in the corner, it narrates, the pen jitters, it giggles
@@ -2716,7 +2731,7 @@ function onDiceThrow(sw){
   if(ROLE==='host') hostRoll(p, sw);
   else { net && net.send({ t:'req', a:'roll', sw }); $('#diceTag').textContent = 'rolling…'; }
 }
-function onPathTap(dir, rev){ if(!S || S.phase!=='play' || busy()) return; const p = controllable(); if(S.turn!==p || S.players[p].loc.z!=='hub' || S.players[p].auto) return; SFX.tick(); if(ROLE==='host') hostPath(p, dir, !!rev); else net && net.send({ t:'req', a:'path', dir, rev:!!rev }); }
+function onPathTap(dir, rev){ if(!S || S.phase!=='play' || busy()) return; const p = controllable(); if(S.turn!==p || S.players[p].loc.z!=='hub' || S.players[p].auto || (dir==='R' && !S.players[p].rope && !ropeEarned())) return; SFX.tick(); if(ROLE==='host') hostPath(p, dir, !!rev); else net && net.send({ t:'req', a:'path', dir, rev:!!rev }); }
 function onAnswerTap(i){ if(!S || !S.ask || S.ask.answered || busy()) return; const p = S.ask.p; if(!(MODE==='local' || p===ME) || S.players[p].auto) return; if(ROLE==='host') hostAnswer(p, i); else { net && net.send({ t:'req', a:'answer', i }); $('#ask').querySelectorAll('.opts button').forEach(b => b.disabled = true); } }
 function submitStache(strokes){ if(!S || !S.draw) return; if(ROLE==='host') hostStache(strokes); else net && net.send({ t:'req', a:'stache', strokes }); $('#pad').hidden = true; }
 function submitNote(w, txt){ if(!S) return; if(ROLE==='host') hostDo({ k:'note', p:w, text:txt }); else net && net.send({ t:'req', a:'note', text:txt }); }
@@ -2761,7 +2776,7 @@ const botProfile = (p) => (MODE==='bot' && p===1) ? BOT_LEVELS[BOT_LEVEL] : BOT_
 // how often the surprises happen (tests turn them off)
 const EV = Object.assign({ sneeze:.1, rain:.06, glitch:.2, lucky:.35, turbo:.25 }, window.__SR_EVENTS || {});
 let luckySw = null;
-async function hostPath(p, dir, rev){ if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel || S.lucky) return; const pl = S.players[p]; if(pl.loc.z!=='hub' || (!DIRS[dir] && dir!=='R')) return; lock = true; try { await hostDo({ k:'path', p, dir, rev: dir!=='R' && !!rev }); } finally { lock = false; } scheduleBots(); }
+async function hostPath(p, dir, rev){ if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel || S.lucky) return; const pl = S.players[p]; if(pl.loc.z!=='hub' || (!DIRS[dir] && dir!=='R') || (dir==='R' && !pl.rope && !ropeEarned())) return; lock = true; try { await hostDo({ k:'path', p, dir, rev: dir!=='R' && !!rev }); } finally { lock = false; } scheduleBots(); }
 async function hostRoll(p, sw, forced){
   if(lock || !S || S.phase!=='play' || S.turn!==p || busy() || S.ask || S.draw || S.duel || S.gduel) return; if(S.lucky && forced===undefined) return; const pl = S.players[p]; if(pl.loc.z==='hub' && !pl.loc.dir) return;
   lock = true;
@@ -2770,6 +2785,7 @@ async function hostRoll(p, sw, forced){
     const s = sw && isFinite(sw.dx) && isFinite(sw.dy) ? { dx:clamp(+sw.dx,-1,1), dy:clamp(+sw.dy,-1,1), sp:clamp(+sw.sp||.5,.25,1) } : { dx:(Math.random()-.5)*.6, dy:-1, sp:.5 };
     // Lucky Star: whoever owns fewer corners sometimes picks between two dice
     if(forced===undefined && !onRope && ownedCount(pl) < ownedCount(S.players[1-p]) && Math.random() < EV.lucky){ const a = 1+rnd(6); const b = 1 + (a + rnd(5)) % 6; luckySw = s; await hostDo({ k:'lucky', p, a, b }); return; }
+    if(pl.loc.z==='hub' && pl.loc.dir==='R' && !pl.rope && !ropeEarned()){ lock = false; return; }
     if(pl.loc.z==='hub' && pl.loc.dir==='R' && !pl.rope){ const g = forced!==undefined ? forced : 1+rnd(6); await hostDo({ k:'roll', p, v:g, gate:1, sw:s }); if(!S || S.phase!=='play') return; await nextTurn(g===6 ? p : 1-p, g===6); return; }
     const v = forced!==undefined ? forced : 1+rnd(onRope ? 3 : 6);
     const turbo = (isRoboP(p) && BOT_LEVEL==='mega' && !onRope && Math.random() < EV.turbo) ? 1 : 0;
@@ -2901,7 +2917,7 @@ async function botStep(){
     if(S.draw && S.draw.by===p){ await hostStache(botStache(victimInfo(S.draw.victim).av)); return; }
     if(S.duel){ const d = S.duel; if(d.phase==='input' && !duelAns[p] && !d.done[p]){ const combo = d.combos[d.round]; const seq = Math.random()<prof.duel ? combo.slice() : combo.map(e => Math.random()<.6 ? e : pick(TAUNTS).e); d.done[p] = true; renderDuel(); setTimeout(() => hostDuelAnswer(p, d.round, seq, 1200+rnd(1800)), (1200+rnd(1800))*SPEED); } continue; }
     if(S.turn!==p || S.dance) continue;
-    if(me.loc.z==='hub' && !me.loc.dir){ let dir = 'W'; if(me.rope) dir = 'R'; else { const score = (d) => ALLEY_QUADS[d].filter(q => me.keys[q]===0 && !locked(q)).length + ALLEY_QUADS[d].filter(q => !(me.doors||[]).includes(q)).length*.3 + Math.random()*.5; dir = Object.keys(DIRS).sort((a,b) => score(b)-score(a))[0]; if(QUAD_LIST.every(q => me.keys[q]>0 || locked(q)) || Math.random() < .12) dir = 'R'; } const need = (q) => me.keys[q]===0 && !locked(q); const rev = dir!=='R' && !need(ALLEY_QUADS[dir][0]) && need(ALLEY_QUADS[dir][1]); await hostPath(p, dir, rev); return; }
+    if(me.loc.z==='hub' && !me.loc.dir){ let dir = 'W'; if(me.rope) dir = 'R'; else { const score = (d) => ALLEY_QUADS[d].filter(q => me.keys[q]===0 && !locked(q)).length + ALLEY_QUADS[d].filter(q => !(me.doors||[]).includes(q)).length*.3 + Math.random()*.5; dir = Object.keys(DIRS).sort((a,b) => score(b)-score(a))[0]; if(ropeEarned() && (QUAD_LIST.every(q => me.keys[q]>0 || locked(q)) || Math.random() < .25)) dir = 'R'; } const need = (q) => me.keys[q]===0 && !locked(q); const rev = dir!=='R' && !need(ALLEY_QUADS[dir][0]) && need(ALLEY_QUADS[dir][1]); await hostPath(p, dir, rev); return; }
     await hostRoll(p, { dx:(Math.random()-.5), dy:-(.4+Math.random()*.6), sp:.4+Math.random()*.6 }); return;
   }
 }
